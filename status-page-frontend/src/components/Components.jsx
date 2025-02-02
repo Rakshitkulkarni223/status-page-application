@@ -1,0 +1,578 @@
+import React, { useEffect, useState } from "react";
+import { Pencil, Trash, AlertTriangle, CalendarClock, PlusCircle } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogClose,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Textarea } from "@/components/ui/textarea";
+
+const user = {
+    id: localStorage.getItem("userId"),
+    role: localStorage.getItem('role'),
+    owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
+};
+
+const Components = () => {
+    const [ownedGroupNames, setOwnedGroupNames] = useState([]);
+    const [editingService, setEditingService] = useState(null);
+    const [serviceName, setServiceName] = useState("");
+    const [serviceStatus, setServiceStatus] = useState("");
+
+    const [problemDescription, setProblemDescription] = useState("");
+    const [problemTitle, setProblemTitle] = useState("");
+    const [problemOccurredAt, setProblemOccurredAt] = useState("");
+    const [problemAffectedServcie, setProblemAffectedServcie] = useState("");
+
+    const [serviceLink, setServiceLink] = useState("");
+    const [maintenanceTime, setMaintenanceTime] = useState("");
+    const [newServiceName, setNewServiceName] = useState("");
+    const [newGroupName, setNewGroupName] = useState("");
+    const [newServiceStatus, setNewServiceStatus] = useState("Operational");
+    const [newServiceLink, setNewServiceLink] = useState("");
+
+    const [maintenanceTitle, setMaintenanceTitle] = useState("");
+    const [maintenanceStatus, setMaintenanceStatus] = useState("");
+    const [maintenanceDescription, setMaintenanceDescription] = useState("");
+    const [maintenanceScheduledStart, setMaintenanceScheduledStart] = useState("");
+    const [maintenanceScheduledEnd, setMaintenanceScheduledEnd] = useState("");
+    const [maintenanceTimeline, setMaintenanceTimeline] = useState([]);
+
+
+    const [services, setServices] = useState([]);
+
+    const fetchServices = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/services', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const data = await response.json();
+            setOwnedGroupNames(user.role === "Admin" ? data : data
+                .filter(group => user.owned_service_groups.includes(group.id)))
+            setServices(data);
+        } catch (error) {
+            console.error('Error subscribing:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchServices();
+    }, [])
+
+    const handleChange = (e) => {
+        const newDateTime = e.target.value;
+        setProblemOccurredAt(newDateTime);
+    };
+
+
+    const handleEditClick = async (service) => {
+        setEditingService(service);
+        setServiceName(service.name);
+        setServiceStatus(service.status);
+    };
+
+    const handleSave = async (id) => {
+        console.log("Updated service:", { serviceName, serviceStatus, id });
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/services/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ name: serviceName, status: serviceStatus }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Service updated successfully!');
+                document.getElementById("close-dialog").click();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.log(error)
+            console.error('Error creating incident:', error);
+            alert('Error creating incident.');
+        }
+
+        setEditingService(null);
+        document.getElementById("close-dialog").click();
+    };
+
+    const handleReportProblem = async (e) => {
+        e.preventDefault();
+
+        const newIncident = {
+            title: problemTitle,
+            description: problemDescription,
+            status: "Reported",
+            affected_services: problemAffectedServcie,
+            occurred_at: problemOccurredAt,
+            reported_by: user.id
+        };
+
+        try {
+            const response = await fetch('http://localhost:5000/api/incidents', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(newIncident),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Incident created successfully!');
+                document.getElementById("close-dialog").click();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.log(error)
+            console.error('Error creating incident:', error);
+            alert('Error creating incident.');
+        }
+    };
+
+    const handleScheduleMaintenance = async (id) => {
+        const maintenanceData = {
+            title: maintenanceTitle,
+            description: maintenanceDescription,
+            status: "Scheduled",
+            affected_services: id,
+            scheduled_start: maintenanceScheduledStart,
+            scheduled_end: maintenanceScheduledEnd
+        }
+        try {
+            const response = await fetch('http://localhost:5000/api/maintenance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({maintenanceData}),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Service maintenance scheduled successfully!');
+                document.getElementById("close-dialog").click();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error creating Service maintenance scheduled:', error);
+            alert('Error creating Service maintenance scheduled.');
+        }
+    };
+
+
+    const handleCreateNewService = async () => {
+        const body = { newServiceName, newServiceStatus, newGroupName }
+
+        try {
+            const response = await fetch('http://localhost:5000/api/services', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(body),
+            });
+
+            const data = await response.json();
+
+
+            alert(JSON.stringify(data))
+
+            if (response.ok) {
+                alert('New service created successfully!');
+                document.getElementById("close-dialog").click();
+            } else {
+                alert(`Error: ${data.message}`);
+            }
+        } catch (error) {
+            console.error('Error creating incident:', error);
+            alert('Error creating incident.');
+        }
+    };
+
+    return (
+        <div className="rounded-b-[10px]">
+
+            {user.role === "Admin" && <div className="flex justify-end mb-4">
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button className="bg-green-700 hover:bg-green-800 text-white">
+                            <PlusCircle size={16} className="mr-2" />
+                            New Service
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                        <DialogHeader>
+                            <DialogTitle>Create New Service</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-2">
+                                <Label htmlFor="new-service-name" className="text-right">
+                                    Name
+                                </Label>
+                                <Input
+                                    id="new-service-name"
+                                    value={newServiceName}
+                                    onChange={(e) => setNewServiceName(e.target.value)}
+                                    className="col-span-3 rounded-[5px]"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                <Label className="text-right">Status</Label>
+                                <div className="col-span-3 flex flex-wrap gap-2">
+                                    <ToggleGroup
+                                        type="single"
+                                        value={newServiceStatus}
+                                        className="flex flex-wrap gap-2"
+                                    >
+                                        <ToggleGroupItem
+                                            value="Operational"
+                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                        >
+                                            Operational
+                                        </ToggleGroupItem>
+                                        <ToggleGroupItem
+                                            disabled
+                                            value="Degraded Performance"
+                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                        >
+                                            Degraded
+                                        </ToggleGroupItem>
+                                        <ToggleGroupItem
+                                            disabled
+                                            value="Partial Outage"
+                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                        >
+                                            Partial Outage
+                                        </ToggleGroupItem>
+                                        <ToggleGroupItem
+                                            disabled
+                                            value="Major Outage"
+                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                        >
+                                            Major Outage
+                                        </ToggleGroupItem>
+                                    </ToggleGroup>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                <Label htmlFor="new-service-name" className="text-right">
+                                    Group name
+                                </Label>
+                                <Input
+                                    id="new-service-name"
+                                    value={newGroupName}
+                                    onChange={(e) => setNewGroupName(e.target.value)}
+                                    className="col-span-3 rounded-[5px]"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                <Label htmlFor="new-service-link" className="text-right">
+                                    An optional link to the Service Link
+                                </Label>
+                                <Input
+                                    id="new-service-link"
+                                    value={newServiceLink}
+                                    onChange={(e) => setNewServiceLink(e.target.value)}
+                                    className="col-span-3 rounded-[5px]"
+                                />
+                            </div>
+                        </div>
+
+                        <DialogFooter>
+                            <Button onClick={handleCreateNewService} className="w-full rounded-[5px] py-2 text-sm">
+                                Create Service
+                            </Button>
+                            <DialogClose asChild>
+                                <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                    ✕
+                                </button>
+                            </DialogClose>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+            </div>}
+
+            <table className="border-[1px] min-w-full table-auto">
+                <thead>
+                    <tr className="bg-gray-700 text-white">
+                        <th className="px-6 py-3 text-left text-sm font-semibold">Service Name</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold">Group</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {ownedGroupNames.map((group) =>
+                        group.services.map((service) => (
+                            <tr key={service.id} className="border-t hover:bg-gray-800">
+                                <td className="px-6 py-3 text-sm">{service.name}</td>
+                                <td className="px-6 py-3 text-sm">
+                                    <span className={`px-2 py-1 text-[12px] rounded-[5px] ${getStatusClass(service.status)}`}>
+                                        {service.status}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-3 text-sm">{group.name}</td>
+                                <td className="px-6 py-3 flex space-x-3">
+                                    {user.role === "Admin" && <Dialog>
+                                        <DialogTrigger asChild>
+                                            <button onClick={() => handleEditClick(service)} className="text-blue-500 hover:text-blue-700">
+                                                <Pencil size={16} />
+                                            </button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                                            <DialogHeader>
+                                                <DialogTitle>Edit Service</DialogTitle>
+                                            </DialogHeader>
+                                            <div className="grid gap-4 py-4">
+                                                <div className="grid grid-cols-4 items-center gap-2">
+                                                    <Label htmlFor="name" className="text-right">
+                                                        Name
+                                                    </Label>
+                                                    <Input
+                                                        id="name"
+                                                        value={serviceName}
+                                                        onChange={(e) => setServiceName(e.target.value)}
+                                                        className="col-span-3 rounded-[5px]"
+                                                    />
+                                                </div>
+
+                                                <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                    <Label className="text-right">Status</Label>
+                                                    <div className="col-span-3 flex flex-wrap gap-2">
+                                                        <ToggleGroup
+                                                            type="single"
+                                                            value={serviceStatus}
+                                                            onValueChange={setServiceStatus}
+                                                            className="flex flex-wrap gap-2"
+                                                        >
+                                                            <ToggleGroupItem
+                                                                value="Operational"
+                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Operational
+                                                            </ToggleGroupItem>
+                                                            <ToggleGroupItem
+                                                                value="Degraded Performance"
+                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Degraded
+                                                            </ToggleGroupItem>
+                                                            <ToggleGroupItem
+                                                                value="Partial Outage"
+                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Partial Outage
+                                                            </ToggleGroupItem>
+                                                            <ToggleGroupItem
+                                                                value="Major Outage"
+                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Major Outage
+                                                            </ToggleGroupItem>
+                                                        </ToggleGroup>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                    <Label htmlFor="new-service-link" className="text-right">
+                                                        An optional link to the Service Link
+                                                    </Label>
+                                                    <Input
+                                                        id="new-service-link"
+                                                        value={serviceLink}
+                                                        onChange={(e) => setServiceLink(e.target.value)}
+                                                        className="col-span-3 rounded-[5px]"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <DialogFooter>
+                                                <Button onClick={() => handleSave(service.id)} className="w-full rounded-[5px] py-2 text-sm">
+                                                    Save changes
+                                                </Button>
+                                                <DialogClose asChild>
+                                                    <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                                        ✕
+                                                    </button>
+                                                </DialogClose>
+                                            </DialogFooter>
+                                        </DialogContent>
+                                    </Dialog>}
+                                    {user.role !== "Admin" && (
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <button className="text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                    <AlertTriangle size={16} />
+                                                </button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                                                <DialogHeader>
+                                                    <DialogTitle>Report an Incident</DialogTitle>
+                                                </DialogHeader>
+                                                <div className="grid gap-2 py-2">
+                                                    <Label>Title</Label>
+                                                    <Textarea value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
+                                                </div>
+                                                <div className="grid gap-2  py-4">
+                                                    <Label>Describe the issue</Label>
+                                                    <Textarea value={problemDescription} onChange={(e) => setProblemDescription(e.target.value)} />
+                                                </div>
+                                                <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                    <Label htmlFor="incident-time" className="text-right">
+                                                        Reported On
+                                                    </Label>
+                                                    <Input
+                                                        id="incident-occured-at"
+                                                        value={problemOccurredAt ? problemOccurredAt.slice(0, 16) : ''}
+                                                        onChange={handleChange}
+                                                        className="col-span-3 rounded-[5px]"
+                                                        type="datetime-local"
+                                                    />
+                                                </div>
+                                                <DialogFooter>
+                                                    <Button onClick={handleReportProblem} className="w-full rounded-[5px] py-2 text-sm">Submit</Button>
+                                                    <DialogClose asChild>
+                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                                            ✕
+                                                        </button>
+                                                    </DialogClose>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
+
+                                    {/* Schedule Maintenance Dialog (for admins) */}
+                                    {user.role === "Admin" && (
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <button className="text-green-500 hover:text-green-700">
+                                                    <CalendarClock size={16} />
+                                                </button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                                                <DialogHeader>
+                                                    <DialogTitle>Schedule Maintenance</DialogTitle>
+                                                </DialogHeader>
+                                                <div className="grid gap-4 py-4">
+                                                    <div className="grid grid-cols-4 items-center gap-2">
+                                                        <Label htmlFor="maintenance-title" className="text-right">
+                                                            Title
+                                                        </Label>
+                                                        <Input
+                                                            id="maintenance-title"
+                                                            value={maintenanceTitle}
+                                                            onChange={(e) => setMaintenanceTitle(e.target.value)}
+                                                            className="col-span-3 rounded-[5px]"
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                        <Label htmlFor="maintenance-description" className="text-right">
+                                                            Description
+                                                        </Label>
+                                                        <Textarea
+                                                            id="maintenance-description"
+                                                            value={maintenanceDescription}
+                                                            onChange={(e) => setMaintenanceDescription(e.target.value)}
+                                                            className="col-span-3 rounded-[5px]"
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                        <Label htmlFor="maintenance-scheduled-start" className="text-right">
+                                                            Scheduled Start
+                                                        </Label>
+                                                        <Input
+                                                            id="maintenance-scheduled-start"
+                                                            value={maintenanceScheduledStart}
+                                                            onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
+                                                            className="col-span-3 rounded-[5px]"
+                                                            type="datetime-local"
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                        <Label htmlFor="maintenance-scheduled-end" className="text-right">
+                                                            Scheduled End
+                                                        </Label>
+                                                        <Input
+                                                            disabled={["Completed", "Canceled"].includes(maintenanceStatus)}
+                                                            id="maintenance-scheduled-end"
+                                                            value={maintenanceScheduledEnd}
+                                                            onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
+                                                            className="col-span-3 rounded-[5px]"
+                                                            type="datetime-local"
+                                                        />
+                                                    </div>
+
+                                                </div>
+                                                <DialogFooter>
+                                                    <Button onClick={()=>handleScheduleMaintenance(service.id)} className="w-full rounded-[5px] py-2 text-sm">Schedule</Button>
+                                                    <DialogClose asChild>
+                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                                            ✕
+                                                        </button>
+                                                    </DialogClose>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
+
+                                    {user.role === "Admin" && <button className="text-red-500 hover:text-red-700">
+                                        <Trash size={16} />
+                                    </button>}
+                                </td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+const getStatusClass = (status) => {
+    switch (status) {
+        case "Operational":
+            return "bg-green-700 text-white";
+        case "Degraded Performance":
+            return "bg-purple-700 text-white";
+        case "Partial Outage":
+            return "bg-red-600 text-white";
+        case "Major Outage":
+            return "bg-red-800 text-white";
+        default:
+            return "bg-gray-500 text-white";
+    }
+};
+
+export default Components;

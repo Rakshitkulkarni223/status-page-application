@@ -1,0 +1,48 @@
+[
+    {
+      "id": 1,
+      "name": "Core Services",
+      "services": [
+        { "id": 101, "name": "Website", "status": "Operational" },
+        { "id": 102, "name": "API", "status": "Degraded Performance" },
+        { "id": 103, "name": "Database", "status": "Operational" }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Infrastructure",
+      "services": [
+        { "id": 201, "name": "Load Balancer", "status": "Operational" },
+        { "id": 202, "name": "CDN", "status": "Partial Outage" },
+        { "id": 203, "name": "DNS", "status": "Operational" }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Messaging Services",
+      "services": [
+        { "id": 301, "name": "Email Notifications", "status": "Major Outage" },
+        { "id": 302, "name": "SMS Gateway", "status": "Operational" },
+        { "id": 303, "name": "Push Notifications", "status": "Degraded Performance" }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Third-Party Integrations",
+      "services": [
+        { "id": 401, "name": "Payment Gateway", "status": "Operational" },
+        { "id": 402, "name": "OAuth Login", "status": "Partial Outage" },
+        { "id": 403, "name": "Analytics API", "status": "Operational" }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Support Systems",
+      "services": [
+        { "id": 501, "name": "Helpdesk", "status": "Degraded Performance" },
+        { "id": 502, "name": "Live Chat", "status": "Operational" },
+        { "id": 503, "name": "Knowledge Base", "status": "Operational" }
+      ]
+    }
+  ]
+  

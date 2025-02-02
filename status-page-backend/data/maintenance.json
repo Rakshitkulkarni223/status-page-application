@@ -1,0 +1,132 @@
+[
+    {
+        "type": "Maintenance",
+        "title": "Database Upgrade",
+        "description": "Upgrading the database to improve performance and reliability.",
+        "status": "Scheduled",
+        "affected_services": [
+  
+        ],
+        "scheduled_start": "2025-02-05T02:00:00Z",
+        "scheduled_end": "2025-02-05T04:00:00Z",
+        "updated_at": "2025-02-02T10:00:00Z",
+        "timeline": [
+            {
+                "status": "Scheduled",
+                "timestamp": "2025-02-02T10:00:00Z",
+                "content": "The database upgrade is scheduled for February 5th, 2025."
+            }
+        ]
+    },
+    {
+        "type": "Maintenance",
+        "title": "Server Hardware Replacement",
+        "description": "Replacing outdated hardware on primary web servers.",
+        "status": "In Progress",
+        "affected_services": [
+
+        ],
+        "scheduled_start": "2025-02-01T23:00:00Z",
+        "scheduled_end": "2025-02-02T03:00:00Z",
+        "updated_at": "2025-02-01T23:30:00Z",
+        "timeline": [
+            {
+                "status": "Scheduled",
+                "timestamp": "2025-01-30T15:00:00Z",
+                "content": "Hardware replacement scheduled to start on February 1st, 2025."
+            },
+            {
+                "status": "In Progress",
+                "timestamp": "2025-02-01T23:30:00Z",
+                "content": "Replacement process is underway; primary servers are temporarily down."
+            }
+        ]
+    },
+    {
+        "type": "Maintenance",
+        "title": "CDN Network Optimization",
+        "description": "Optimizing content delivery network routes for faster loading times.",
+        "status": "Verifying",
+        "affected_services": [
+      
+        ],
+        "scheduled_start": "2025-02-01T06:00:00Z",
+        "scheduled_end": "2025-02-01T08:00:00Z",
+        "updated_at": "2025-02-01T08:15:00Z",
+        "timeline": [
+            {
+                "status": "Scheduled",
+                "timestamp": "2025-01-29T12:00:00Z",
+                "content": "CDN optimization scheduled to start on February 1st, 2025."
+            },
+            {
+                "status": "In Progress",
+                "timestamp": "2025-02-01T06:00:00Z",
+                "content": "CDN optimization in progress; route adjustments are being made."
+            },
+            {
+                "status": "Verifying",
+                "timestamp": "2025-02-01T08:15:00Z",
+                "content": "Optimization complete, verifying the improvements in loading times."
+            }
+        ]
+    },
+    {
+        "type": "Maintenance",
+        "title": "Email Server Migration",
+        "description": "Migrating email servers to a more scalable infrastructure.",
+        "status": "Completed",
+        "affected_services": [
+        
+        ],
+        "scheduled_start": "2025-01-28T22:00:00Z",
+        "scheduled_end": "2025-01-29T02:00:00Z",
+        "updated_at": "2025-01-29T02:30:00Z",
+        "timeline": [
+            {
+                "status": "Scheduled",
+                "timestamp": "2025-01-26T14:00:00Z",
+                "content": "Email server migration scheduled for January 28th, 2025."
+            },
+            {
+                "status": "In Progress",
+                "timestamp": "2025-01-28T22:00:00Z",
+                "content": "Migration process has started; emails may experience temporary delays."
+            },
+            {
+                "status": "Verifying",
+                "timestamp": "2025-01-29T02:00:00Z",
+                "content": "Migration complete, verifying the system's stability and performance."
+            },
+            {
+                "status": "Completed",
+                "timestamp": "2025-01-29T02:30:00Z",
+                "content": "Migration successfully completed, all systems are functioning normally."
+            }
+        ]
+    },
+    {
+        "type": "Maintenance",
+        "title": "Mobile API Update Rollout",
+        "description": "Deploying a new version of the mobile API to support additional features.",
+        "status": "Canceled",
+        "affected_services": [
+
+        ],
+        "scheduled_start": "2025-02-03T04:00:00Z",
+        "scheduled_end": "2025-02-03T06:00:00Z",
+        "updated_at": "2025-02-02T18:00:00Z",
+        "timeline": [
+            {
+                "status": "Scheduled",
+                "timestamp": "2025-02-01T09:00:00Z",
+                "content": "Mobile API update scheduled for February 3rd, 2025."
+            },
+            {
+                "status": "Canceled",
+                "timestamp": "2025-02-02T18:00:00Z",
+                "content": "The mobile API update has been canceled due to unforeseen issues."
+            }
+        ]
+    }
+]

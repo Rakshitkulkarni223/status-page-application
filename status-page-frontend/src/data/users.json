@@ -1,0 +1,191 @@
+[
+    {
+        "id": 1,
+        "username": "admin_user",
+        "email": "admin@example.com",
+        "role": "Admin",
+        "status": "Active",
+        "owned_service_groups": [1, 2],
+        "password": "admin_password123"
+    },
+    {
+        "id": 2,
+        "username": "admin_services",
+        "email": "adminservices@example.com",
+        "role": "Admin",
+        "status": "Active",
+        "owned_service_groups": [3, 4],
+        "password": "admin_services_password123"
+    },
+    {
+        "id": 3,
+        "username": "admin_support",
+        "email": "supportadmin@example.com",
+        "role": "Admin",
+        "status": "Active",
+        "owned_service_groups": [5],
+        "password": "admin_support_password123"
+    },
+    {
+        "id": 4,
+        "username": "admin_security",
+        "email": "securityadmin@example.com",
+        "role": "Admin",
+        "status": "Active",
+        "owned_service_groups": [2, 3],
+        "password": "admin_security_password123"
+    },
+    {
+        "id": 5,
+        "username": "admin_devops",
+        "email": "devopsadmin@example.com",
+        "role": "Admin",
+        "status": "Active",
+        "owned_service_groups": [1, 5],
+        "password": "admin_devops_password123"
+    },
+    {
+        "id": 6,
+        "username": "admin_integrations",
+        "email": "integrationsadmin@example.com",
+        "role": "Admin",
+        "status": "Active",
+        "owned_service_groups": [4, 5],
+        "password": "admin_integrations_password123"
+    },
+    {
+        "id": 7,
+        "username": "user_email_notifications",
+        "email": "user@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [1,2],
+        "password": "user_email_password123"
+    },
+    {
+        "id": 8,
+        "username": "user_push_notifications",
+        "email": "push@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [2,4],
+        "password": "user_push_password123"
+    },
+    {
+        "id": 9,
+        "username": "user_api_database",
+        "email": "apiuser@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [1,2,3],
+        "password": "user_api_password123"
+    },
+    {
+        "id": 10,
+        "username": "user_helpdesk",
+        "email": "helpdesk@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [4],
+        "password": "helpdesk_password123"
+    },
+    {
+        "id": 11,
+        "username": "user_sms_notifications",
+        "email": "sms@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [5],
+        "password": "sms_password123"
+    },
+    {
+        "id": 12,
+        "username": "user_website",
+        "email": "website@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [4,5],
+        "password": "website_password123"
+    },
+    {
+        "id": 13,
+        "username": "user_payment_gateway",
+        "email": "payments@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [2,3,5],
+        "password": "payments_password123"
+    },
+    {
+        "id": 14,
+        "username": "user_oauth",
+        "email": "oauth@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [1,4],
+        "password": "oauth_password123"
+    },
+    {
+        "id": 15,
+        "username": "user_analytics",
+        "email": "analytics@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [2,5],
+        "password": "analytics_password123"
+    },
+    {
+        "id": 16,
+        "username": "user_cdn",
+        "email": "cdn@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [1,2,5],
+        "password": "cdn_password123"
+    },
+    {
+        "id": 17,
+        "username": "user_load_balancer",
+        "email": "loadbalancer@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [2],
+        "password": "loadbalancer_password123"
+    },
+    {
+        "id": 18,
+        "username": "user_knowledge_base",
+        "email": "knowledge@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [3,5],
+        "password": "knowledge_password123"
+    },
+    {
+        "id": 19,
+        "username": "user_live_chat",
+        "email": "livechat@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [2],
+        "password": "livechat_password123"
+    },
+    {
+        "id": 20,
+        "username": "user_dns",
+        "email": "dns@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [3],
+        "password": "dns_password123"
+    },
+    {
+        "id": 21,
+        "username": "user_general_support",
+        "email": "support@example.com",
+        "role": "User",
+        "status": "Active",
+        "owned_services": [1, 2],
+        "password": "support_password123"
+    }
+]

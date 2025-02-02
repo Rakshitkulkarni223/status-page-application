@@ -1,0 +1,43 @@
+[
+    {
+      "name": "Core Services",
+      "services": [
+        {  "name": "Website", "status": "Operational" },
+        {  "name": "API", "status": "Degraded Performance" },
+        {  "name": "Database", "status": "Operational" }
+      ]
+    },
+    {
+      "name": "Infrastructure",
+      "services": [
+        {  "name": "Load Balancer", "status": "Operational" },
+        {  "name": "CDN", "status": "Partial Outage" },
+        {  "name": "DNS", "status": "Operational" }
+      ]
+    },
+    {
+      "name": "Messaging Services",
+      "services": [
+        {  "name": "Email Notifications", "status": "Major Outage" },
+        { "name": "SMS Gateway", "status": "Operational" },
+        { "name": "Push Notifications", "status": "Degraded Performance" }
+      ]
+    },
+    {
+      "name": "Third-Party Integrations",
+      "services": [
+        {  "name": "Payment Gateway", "status": "Operational" },
+        {  "name": "OAuth Login", "status": "Partial Outage" },
+        {  "name": "Analytics API", "status": "Operational" }
+      ]
+    },
+    {
+      "name": "Support Systems",
+      "services": [
+        { "name": "Helpdesk", "status": "Degraded Performance" },
+        {  "name": "Live Chat", "status": "Operational" },
+        { "name": "Knowledge Base", "status": "Operational" }
+      ]
+    }
+  ]
+  
