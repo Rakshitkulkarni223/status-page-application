@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const serviceRoutes = require('./routes/services');
@@ -14,13 +15,16 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Middleware
-app.use(bodyParser.json());
+const isDev = app.get('env') === 'development';
+
+app.use(express.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: !isDev ? process.env.WEB_APP : "http://localhost:5173",
     credentials: true,
 }
+
 app.use(cors(corsOptions));
 
 // Routes

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import TimeLine from './TimeLinePage';
 import { useNavigate } from 'react-router-dom';
+import { apiUrl } from '../config/appConfig';
 
 const ServiceStatusPage = () => {
     const [activeServices, setActiveServices] = useState({});
@@ -13,7 +14,7 @@ const ServiceStatusPage = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/services');
+                const response = await fetch(`${apiUrl}/api/services`);
                 const data = await response.json();
                 setServices(data);
             } catch (error) {
@@ -25,7 +26,7 @@ const ServiceStatusPage = () => {
 
     const fetchMaintence = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/maintenance', {
+            const response = await fetch(`${apiUrl}/api/maintenance`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ const ServiceStatusPage = () => {
 
     const fetchIncidents = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/incidents', {
+            const response = await fetch(`${apiUrl}/api/incidents`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,9 +83,7 @@ const ServiceStatusPage = () => {
                 </div>
             </nav>
 
-            <main className="flex-1 p-6 space-y-6" style={{
-                margin: '0 auto'
-            }}>
+            <main className="flex-1 p-6 space-y-6 w-full max-w-5xl mx-auto">
                 <section className="services-list space-y-4">
                     <h2 className="text-2xl font-semibold">Services</h2>
                     {services.map((group) => {

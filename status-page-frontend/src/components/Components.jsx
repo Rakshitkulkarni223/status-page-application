@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Textarea } from "@/components/ui/textarea";
+import { apiUrl } from "../config/appConfig";
 
 const user = {
     id: localStorage.getItem("userId"),
@@ -51,7 +52,7 @@ const Components = () => {
 
     const fetchServices = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/services', {
+            const response = await fetch(`${apiUrl}api/services`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +87,7 @@ const Components = () => {
         console.log("Updated service:", { serviceName, serviceStatus, id });
 
         try {
-            const response = await fetch(`http://localhost:5000/api/services/${id}`, {
+            const response = await fetch(`${apiUrl}/api/services/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,7 +127,7 @@ const Components = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:5000/api/incidents', {
+            const response = await fetch(`${apiUrl}/api/incidents`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ const Components = () => {
             scheduled_end: maintenanceScheduledEnd
         }
         try {
-            const response = await fetch('http://localhost:5000/api/maintenance', {
+            const response = await fetch(`${apiUrl}/api/maintenance`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -188,7 +189,7 @@ const Components = () => {
         const body = { newServiceName, newServiceStatus, newGroupName }
 
         try {
-            const response = await fetch('http://localhost:5000/api/services', {
+            const response = await fetch(`${apiUrl}/api/services`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

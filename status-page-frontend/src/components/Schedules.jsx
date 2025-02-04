@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { apiUrl } from "../config/appConfig";
 
 const user = {
     id: localStorage.getItem("userId"),
@@ -42,7 +43,7 @@ const Schedules = () => {
 
     const fetchMaintence = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/maintenance', {
+            const response = await fetch(`${apiUrl}/api/maintenance`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ const Schedules = () => {
             scheduled_end: maintenanceScheduledEnd
         }
         try {
-            const response = await fetch('http://localhost:5000/api/maintenance', {
+            const response = await fetch(`${apiUrl}/api/maintenance`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

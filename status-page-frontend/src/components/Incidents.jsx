@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { apiUrl } from "../config/appConfig";
 
 const user = {
     id: localStorage.getItem("userId"),
@@ -44,7 +45,7 @@ const Incidents = () => {
 
     const fecthServiceStatus = async (incidentId) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/incidents/service-status/${incidentId}`, {
+            const response = await fetch(`${apiUrl}/api/incidents/service-status/${incidentId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -83,7 +84,7 @@ const Incidents = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:5000/api/incidents/${incidentId}`, {
+            const response = await fetch(`${apiUrl}/api/incidents/${incidentId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ const Incidents = () => {
 
     const fetchIncidents = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/incidents', {
+            const response = await fetch(`${apiUrl}/api/incidents`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

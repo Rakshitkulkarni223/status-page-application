@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { apiUrl } from "../config/appConfig";
 
 const user = {
   id: localStorage.getItem("userId"),
@@ -43,7 +44,7 @@ const UserOwnedServices = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/services', {
+      const response = await fetch(`${apiUrl}/api/services`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

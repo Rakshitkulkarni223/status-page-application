@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { apiUrl } from '../config/appConfig';
 
 const user = {
   id: localStorage.getItem("userId"),
@@ -31,7 +32,7 @@ const [services, setServices] = useState([]);
 
   const fetchServices = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/services', {
+      const response = await fetch(`${apiUrl}/api/services`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -46,11 +47,11 @@ const [services, setServices] = useState([]);
 
   const subscribeToService = async (serviceGroupId) => {
     try {
-      const response = await fetch('http://localhost:5000/api/subscription/subscribe', {
+      const response = await fetch(`${apiUrl}/api/subscription/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // Ensure user is logged in
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ serviceGroupId })
       });
