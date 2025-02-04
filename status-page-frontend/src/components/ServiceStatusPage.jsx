@@ -4,6 +4,12 @@ import TimeLine from './TimeLinePage';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/appConfig';
 
+const user = {
+    id: localStorage.getItem("userId"),
+    role: localStorage.getItem('role'),
+    owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
+};
+
 const ServiceStatusPage = () => {
     const [activeServices, setActiveServices] = useState({});
     const [services, setServices] = useState([]);
@@ -14,7 +20,7 @@ const ServiceStatusPage = () => {
     useEffect(() => {
         const fetchServices = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/services`);
+                const response = await fetch(`${apiUrl}/api/services/`);
                 const data = await response.json();
                 setServices(data);
             } catch (error) {
@@ -77,7 +83,13 @@ const ServiceStatusPage = () => {
                     <p className='text-[20px]'>Status Page</p>
                 </div>
                 <div>
-                    <button className="bg-[#237479] text-white px-4 py-2 rounded-[5px] hover:bg-blue-700 text-[15px]" onClick={() => navigate('/login')}>
+                    <button className="bg-[#237479] text-white px-4 py-2 rounded-[5px] hover:bg-[#1a5f5d] text-[15px]" onClick={() => {
+                        if(user?.id){
+                            navigate('/dashboard')
+                        }else {
+                            navigate('/login')
+                        }
+                    }}>
                         Dashboard
                     </button>
                 </div>

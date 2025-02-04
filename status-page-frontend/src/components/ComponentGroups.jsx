@@ -23,24 +23,45 @@ const user = {
 
 const UserOwnedServices = () => {
 
-  const [editingGroup, setEditingGroup] = useState(null);
   const [groupName, setGroupName] = useState("");
 
   const [ownedGroupNames, setOwnedGroupNames] = useState([]);
 
+
   const handleEdit = (group) => {
-    setEditingGroup(group);
     setGroupName(group.name);
   };
 
-  const handleSave = () => {
-    console.log("Updated group name:", groupName);
-    setEditingGroup(null);
-    document.getElementById("close-dialog").click();
+  const handleSave = async (id) => {
+    if (!groupName || groupName?.trim() === "") {
+      alert("Group name cannot be empty!");
+      return;
+    }
+    try {
+      const response = await fetch(`${apiUrl}/api/services/group/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ name: groupName }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        document.getElementById("close-dialog").click();
+        alert('Component group name has been updated successfully!');
+        fetchServices();
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error component group name update failed:', error);
+      alert('Error component group name update failed.');
+    }
+
   };
-
-
-  const [services, setServices] = useState([]);
 
   const fetchServices = async () => {
     try {
@@ -51,9 +72,8 @@ const UserOwnedServices = () => {
         }
       });
       const data = await response.json();
-      setOwnedGroupNames(user.role === "Admin" ? data: data
+      setOwnedGroupNames(user.role === "Admin" ? data : data
         .filter(group => user.owned_service_groups.includes(group.id)))
-      setServices(data);
     } catch (error) {
       console.error('Error subscribing:', error);
     }
@@ -88,6 +108,7 @@ const UserOwnedServices = () => {
                       Name
                     </Label>
                     <Input
+                      required
                       disabled={user.role !== "Admin"}
                       id="name"
                       value={groupName}
@@ -98,7 +119,7 @@ const UserOwnedServices = () => {
                 </div>
 
                 <DialogFooter>
-                  <Button  disabled={user.role !== "Admin"} onClick={handleSave} className="w-full rounded-[5px] py-2 text-sm">
+                  <Button disabled={user.role !== "Admin"} onClick={() => handleSave(group.id)} className="w-full rounded-[5px] py-2 text-sm">
                     Save changes
                   </Button>
                   <DialogClose asChild>

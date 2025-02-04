@@ -1,11 +1,10 @@
 const express = require('express');
 const Maintenance = require('../models/Maintenance');
+const Service = require('../models/Service');
 const router = express.Router();
 
 router.post('/', async (req, res) => {
   const { id, ...maintenanceData } = req.body;
-
-  console.log(id)
 
   let maintenance;
   let data;
@@ -27,7 +26,7 @@ router.post('/', async (req, res) => {
         });
       }
       await maintenance.save();
-    
+
     } else {
 
       data = {
@@ -43,9 +42,13 @@ router.post('/', async (req, res) => {
 
       maintenance = new Maintenance(data);
       await maintenance.save();
+
+      let { affected_services: serviceId, serviceStatus: status } = maintenanceData.maintenanceData;
+      if (serviceId) {
+        await Service.findByIdAndUpdate(serviceId, { status });
+      }
     }
 
-    
     res.status(201).json(maintenance);
   } catch (err) {
     res.status(400).json({ message: err.message });

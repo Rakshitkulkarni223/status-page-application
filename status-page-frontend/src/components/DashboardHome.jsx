@@ -13,22 +13,29 @@ const DashboardHome = () => {
   const [expandedGroups, setExpandedGroups] = useState([]);
   const [serviceStatuses, setServiceStatuses] = useState({});
 
-  
+  const [changedServiceStatuses, setChangedServiceStatuses] = useState({});
+
+
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
       prev.includes(groupId)
-    ? prev.filter((group) => group !== groupId)
-    : [...prev, groupId]
-  );
-};
+        ? prev.filter((group) => group !== groupId)
+        : [...prev, groupId]
+    );
+  };
 
-const handleStatusChange = (serviceId, newStatus) => {
-  setServiceStatuses((prevStatuses) => ({
-    ...prevStatuses,
-    [serviceId]: newStatus,
-  }));
-};
-const [services, setServices] = useState([]);
+  const handleStatusChange = (serviceId, newStatus) => {
+    setServiceStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [serviceId]: newStatus,
+    }));
+
+    setChangedServiceStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [serviceId]: true,
+    }));
+  };
+  const [services, setServices] = useState([]);
 
   const fetchServices = async () => {
     try {
@@ -43,6 +50,34 @@ const [services, setServices] = useState([]);
     } catch (error) {
       console.error('Error subscribing:', error);
     }
+  };
+
+  const handleSetStatus = async (id) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/services/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ status: serviceStatuses[id] }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Service status updated successfully!');
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error status update failed:', error);
+      alert('Error status update failed.');
+    }
+    setChangedServiceStatuses((prevStatuses) => ({
+      ...prevStatuses,
+      [id]: false,
+    }));
   };
 
   const subscribeToService = async (serviceGroupId) => {
@@ -89,7 +124,7 @@ const [services, setServices] = useState([]);
                     <h4 className="text-lg font-semibold">{group.name}</h4>
                   </div>
                   <div className="flex flex-row justify-between items-center cursor-pointer gap-2">
-                    <button className="bg-[#237479] text-white text-[12px] py-1 px-2 rounded hover:bg-[#1a5f5d]" onClick={() => {subscribeToService(group.id)}}>
+                    <button className="bg-[#237479] text-white text-[12px] py-1 px-2 rounded hover:bg-[#1a5f5d]" onClick={() => { subscribeToService(group.id) }}>
                       Subscribe
                     </button>
                     <span>{expandedGroups.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
@@ -169,6 +204,30 @@ const [services, setServices] = useState([]);
                               Major Outage
                             </ToggleGroupItem>
                           </ToggleGroup>
+                          {changedServiceStatuses[service.id] && <div className='flex gap-2'> <button
+                            onClick={() => handleSetStatus(service.id)}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-[12px] rounded-[10px] shadow-md transition-all duration-300"
+                          >
+                            Update status
+                          </button>
+                            <button
+                              onClick={() => {
+                                setServiceStatuses((prevStatuses) => ({
+                                  ...prevStatuses,
+                                  [service.id]: group.services[service.id],
+                                }));
+                            
+                                setChangedServiceStatuses((prevStatuses) => ({
+                                  ...prevStatuses,
+                                  [service.id]: false,
+                                }));
+                              }}
+                              className="px-4 py-2 bg-red-600 hover:bg-green-700 text-white text-[12px] rounded-[10px] shadow-md transition-all duration-300"
+                            >
+                              Discard
+                            </button>
+                          </div>
+                          }
                         </div>
                       </div>
                     </li>

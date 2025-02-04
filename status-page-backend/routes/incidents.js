@@ -24,7 +24,7 @@ router.post('/', authMiddleware, async (req, res) => {
       {
         status: "Reported",
         timestamp: new Date().toISOString(),
-        content: `${title} reported. Our team is assessing the issue.`
+        content: `${title} reported. Our team is assessing the issue. ${description}`
       }
     ]
   });
@@ -54,15 +54,13 @@ router.put('/:id', async (req, res) => {
       incident.timeline.push({
         status,
         timestamp: new Date(),
-        content: timeline.content || `Status updated to ${status}`
+        content: timeline.content || `Status updated to ${status} state.`
       });
     }
 
     const updatedIncident = await incident.save();
 
-
     if (updatedIncident.affected_services) {
-      console.log(updatedIncident.affected_services, serviceStatus)
       await Service.findByIdAndUpdate(updatedIncident.affected_services, { status: serviceStatus })
     }
 

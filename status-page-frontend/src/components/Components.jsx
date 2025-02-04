@@ -23,8 +23,8 @@ const user = {
 };
 
 const Components = () => {
+
     const [ownedGroupNames, setOwnedGroupNames] = useState([]);
-    const [editingService, setEditingService] = useState(null);
     const [serviceName, setServiceName] = useState("");
     const [serviceStatus, setServiceStatus] = useState("");
 
@@ -45,14 +45,22 @@ const Components = () => {
     const [maintenanceDescription, setMaintenanceDescription] = useState("");
     const [maintenanceScheduledStart, setMaintenanceScheduledStart] = useState("");
     const [maintenanceScheduledEnd, setMaintenanceScheduledEnd] = useState("");
-    const [maintenanceTimeline, setMaintenanceTimeline] = useState([]);
+
+    const [serviceStatuses, setServiceStatuses] = useState({});
 
 
-    const [services, setServices] = useState([]);
+    const handleStatusChange = (incidentId, newStatus) => {
+        setServiceStatuses((prevStatuses) => ({
+            ...prevStatuses,
+            [incidentId]: newStatus,
+        }));
+    };
+
+    const [isOtherSelected, setIsOtherSelected] = useState(false);
 
     const fetchServices = async () => {
         try {
-            const response = await fetch(`${apiUrl}api/services`, {
+            const response = await fetch(`${apiUrl}/api/services`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,7 +69,6 @@ const Components = () => {
             const data = await response.json();
             setOwnedGroupNames(user.role === "Admin" ? data : data
                 .filter(group => user.owned_service_groups.includes(group.id)))
-            setServices(data);
         } catch (error) {
             console.error('Error subscribing:', error);
         }
@@ -78,13 +85,16 @@ const Components = () => {
 
 
     const handleEditClick = async (service) => {
-        setEditingService(service);
         setServiceName(service.name);
         setServiceStatus(service.status);
     };
 
     const handleSave = async (id) => {
-        console.log("Updated service:", { serviceName, serviceStatus, id });
+
+        if (!serviceName || !serviceName) {
+            alert("Service name or status cannot be empty. Please fill all the required fields.");
+            return;
+        }
 
         try {
             const response = await fetch(`${apiUrl}/api/services/${id}`, {
@@ -93,7 +103,7 @@ const Components = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ name: serviceName, status: serviceStatus }),
+                body: JSON.stringify({ name: serviceName, status: serviceName, link: serviceLink }),
             });
 
             const data = await response.json();
@@ -101,17 +111,15 @@ const Components = () => {
             if (response.ok) {
                 alert('Service updated successfully!');
                 document.getElementById("close-dialog").click();
+                fetchServices();
             } else {
                 alert(`Error: ${data.message}`);
             }
         } catch (error) {
             console.log(error)
-            console.error('Error creating incident:', error);
-            alert('Error creating incident.');
+            console.error('Error Service updated failed:', error);
+            alert('Error Service updated failed.');
         }
-
-        setEditingService(null);
-        document.getElementById("close-dialog").click();
     };
 
     const handleReportProblem = async (e) => {
@@ -151,14 +159,31 @@ const Components = () => {
         }
     };
 
-    const handleScheduleMaintenance = async (id) => {
+    const handleScheduleMaintenance = async (id, status) => {
+
+        if (!maintenanceTitle || !maintenanceDescription || !maintenanceScheduledStart || !maintenanceScheduledEnd) {
+            alert("Maintenance title, description, start date or end date cannot be empty. Please fill all the required fields.");
+            return;
+        }
+
+        let updatedStatus = status;
+
+        if (status === "Operational" && !serviceStatuses[id]) {
+            alert("Please select the service status.");
+            return;
+        } else {
+            updatedStatus = serviceStatuses[id];
+        }
+
+
         const maintenanceData = {
             title: maintenanceTitle,
             description: maintenanceDescription,
             status: "Scheduled",
             affected_services: id,
             scheduled_start: maintenanceScheduledStart,
-            scheduled_end: maintenanceScheduledEnd
+            scheduled_end: maintenanceScheduledEnd,
+            serviceStatus: updatedStatus
         }
         try {
             const response = await fetch(`${apiUrl}/api/maintenance`, {
@@ -167,13 +192,19 @@ const Components = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({maintenanceData}),
+                body: JSON.stringify({ maintenanceData }),
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 alert('Service maintenance scheduled successfully!');
+                setMaintenanceTitle('');
+                setMaintenanceDescription('');
+                setMaintenanceScheduledStart('');
+                setMaintenanceScheduledEnd('');
+                setServiceStatuses({});
+                fetchServices();
                 document.getElementById("close-dialog").click();
             } else {
                 alert(`Error: ${data.message}`);
@@ -186,7 +217,12 @@ const Components = () => {
 
 
     const handleCreateNewService = async () => {
-        const body = { newServiceName, newServiceStatus, newGroupName }
+        const body = { newServiceName, newServiceStatus, newGroupName, newServiceLink }
+
+        if (!newServiceName || !newServiceStatus || !newGroupName) {
+            alert("Service name or status, Group name cannot be empty. Please fill all the required fields.");
+            return;
+        }
 
         try {
             const response = await fetch(`${apiUrl}/api/services`, {
@@ -200,18 +236,21 @@ const Components = () => {
 
             const data = await response.json();
 
-
-            alert(JSON.stringify(data))
-
             if (response.ok) {
                 alert('New service created successfully!');
                 document.getElementById("close-dialog").click();
+                setNewServiceName('');
+                setNewGroupName('');
+                setNewServiceLink('');
+                setNewServiceStatus('Operational');
+                setIsOtherSelected(false);
+                fetchServices();
             } else {
                 alert(`Error: ${data.message}`);
             }
         } catch (error) {
-            console.error('Error creating incident:', error);
-            alert('Error creating incident.');
+            console.error('Error creating new service: ', error);
+            alert('Error creating new service.');
         }
     };
 
@@ -219,7 +258,15 @@ const Components = () => {
         <div className="rounded-b-[10px]">
 
             {user.role === "Admin" && <div className="flex justify-end mb-4">
-                <Dialog>
+                <Dialog onOpenChange={(isOpen) => {
+                    if (!isOpen) {
+                        setNewServiceName('');
+                        setNewGroupName('');
+                        setNewServiceLink('');
+                        setNewServiceStatus('Operational');
+                        setIsOtherSelected(false);
+                    }
+                }}>
                     <DialogTrigger asChild>
                         <Button className="bg-green-700 hover:bg-green-800 text-white">
                             <PlusCircle size={16} className="mr-2" />
@@ -233,7 +280,7 @@ const Components = () => {
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-2">
                                 <Label htmlFor="new-service-name" className="text-right">
-                                    Name
+                                    Service name
                                 </Label>
                                 <Input
                                     id="new-service-name"
@@ -243,8 +290,8 @@ const Components = () => {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                <Label className="text-right">Status</Label>
+                            <div className="grid grid-cols-4 items-center gap-3 mt-2">
+                                <Label className="text-right">Service status</Label>
                                 <div className="col-span-3 flex flex-wrap gap-2">
                                     <ToggleGroup
                                         type="single"
@@ -282,16 +329,44 @@ const Components = () => {
                                 </div>
                             </div>
 
+
                             <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                <Label htmlFor="new-service-name" className="text-right">
+                                <Label htmlFor="group-selection" className="text-right">
                                     Group name
                                 </Label>
-                                <Input
-                                    id="new-service-name"
-                                    value={newGroupName}
-                                    onChange={(e) => setNewGroupName(e.target.value)}
-                                    className="col-span-3 rounded-[5px]"
-                                />
+
+                                <select
+                                    id="group-selection"
+                                    value={isOtherSelected ? "other" : newGroupName}
+                                    onChange={(e) => {
+                                        if (e.target.value === "other") {
+                                            setIsOtherSelected(true);
+                                            setNewGroupName("");
+                                        } else {
+                                            setIsOtherSelected(false);
+                                            setNewGroupName(e.target.value);
+                                        }
+                                    }}
+                                    className="col-span-3 text-[14px] rounded-[5px] p-1 border border-gray-300 bg-gray-900 text-white"
+                                >
+                                    <option value="" disabled>Select a group</option>
+                                    {ownedGroupNames.map((group) => (
+                                        <option key={group.id} value={group.name}>
+                                            {group.name}
+                                        </option>
+                                    ))}
+                                    <option value="other">Other</option>
+                                </select>
+
+                                {isOtherSelected && (
+                                    <Input
+                                        id="new-service-name"
+                                        placeholder="Enter new group name"
+                                        value={newGroupName}
+                                        onChange={(e) => setNewGroupName(e.target.value)}
+                                        className="col-span-3 rounded-[5px] mt-2"
+                                    />
+                                )}
                             </div>
 
                             <div className="grid grid-cols-4 items-center gap-2 mt-2">
@@ -471,19 +546,26 @@ const Components = () => {
                                         </Dialog>
                                     )}
 
-                                    {/* Schedule Maintenance Dialog (for admins) */}
                                     {user.role === "Admin" && (
-                                        <Dialog>
+                                        <Dialog onOpenChange={(isOpen) => {
+                                            if (!isOpen) {
+                                                setMaintenanceTitle('');
+                                                setMaintenanceDescription('');
+                                                setMaintenanceScheduledStart('');
+                                                setMaintenanceScheduledEnd('');
+                                                setServiceStatuses({});
+                                            }
+                                        }}>
                                             <DialogTrigger asChild>
                                                 <button className="text-green-500 hover:text-green-700">
                                                     <CalendarClock size={16} />
                                                 </button>
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                                            <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white">
                                                 <DialogHeader>
                                                     <DialogTitle>Schedule Maintenance</DialogTitle>
                                                 </DialogHeader>
-                                                <div className="grid gap-4 py-4">
+                                                <div className="grid gap-5 py-4">
                                                     <div className="grid grid-cols-4 items-center gap-2">
                                                         <Label htmlFor="maintenance-title" className="text-right">
                                                             Title
@@ -535,9 +617,47 @@ const Components = () => {
                                                         />
                                                     </div>
 
+                                                    <div className="grid grid-cols-4 items-center gap-3 mt-2">
+                                                        <Label className="text-right">Change service status</Label>
+                                                        <div className="col-span-3 flex flex-wrap gap-2">
+                                                            <ToggleGroup
+                                                                type="single"
+                                                                value={serviceStatuses[service.id]}
+                                                                onValueChange={(newStatus) => handleStatusChange(service.id, newStatus)}
+                                                                className="flex flex-wrap gap-2"
+                                                            >
+                                                                <ToggleGroupItem
+                                                                    disabled
+                                                                    value="Operational"
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Operational
+                                                                </ToggleGroupItem>
+                                                                <ToggleGroupItem
+                                                                    value="Degraded Performance"
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Degraded Performance
+                                                                </ToggleGroupItem>
+                                                                <ToggleGroupItem
+                                                                    value="Partial Outage"
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Partial Outage
+                                                                </ToggleGroupItem>
+                                                                <ToggleGroupItem
+                                                                    value="Major Outage"
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Major Outage
+                                                                </ToggleGroupItem>
+                                                            </ToggleGroup>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
                                                 <DialogFooter>
-                                                    <Button onClick={()=>handleScheduleMaintenance(service.id)} className="w-full rounded-[5px] py-2 text-sm">Schedule</Button>
+                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="w-full rounded-[5px] py-2 text-sm">Schedule</Button>
                                                     <DialogClose asChild>
                                                         <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
                                                             ✕

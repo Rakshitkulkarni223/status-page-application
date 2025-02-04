@@ -25,7 +25,6 @@ const user = {
 
 
 const Incidents = () => {
-    const [editingIncident, setEditingIncident] = useState(null);
     const [incidentTitle, setIncidentTitle] = useState("");
     const [incidentStatus, setIncidentStatus] = useState("");
     const [incidentDescription, setIncidentDescription] = useState("");
@@ -34,53 +33,52 @@ const Incidents = () => {
     const [incidentContent, setIncidentContent] = useState("");
 
     const [serviceStatuses, setServiceStatuses] = useState({});
-    
-    
-    const handleStatusChange = (incidentId, newStatus) => {
-      setServiceStatuses((prevStatuses) => ({
-        ...prevStatuses,
-        [incidentId]: newStatus,
-      }));
-    };
 
-    const fecthServiceStatus = async (incidentId) => {
-        try {
-            const response = await fetch(`${apiUrl}/api/incidents/service-status/${incidentId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            const data = await response.json();
-            setServiceStatuses((prevStatuses) => ({
-                ...prevStatuses,
-                [incidentId]: data.affected_services.status,
-            }));
-        } catch (error) {
-            console.error('Error subscribing:', error);
-        }
+
+    const handleStatusChange = (incidentId, newStatus) => {
+        setServiceStatuses((prevStatuses) => ({
+            ...prevStatuses,
+            [incidentId]: newStatus,
+        }));
     };
 
     const handleEditClick = async (incident) => {
-        setEditingIncident(incident);
         setIncidentTitle(incident.title);
         setIncidentStatus(incident.status);
         setIncidentDescription(incident.description);
         setIncidentLink(incident.link);
         setIncidentTime(incident.occurredAt);
         setIncidentContent(incident.content || "");
-        await fecthServiceStatus(incident._id);
+        setServiceStatuses((prevStatuses) => ({
+            ...prevStatuses,
+            [incident._id]: incident.affected_services.status,
+        }));
     };
-    
 
     const handleSave = async (e, incidentId) => {
         e.preventDefault();
+        let serviceStatus = serviceStatuses[incidentId];
+        
+        if (!incidentStatus || !serviceStatus || !incidentContent) {
+            alert("Incident status, content or service status cannnot be empty. Please fill all the required fields.");
+            return;
+        }
+
+        if (incidentStatus === "Identified" || incidentStatus === "Monitoring") {
+            if (serviceStatus === "Operational") {
+                alert("When an incident is in Identified or Monitoring state then service cannnot be Operational. Please change the service status.");
+                return;
+            }
+        }
+        
+        if (incidentStatus === "Fixed") {
+            serviceStatus = "Operational";
+        }
 
         const updatedIncident = {
             status: incidentStatus,
-            serviceStatus: serviceStatuses[incidentId],
-            timeline: incidentStatus !== 'Reported' ? [{ status: incidentStatus, content: incidentDescription }] : [],
+            serviceStatus,
+            timeline: incidentStatus !== 'Reported' ? [{ status: incidentStatus, content: incidentContent }] : [],
         };
 
         try {
@@ -97,8 +95,8 @@ const Incidents = () => {
 
             if (response.ok) {
                 alert('Incident updated successfully!');
-                setEditingIncident(null);
                 document.getElementById("close-dialog").click();
+                fetchIncidents();
             } else {
                 alert(`Error: ${data.message}`);
             }
@@ -192,7 +190,7 @@ const Incidents = () => {
                                                             disabled={(user.role === "Admin" && status === "Reported")}
                                                             key={status}
                                                             onClick={() => setIncidentStatus(status)}
-                                                            className={incidentStatus === status ? "bg-blue-500" : "bg-gray-500"}
+                                                            className={incidentStatus === status ? "rounded-[10px] bg-blue-500" : "rounded-[10px] bg-gray-500"}
                                                         >
                                                             {status}
                                                         </Button>
@@ -202,9 +200,23 @@ const Incidents = () => {
 
                                             <div className="grid grid-cols-4 items-center gap-2 mt-2">
                                                 <Label htmlFor="incident-description" className="text-right">
+                                                    Status description
+                                                </Label>
+                                                <Textarea
+                                                    id="incident-description"
+                                                    value={incidentContent}
+                                                    onChange={(e) => setIncidentContent(e.target.value)}
+                                                    className="col-span-3 rounded-[5px]"
+                                                />
+                                            </div>
+
+
+                                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                <Label htmlFor="incident-description" className="text-right">
                                                     Description
                                                 </Label>
                                                 <Textarea
+                                                    disabled
                                                     id="incident-description"
                                                     value={incidentDescription}
                                                     onChange={(e) => setIncidentDescription(e.target.value)}
@@ -213,7 +225,7 @@ const Incidents = () => {
                                             </div>
 
 
-                                  
+
                                             <div className="grid grid-cols-4 items-center gap-2 mt-2">
                                                 <Label htmlFor="incident-time" className="text-right">
                                                     Reported On
@@ -249,13 +261,13 @@ const Incidents = () => {
                                                     </ToggleGroupItem>
                                                     <ToggleGroupItem
                                                         value="Partial Outage"
-                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Partial Outage"  ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                     >
                                                         Partial Outage
                                                     </ToggleGroupItem>
                                                     <ToggleGroupItem
                                                         value="Major Outage"
-                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Major Outage"  ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                     >
                                                         Major Outage
                                                     </ToggleGroupItem>
