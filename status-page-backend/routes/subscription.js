@@ -2,9 +2,8 @@ const express = require('express');
 const User = require('../models/User');
 const ServiceGroup = require('../models/ServiceGroup');
 const router = express.Router();
-const authMiddleware = require('../middleware/auth'); // Ensure the user is authenticated
+const authMiddleware = require('../middleware/auth');
 
-// Subscribe User to a Service Group
 router.post('/subscribe', authMiddleware, async (req, res) => {
     const { serviceGroupId } = req.body;
     const userId = req.userId;

@@ -32,18 +32,15 @@ router.post('/signup', async (req, res) => {
 });
 
 
-// Sign-In (Login) Endpoint
 router.post('/signin', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Check if user exists
         const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: 'User not found' });
         }
 
-        // Compare the password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
@@ -51,14 +48,12 @@ router.post('/signin', async (req, res) => {
 
         req.userId = user.id;
 
-        // Create JWT token
         const token = jwt.sign(
             { userId: user._id, email: user.email },
-            process.env.JWT_SECRET, // Ensure this is set in your environment variables
-            { expiresIn: '1h' } // Token expires in 1 hour
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
         );
 
-        // Respond with the token
         res.status(200).json({ token, userId: user._id, role: user.role, owned_service_groups: JSON.stringify(user.owned_service_groups) });
     } catch (error) {
         console.error(error);

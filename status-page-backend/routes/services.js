@@ -2,10 +2,11 @@ const express = require('express');
 const ServiceGroup = require('../models/ServiceGroup');
 const Maintenance = require('../models/Maintenance');
 const Service = require('../models/Service');
+const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
 
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   const { newServiceName, newServiceStatus, newGroupName, newServiceLink } = req.body;
   try {
     const newService = new Service({
@@ -32,7 +33,7 @@ router.post('/', async (req, res) => {
 });
 
 
-router.post('/:id', async (req, res) => {
+router.post('/:id',authMiddleware, async (req, res) => {
   const { name, status, link } = req.body;
   try {
     const id = req.params.id;
@@ -49,7 +50,7 @@ router.post('/:id', async (req, res) => {
 });
 
 
-router.put('/group/:id', async (req, res) => {
+router.put('/group/:id', authMiddleware, async (req, res) => {
   try {
     const { name } = req.body;
     const id = req.params.id;

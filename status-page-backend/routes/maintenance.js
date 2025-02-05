@@ -1,10 +1,11 @@
 const express = require('express');
 const Maintenance = require('../models/Maintenance');
 const Service = require('../models/Service');
+const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const { status, delayed_start, delayed_end, timeline } = req.body;
 
@@ -45,7 +46,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/',authMiddleware,  async (req, res) => {
   const { timeline } = req.body;
   try {
     const data = {

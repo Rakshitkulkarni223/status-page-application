@@ -78,7 +78,7 @@ function Dashboard() {
     return (
         <div className="flex h-screen">
             <div className="w-2 bg-gray-1500 text-gray p-4">
-                <div className="text-xl font-bold mb-6">Cachet Dashboard</div>
+                <div className="text-xl font-bold mb-6">Status page Dashboard</div>
                 <div>
                     {items.map((item) => (
                         <div

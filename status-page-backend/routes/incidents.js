@@ -47,7 +47,7 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   const { status, timeline, serviceStatus } = req.body;
   try {
     const incident = await Incident.findById(req.params.id);
