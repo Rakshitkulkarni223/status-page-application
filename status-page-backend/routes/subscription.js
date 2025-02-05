@@ -7,7 +7,6 @@ const authMiddleware = require('../middleware/auth');
 router.post('/subscribe', authMiddleware, async (req, res) => {
     const { serviceGroupId } = req.body;
     const userId = req.userId;
-    console.log(req.body)
 
     try {
         const serviceGroup = await ServiceGroup.findById(serviceGroupId);
@@ -30,7 +29,6 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
 
         res.status(200).json({ message: 'Subscribed successfully', owned_service_groups: user.owned_service_groups });
     } catch (error) {
-        console.log(error)
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });

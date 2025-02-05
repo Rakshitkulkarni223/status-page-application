@@ -70,7 +70,6 @@ router.post('/signin', async (req, res) => {
 
 
 router.get('/refreshToken', async (req, res) => {
-    console.log(req.header(('Authorization')))
     const token = req.header('Authorization')?.split(' ')[1];
 
     if (!token) {

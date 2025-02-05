@@ -25,14 +25,13 @@ const activeStatuses = [
 ];
 
 const TimeLine = ({ timelines, type }) => {
-    let activeTimelines = timelines.filter(activity => activeStatuses.includes(activity.status));
-    console.log(activeTimelines)
+    const activeTimelines = timelines.filter(activity => activeStatuses.includes(activity.status));
 
     return (
         <section className="incident-timeline space-y-4">
             <h2 className="text-2xl font-semibold text-left">{type}</h2>
             {activeTimelines.length > 0 ? activeTimelines.map((activity) => (
-                <div key={activity.id} className="bg-gray-800 rounded-lg shadow-md">
+                <div key={activity._id} className="bg-gray-800 rounded-lg shadow-md">
                     <div className="flex justify-between items-start p-4">
                         <div className="space-y-2 flex flex-col items-start">
                             <h3 className="text-xl font-semibold">{activity.title}</h3>

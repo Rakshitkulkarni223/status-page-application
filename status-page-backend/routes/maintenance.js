@@ -125,6 +125,6 @@ const updateMaintenanceStatus = async () => {
   }
 };
 
-setInterval(updateMaintenanceStatus, 60 * 1000);
+// setInterval(updateMaintenanceStatus, 60 * 1000);
 
 module.exports = router;

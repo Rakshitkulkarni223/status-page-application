@@ -89,7 +89,7 @@ const Components = () => {
 
     const handleSave = async (id) => {
 
-        if (!serviceName || !serviceName) {
+        if (!serviceName || !serviceStatus) {
             alert("Service name or status cannot be empty. Please fill all the required fields.");
             return;
         }
@@ -101,7 +101,7 @@ const Components = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ name: serviceName, status: serviceName, link: serviceLink }),
+                body: JSON.stringify({ name: serviceName, status: serviceStatus, link: serviceLink }),
             });
 
             const data = await response.json();
@@ -114,7 +114,6 @@ const Components = () => {
                 alert(`Error: ${data.message}`);
             }
         } catch (error) {
-            console.log(error)
             console.error('Error Service updated failed:', error);
             alert('Error Service updated failed.');
         }
@@ -149,7 +148,6 @@ const Components = () => {
             });
 
             const data = await response.json();
-            console.log(data)
             if (response.ok) {
                 alert('Incident created successfully!');
                 document.getElementById("close-dialog").click();
@@ -158,7 +156,6 @@ const Components = () => {
                 document.getElementById("close-dialog").click();
             }
         } catch (error) {
-            console.log(error)
             console.error('Error creating incident:', error);
             alert('Error creating incident.');
         }
@@ -391,11 +388,11 @@ const Components = () => {
                         </div>
 
                         <DialogFooter>
-                            <Button onClick={handleCreateNewService} className="w-full rounded-[5px] py-2 text-sm">
+                            <Button onClick={handleCreateNewService} className="w-full rounded-[5px] py-2 text-[12px]">
                                 Create Service
                             </Button>
                             <DialogClose asChild>
-                                <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                     ✕
                                 </button>
                             </DialogClose>
@@ -408,23 +405,23 @@ const Components = () => {
             <table className="border-[1px] min-w-full table-auto">
                 <thead>
                     <tr className="bg-gray-700 text-white">
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Service Name</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Group</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+                        <th className="px-6 py-3 text-left text-[12px] font-semibold">Service Name</th>
+                        <th className="px-6 py-3 text-left text-[12px] font-semibold">Status</th>
+                        <th className="px-6 py-3 text-left text-[12px] font-semibold">Group</th>
+                        <th className="px-6 py-3 text-left text-[12px] font-semibold">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {ownedGroupNames.map((group) =>
                         group.services.map((service) => (
                             <tr key={service.id} className="border-t hover:bg-gray-800">
-                                <td className="px-6 py-3 text-sm">{service.name}</td>
-                                <td className="px-6 py-3 text-sm">
+                                <td className="px-6 py-3 text-[12px]">{service.name}</td>
+                                <td className="px-6 py-3 text-[12px]">
                                     <span className={`px-2 py-1 text-[12px] rounded-[5px] ${getStatusClass(service.status)}`}>
                                         {service.status}
                                     </span>
                                 </td>
-                                <td className="px-6 py-3 text-sm">{group.name}</td>
+                                <td className="px-6 py-3 text-[12px]">{group.name}</td>
                                 <td className="px-6 py-3 flex space-x-3">
                                     {user.role === "Admin" && <Dialog>
                                         <DialogTrigger asChild>
@@ -432,7 +429,7 @@ const Components = () => {
                                                 <Pencil size={16} />
                                             </button>
                                         </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[550px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
+                                        <DialogContent className="sm:max-w-[520px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                                             <DialogHeader>
                                                 <DialogTitle>Edit Service</DialogTitle>
                                             </DialogHeader>
@@ -460,25 +457,25 @@ const Components = () => {
                                                         >
                                                             <ToggleGroupItem
                                                                 value="Operational"
-                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Operational
                                                             </ToggleGroupItem>
                                                             <ToggleGroupItem
                                                                 value="Degraded Performance"
-                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Degraded
                                                             </ToggleGroupItem>
                                                             <ToggleGroupItem
                                                                 value="Partial Outage"
-                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Partial Outage
                                                             </ToggleGroupItem>
                                                             <ToggleGroupItem
                                                                 value="Major Outage"
-                                                                className={`px-2 py-1 rounded-[10px] text-sm ${serviceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Major Outage
                                                             </ToggleGroupItem>
@@ -500,11 +497,11 @@ const Components = () => {
                                             </div>
 
                                             <DialogFooter>
-                                                <Button onClick={() => handleSave(service.id)} className="w-full rounded-[5px] py-2 text-sm">
+                                                <Button onClick={() => handleSave(service.id)} className="w-full rounded-[5px] py-2 text-[12px]">
                                                     Save changes
                                                 </Button>
                                                 <DialogClose asChild>
-                                                    <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                                    <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                                         ✕
                                                     </button>
                                                 </DialogClose>
@@ -569,9 +566,9 @@ const Components = () => {
                                                     </div>
                                                 </div>
                                                 <DialogFooter>
-                                                    <Button onClick={handleReportProblem} className="w-full rounded-[5px] py-2 text-sm">Submit</Button>
+                                                    <Button onClick={handleReportProblem} className="w-full rounded-[5px] py-2 text-[12px]">Submit</Button>
                                                     <DialogClose asChild>
-                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                                             ✕
                                                         </button>
                                                     </DialogClose>
@@ -707,9 +704,9 @@ const Components = () => {
                                                     </div>
                                                 </div>
                                                 <DialogFooter>
-                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="w-full rounded-[5px] py-2 text-sm">Schedule</Button>
+                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="w-full rounded-[5px] py-2 text-[12px]">Schedule</Button>
                                                     <DialogClose asChild>
-                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
+                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                                             ✕
                                                         </button>
                                                     </DialogClose>

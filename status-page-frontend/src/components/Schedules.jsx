@@ -76,7 +76,7 @@ const Schedules = () => {
         const maintenanceData = {
             status: maintenanceStatus,
             delayed_start: maintenanceDelayedStart,
-            delayed_end: maintenanceDelayedStart,
+            delayed_end: maintenanceDelayedEnd,
             timeline: maintenanceStatus !== 'Scheduled' ? [{ status: maintenanceStatus, content: maintenanceStatusContent }] : [],
         }
 
@@ -93,7 +93,6 @@ const Schedules = () => {
             const data = await response.json();
 
             if (response.ok) {
-                console.log(data)
                 alert('Service maintenance updated successfully!');
                 document.getElementById("close-dialog").click();
                 fetchMaintence();
@@ -241,7 +240,7 @@ const Schedules = () => {
                                             </div>
 
 
-                                            {maintenanceStatus === "Delayed" &&
+                                            {(maintenanceStatus === "Delayed" || maintenanceItem.status === "Delayed") &&
                                                 <div className="grid grid-cols-4 items-center gap-4">
                                                     <div>
                                                         <Label htmlFor="maintenance-delayed-start" className="text-right">

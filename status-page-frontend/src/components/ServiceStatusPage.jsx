@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import TimeLine from './TimeLinePage';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/appConfig';
-import { useAuth } from '../contexts/authContext';
 
 const ServiceStatusPage = () => {
-
-    const { user } = useAuth();
 
     const [activeServices, setActiveServices] = useState({});
     const [services, setServices] = useState([]);
@@ -82,11 +79,7 @@ const ServiceStatusPage = () => {
                 </div>
                 <div>
                     <button className="bg-[#237479] text-white px-4 py-2 rounded-[5px] hover:bg-[#1a5f5d] text-[15px]" onClick={() => {
-                        if(user?.id){
-                            navigate('/dashboard')
-                        }else {
-                            navigate('/login')
-                        }
+                        navigate('/dashboard');
                     }}>
                         Dashboard
                     </button>

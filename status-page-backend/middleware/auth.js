@@ -13,7 +13,6 @@ const authMiddleware = async (req, res, next) => {
         try {
             payload = jwt.verify(token, process.env.JWT_SECRET);
         } catch (err) {
-            console.log(err)
             return res.status(404).send({ message: "Access denied, you have been logged out please login."});
         }
 

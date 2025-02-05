@@ -16,7 +16,6 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 
   const existingIncident = await Incident.findOne({ affected_services, reported_by }).populate('affected_services');
-  console.log(existingIncident)
 
   if (existingIncident && existingIncident.status !== "Fixed") {
     return res.status(409).json({ message: `An incident for the ${existingIncident.affected_services.name} service has already been reported by you. The incident is in ${existingIncident.status} state. Once it is in Fixed state then you can report another incident.` });
@@ -94,7 +93,6 @@ router.get('/', async (req, res) => {
     }
 
     const incidents = await Incident.find(query).populate('affected_services');
-    console.log(incidents)
     res.status(200).json(incidents);
   } catch (err) {
     res.status(500).json({ message: err.message });
