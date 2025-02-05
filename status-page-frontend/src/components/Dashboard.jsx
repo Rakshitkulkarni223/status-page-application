@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, CircleAlert, LogOut, Icon } from "lucide-react";
+import { Calendar, CalendarSync, Inbox, LayoutDashboard, CircleAlert, Group, Component } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import DashboardHome from "./DashboardHome";
 import ComponentGroups from "./ComponentGroups";
@@ -15,19 +15,19 @@ const items = [
     {
         title: "Dashboard",
         url: "/dashboard",
-        icon: Home,
+        icon: LayoutDashboard,
         key: "DashboardHome"
     },
     {
         title: "Component Groups",
         url: "/component-groups",
-        icon: Inbox,
+        icon: Group,
         key: "ComponentGroups"
     },
     {
         title: "Components",
         url: "/components",
-        icon: Calendar,
+        icon: Component,
         key: "Components"
     },
     {
@@ -39,7 +39,7 @@ const items = [
     {
         title: "Schedules",
         url: "/schedules",
-        icon: Calendar,
+        icon: CalendarSync,
         key: "Schedules"
     }
 ];
@@ -122,7 +122,7 @@ function Dashboard() {
     return (
         <div className="flex h-screen">
             <div className="w-2 bg-gray-1500 text-gray p-4">
-                <div className="text-xl font-bold mb-6">Status page Dashboard</div>
+                <div className="text-xl font-bold mb-6 cursor-pointer" onClick={() => navigate('/')}>Status Page</div>
                 <div>
                     {items.map((item) => (
                         <div
@@ -137,9 +137,13 @@ function Dashboard() {
                     ))}
                 </div>
             </div>
-            <div className="flex-1 bg-gray-900 p-6">
-                <p className="text-right cursor-pointer text-red-400 mb-3" onClick={handleLogout}>Logout</p>
-                {getSelectedPage(selected)}
+            <div className="flex-1 bg-gray-900 p-4">
+                <div className="mb-6">
+                    <p className="text-right cursor-pointer text-red-400 mb-3" onClick={handleLogout}>Logout</p>
+                </div>
+                <div>
+                    {getSelectedPage(selected)}
+                </div>
             </div>
         </div>
     );

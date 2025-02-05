@@ -3,6 +3,7 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import TimeLine from './TimeLinePage';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/appConfig';
+import { LayoutDashboard } from 'lucide-react';
 
 const ServiceStatusPage = () => {
 
@@ -11,19 +12,6 @@ const ServiceStatusPage = () => {
     const [maintenance, setMaintenance] = useState([]);
     const [incidents, setIncidents] = useState([]);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchServices = async () => {
-            try {
-                const response = await fetch(`${apiUrl}/api/services/`);
-                const data = await response.json();
-                setServices(data);
-            } catch (error) {
-                console.error('Error fetching services:', error);
-            }
-        };
-        fetchServices();
-    }, []);
 
     const fetchMaintence = async () => {
         try {
@@ -55,12 +43,20 @@ const ServiceStatusPage = () => {
         }
     };
 
-    useEffect(() => {
-        fetchIncidents();
-    }, [])
+    const fetchServices = async () => {
+        try {
+            const response = await fetch(`${apiUrl}/api/services/`);
+            const data = await response.json();
+            setServices(data);
+            fetchIncidents();
+            fetchMaintence();
+        } catch (error) {
+            console.error('Error fetching services:', error);
+        }
+    };
 
     useEffect(() => {
-        fetchMaintence();
+        fetchServices();
     }, [])
 
     const toggleService = (id) => {
@@ -75,14 +71,15 @@ const ServiceStatusPage = () => {
         <div className="bg-gray-900 text-white min-h-screen flex flex-col">
             <nav className="bg-gray-900 py-3 px-4 flex justify-between border-b-[1px] items-center">
                 <div className="text-white text-2xl font-semibold">
-                    <p className='text-[20px]'>Status Page</p>
+                    <p className='text-[20px] cursor-pointer' onClick={() => fetchServices()}>Status Page</p>
                 </div>
-                <div>
-                    <button className="bg-[#237479] text-white px-4 py-2 rounded-[5px] hover:bg-[#1a5f5d] text-[15px]" onClick={() => {
-                        navigate('/dashboard');
-                    }}>
+                <div className='flex flex-row items-center gap-2 bg-[#1a5f5d] cursor-pointer text-white px-4 py-2 rounded-[5px] hover:bg-[#237479] text-[14px]' onClick={() => {
+                    navigate('/dashboard');
+                }}>
+                    <LayoutDashboard size={16} />
+                    <p>
                         Dashboard
-                    </button>
+                    </p>
                 </div>
             </nav>
 
@@ -124,19 +121,24 @@ const ServiceStatusPage = () => {
                                                     key={service.id}
                                                     className="flex justify-between items-center p-4 border-b border-gray-60"
                                                 >
-                                                    <span className="text-gray-200 text-[15px]">{service.name}</span>
-                                                    <span
-                                                        className={`inline-block px-2 py-0 rounded-[5px] text-[12px] text-white ${service.status === 'Operational'
-                                                            ? 'bg-green-700'
-                                                            : service.status === 'Degraded Performance'
-                                                                ? 'bg-[#533969]'
-                                                                : service.status === 'Partial Outage' ?
-                                                                    'bg-red-600' :
-                                                                    'bg-red-800'
-                                                            }`}
-                                                    >
-                                                        {service.status}
-                                                    </span>
+                                                    <div className='flex flex-col gap-2'>
+                                                        <span className="text-gray-200 text-[15px]">{service.name}</span>
+                                                        {service.link && <a href={service.link} target='_blank' className="text-[#d4d4d8] text-[12px] underline">Visit Website</a>}
+                                                    </div>
+                                                    <div>
+                                                        <span
+                                                            className={`inline-block px-2 py-0 rounded-[5px] text-[12px] text-white ${service.status === 'Operational'
+                                                                ? 'bg-green-700'
+                                                                : service.status === 'Degraded Performance'
+                                                                    ? 'bg-[#533969]'
+                                                                    : service.status === 'Partial Outage' ?
+                                                                        'bg-red-600' :
+                                                                        'bg-red-800'
+                                                                }`}
+                                                        >
+                                                            {service.status}
+                                                        </span>
+                                                    </div>
                                                 </li>
                                             ))}
                                         </ul>
