@@ -5,14 +5,24 @@ const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
 router.post('/', authMiddleware, async (req, res) => {
-  const { title, description, affected_services, occurred_at, reported_by } = req.body;
+  const { title, description, affected_services, occurred_at, reported_by, timeline } = req.body;
 
   if (!title || !description || !affected_services || !occurred_at || !reported_by) {
     return res.status(400).json({ message: 'Missing required fields: title, description, status, occurred_at, or reported_by' });
   }
 
+  if(req.userId !== reported_by){
+    return res.status(403).json({ message: 'You are not authorized. Please login to create an incident.' });
+  }
+
+  const existingIncident = await Incident.findOne({ affected_services, reported_by }).populate('affected_services');
+  console.log(existingIncident)
+
+  if (existingIncident && existingIncident.status !== "Fixed") {
+    return res.status(409).json({ message: `An incident for the ${existingIncident.affected_services.name} service has already been reported by you. The incident is in ${existingIncident.status} state. Once it is in Fixed state then you can report another incident.` });
+  }
+
   const newIncident = new Incident({
-    type: "Incident",
     title,
     description,
     status: "Reported",
@@ -22,9 +32,8 @@ router.post('/', authMiddleware, async (req, res) => {
     reported_by: req.userId,
     timeline: [
       {
-        status: "Reported",
-        timestamp: new Date(),
-        content: `${title} reported. Our team is assessing the issue. ${description}`
+        ...timeline[0],
+        timestamp: new Date()
       }
     ]
   });

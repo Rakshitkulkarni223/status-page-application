@@ -126,13 +126,19 @@ const Components = () => {
     const handleReportProblem = async (e) => {
         e.preventDefault();
 
+        if (!problemTitle || !problemDescription || !problemOccurredAt || !problemStatusContent) {
+            alert('Missing required fields: title, description, status, occurred_at. Please fill all the required fields.');
+            return;
+        }
+
         const newIncident = {
             title: problemTitle,
             description: problemDescription,
             status: "Reported",
             affected_services: problemAffectedServcie,
             occurred_at: problemOccurredAt,
-            reported_by: user.id
+            reported_by: user.id,
+            timeline: [{ status: "Reported", content: problemStatusContent }],
         };
 
         try {
@@ -146,12 +152,12 @@ const Components = () => {
             });
 
             const data = await response.json();
-
+            console.log(data)
             if (response.ok) {
                 alert('Incident created successfully!');
                 document.getElementById("close-dialog").click();
             } else {
-                alert(`Error: ${data.message}`);
+                alert(`${data.message}`);
             }
         } catch (error) {
             console.log(error)
@@ -508,35 +514,61 @@ const Components = () => {
                                         </DialogContent>
                                     </Dialog>}
                                     {user.role !== "Admin" && (
-                                        <Dialog>
+                                        <Dialog onOpenChange={(isOpen) => {
+                                            if (!isOpen) {
+                                                setProblemAffectedServcie('');
+                                                setProblemDescription('');
+                                                setProblemOccurredAt('');
+                                                setProblemStatusContent('');
+                                                setProblemTitle('');
+                                            }
+                                        }}>
                                             <DialogTrigger asChild>
-                                                <button className="text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                {service.status === "Operational" ? <button className="text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
                                                     <AlertTriangle size={16} />
-                                                </button>
+                                                </button> : <button disabled className="text-yellow-500" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                    <AlertTriangle size={16} opacity={0.56} />
+                                                </button>}
+
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                                            <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                                                 <DialogHeader>
                                                     <DialogTitle>Report an Incident</DialogTitle>
                                                 </DialogHeader>
-                                                <div className="grid gap-2 py-2">
-                                                    <Label>Title</Label>
-                                                    <Textarea value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
-                                                </div>
-                                                <div className="grid gap-2  py-4">
-                                                    <Label>Describe the issue</Label>
-                                                    <Textarea value={problemDescription} onChange={(e) => setProblemDescription(e.target.value)} />
-                                                </div>
-                                                <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                                    <Label htmlFor="incident-time" className="text-right">
-                                                        Reported On
-                                                    </Label>
-                                                    <Input
-                                                        id="incident-occured-at"
-                                                        value={problemOccurredAt ? problemOccurredAt.slice(0, 16) : ''}
-                                                        onChange={handleChange}
-                                                        className="col-span-3 rounded-[5px]"
-                                                        type="datetime-local"
-                                                    />
+                                                <div className="grid gap-5 max-h-[60vh] overflow-y-auto py-4 px-3">
+                                                    <div className="grid gap-2">
+                                                        <Label htmlFor="incident-title" className="text-right">Title</Label>
+                                                        <Input id="incident-title" value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
+                                                    </div>
+                                                    <div className="grid gap-2">
+                                                        <Label>Describe the issue</Label>
+                                                        <Textarea value={problemDescription} onChange={(e) => setProblemDescription(e.target.value)} />
+                                                    </div>
+
+                                                    <div className="grid grid-cols-4 items-center gap-2">
+                                                        <Label htmlFor="incident-status-description" className="text-right">
+                                                            Status description
+                                                        </Label>
+                                                        <Textarea
+                                                            id="incident-status-description"
+                                                            value={problemStatusContent}
+                                                            onChange={(e) => setProblemStatusContent(e.target.value)}
+                                                            className="col-span-3 rounded-[5px]"
+                                                        />
+                                                    </div>
+
+                                                    <div className="grid grid-cols-4 items-center gap-2">
+                                                        <Label htmlFor="incident-time" className="text-right">
+                                                            Reported On
+                                                        </Label>
+                                                        <Input
+                                                            id="incident-occured-at"
+                                                            value={problemOccurredAt ? problemOccurredAt.slice(0, 16) : ''}
+                                                            onChange={handleChange}
+                                                            className="col-span-3 rounded-[5px]"
+                                                            type="datetime-local"
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <DialogFooter>
                                                     <Button onClick={handleReportProblem} className="w-full rounded-[5px] py-2 text-sm">Submit</Button>

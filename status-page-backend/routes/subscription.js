@@ -29,7 +29,7 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
         user.owned_service_groups.push(serviceGroupId);
         await user.save();
 
-        res.status(200).json({ message: 'Subscribed successfully', data: user.owned_service_groups });
+        res.status(200).json({ message: 'Subscribed successfully', owned_service_groups: user.owned_service_groups });
     } catch (error) {
         console.log(error)
         res.status(500).json({ message: 'Server error', error: error.message });

@@ -15,7 +15,6 @@ const DashboardHome = () => {
 
   const [changedServiceStatuses, setChangedServiceStatuses] = useState({});
 
-
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
       prev.includes(groupId)
@@ -92,10 +91,10 @@ const DashboardHome = () => {
       });
 
       const data = await response.json();
-      console.log(data);
-      localStorage.setItem("owned_service_groups", JSON.stringify(data))
+      localStorage.setItem("owned_service_groups", data.owned_service_groups.join(','))
       if (response.ok) {
         alert('Subscribed successfully!');
+        fetchServices();
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -124,7 +123,11 @@ const DashboardHome = () => {
                     <h4 className="text-lg font-semibold">{group.name}</h4>
                   </div>
                   <div className="flex flex-row justify-between items-center cursor-pointer gap-2">
-                    <button className="bg-[#237479] text-white text-[12px] py-1 px-2 rounded hover:bg-[#1a5f5d]" onClick={() => { subscribeToService(group.id) }}>
+                    <button disabled={user.owned_service_groups.includes(group.id)} className={user.owned_service_groups.includes(group.id) ? "bg-gray-600 text-white text-[12px] py-1 px-2 rounded-[5px]" : "bg-[#237479] text-white text-[12px] py-1 px-2 rounded-[5px] hover:bg-[#1a5f5d]"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        subscribeToService(group.id);
+                      }}>
                       Subscribe
                     </button>
                     <span>{expandedGroups.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
@@ -216,7 +219,7 @@ const DashboardHome = () => {
                                   ...prevStatuses,
                                   [service.id]: group.services[service.id],
                                 }));
-                            
+
                                 setChangedServiceStatuses((prevStatuses) => ({
                                   ...prevStatuses,
                                   [service.id]: false,

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { apiUrl } from "../config/appConfig";
+import { Calculator, PencilIcon } from "lucide-react";
 
 const user = {
   id: localStorage.getItem("userId"),
@@ -20,13 +21,13 @@ const user = {
   owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
 };
 
+console.log(user.owned_service_groups)
 
 const UserOwnedServices = () => {
 
   const [groupName, setGroupName] = useState("");
 
   const [ownedGroupNames, setOwnedGroupNames] = useState([]);
-
 
   const handleEdit = (group) => {
     setGroupName(group.name);
@@ -92,17 +93,14 @@ const UserOwnedServices = () => {
               <DialogTrigger asChild>
                 <div onClick={() => handleEdit(group)} className="flex justify-between items-center p-4 border-b hover:bg-gray-800 cursor-pointer">
                   <span>{group.name}</span>
-                  <button className="flex items-center">
-                    <PencilSquareIcon className="w-5 h-5 text-blue-500" />
-                    <p className="ml-2">Edit</p>
-                  </button>
+                  {user?.role === "Admin" && <button className="text-blue-500 hover:text-blue-700"> <PencilIcon size={16} /> </button>}
                 </div>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px] bg-gray-900">
                 <DialogHeader>
                   <DialogTitle>Edit Component Group</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4 py-4 px-3">
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="name" className="text-right">
                       Name
