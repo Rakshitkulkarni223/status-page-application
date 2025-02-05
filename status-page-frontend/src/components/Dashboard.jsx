@@ -1,5 +1,5 @@
 import { Calendar, Home, Inbox, Search, CircleAlert, LogOut, Icon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DashboardHome from "./DashboardHome";
 import ComponentGroups from "./ComponentGroups";
 import Components from "./Components";
@@ -7,6 +7,9 @@ import Incidents from "./Incidents";
 import Schedules from "./Schedules";
 
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../contexts/authContext";
+import { CONSTANTS } from "../utils/constants";
+import { apiUrl } from "../config/appConfig";
 
 const items = [
     {
@@ -61,19 +64,60 @@ const getSelectedPage = (page) => {
     }
 };
 
-
 function Dashboard() {
     const [selected, setSelected] = useState('DashboardHome');
 
     const navigate = useNavigate();
+    const { logout, login, setAuthStatus } = useAuth();
+
+    const token = localStorage.getItem('token');
+
+    const refreshAccessToken = useCallback(async () => {
+        try {
+            const response = await fetch(`${apiUrl}/api/auth/refreshToken`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                let user = {
+                    "id": data.userId,
+                    "role": data.role,
+                    "owned_service_groups": data.owned_service_groups,
+                }
+                const expires = data.expires;
+                localStorage.setItem('token', token);
+
+                login(user, token, expires);
+                setAuthStatus(CONSTANTS.AUTH_STATUS.SUCCESS);
+            } else {
+                logout();
+                localStorage.removeItem('token');
+                navigate('/login');
+            }
+        } catch (err) {
+            logout();
+            localStorage.removeItem('token');
+            navigate('/login');
+        }
+
+    }, [login, logout, setAuthStatus]);
+
+    useEffect(() => {
+        refreshAccessToken();
+    }, [refreshAccessToken])
+
 
     const handleLogout = () => {
+        logout();
         localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('owned_service_groups');
-        navigate('/login'); 
+        navigate('/login');
     };
-    
+
 
     return (
         <div className="flex h-screen">

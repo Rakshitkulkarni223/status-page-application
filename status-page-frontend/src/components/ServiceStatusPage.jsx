@@ -3,14 +3,12 @@ import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import TimeLine from './TimeLinePage';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/appConfig';
-
-const user = {
-    id: localStorage.getItem("userId"),
-    role: localStorage.getItem('role'),
-    owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
-};
+import { useAuth } from '../contexts/authContext';
 
 const ServiceStatusPage = () => {
+
+    const { user } = useAuth();
+
     const [activeServices, setActiveServices] = useState({});
     const [services, setServices] = useState([]);
     const [maintenance, setMaintenance] = useState([]);

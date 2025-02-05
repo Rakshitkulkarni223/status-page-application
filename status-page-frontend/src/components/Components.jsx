@@ -15,15 +15,12 @@ import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
-
-const user = {
-    id: localStorage.getItem("userId"),
-    role: localStorage.getItem('role'),
-    owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
-};
+import { useAuth } from "../contexts/authContext";
 
 const Components = () => {
 
+    const { user, token } = useAuth();
+  
     const [ownedGroupNames, setOwnedGroupNames] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const [serviceStatus, setServiceStatus] = useState("");
@@ -102,7 +99,7 @@ const Components = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ name: serviceName, status: serviceName, link: serviceLink }),
             });
@@ -146,7 +143,7 @@ const Components = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(newIncident),
             });
@@ -158,6 +155,7 @@ const Components = () => {
                 document.getElementById("close-dialog").click();
             } else {
                 alert(`${data.message}`);
+                document.getElementById("close-dialog").click();
             }
         } catch (error) {
             console.log(error)
@@ -200,7 +198,7 @@ const Components = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(maintenanceData),
             });
@@ -239,7 +237,7 @@ const Components = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(body),
             });

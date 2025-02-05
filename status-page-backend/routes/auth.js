@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const router = express.Router();
 
+const moment = require('moment');
+
 
 router.post('/signup', async (req, res) => {
     const { username, email, password } = req.body;
@@ -48,13 +50,48 @@ router.post('/signin', async (req, res) => {
 
         req.userId = user.id;
 
-        const token = jwt.sign(
-            { userId: user._id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
+        let expires = moment().add(2, 'hours');
 
-        res.status(200).json({ token, userId: user._id, role: user.role, owned_service_groups: JSON.stringify(user.owned_service_groups) });
+        const payload = {
+            userId: user._id,
+            expires,
+            iat: moment().unix(),
+            exp: expires.unix()
+        }
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET);
+
+        res.status(200).json({ token, expires: expires.toDate(), userId: user._id, role: user.role, owned_service_groups: user.owned_service_groups });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
+router.get('/refreshToken', async (req, res) => {
+    console.log(req.header(('Authorization')))
+    const token = req.header('Authorization')?.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: 'Access denied, no token provided' });
+    }
+
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const { userId, expires } = payload;
+
+        if (!userId) {
+            return res.status(404).send({ message: "Not authorized..you have been logged out please login."});
+        }
+
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).send({ message: "Not authorized..you have been logged out please login."});
+        }
+
+        return res.status(200).json({ token, expires, userId, role: user.role, owned_service_groups: user.owned_service_groups });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error' });

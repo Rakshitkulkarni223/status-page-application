@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/appConfig';
+import { useAuth } from '../contexts/authContext';
+import { CONSTANTS } from '../utils/constants';
 
 const LoginPage = () => {
     const navigate = useNavigate(); 
@@ -8,6 +10,8 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
+
+    const { login, user, setAuthStatus, logout } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -26,14 +30,23 @@ const LoginPage = () => {
                 throw new Error(data.message || 'Login failed');
             }
 
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('userId', data.userId);
-            localStorage.setItem('role', data.role);
-            localStorage.setItem("owned_service_groups", JSON.parse(data.owned_service_groups));
+            let user = {
+                "id": data.userId,
+                "role": data.role,
+                "owned_service_groups": data.owned_service_groups,
+            }
+            let token = data.token;
+            let expires = data.expires;
 
+            localStorage.setItem('token', token);
+
+            login(user, token, expires);
+            setAuthStatus(CONSTANTS.AUTH_STATUS.SUCCESS);
             navigate('/dashboard');
         } catch (err) {
             setError(err.message);
+            logout();
+            localStorage.removeItem('token');
         }
     };
 

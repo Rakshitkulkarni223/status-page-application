@@ -13,19 +13,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { apiUrl } from "../config/appConfig";
-import { Calculator, PencilIcon } from "lucide-react";
-
-const user = {
-  id: localStorage.getItem("userId"),
-  role: localStorage.getItem('role'),
-  owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
-};
-
-console.log(user.owned_service_groups)
+import { PencilIcon } from "lucide-react";
+import { useAuth } from "../contexts/authContext";
 
 const UserOwnedServices = () => {
 
   const [groupName, setGroupName] = useState("");
+  const { user, token } = useAuth();
 
   const [ownedGroupNames, setOwnedGroupNames] = useState([]);
 
@@ -43,7 +37,7 @@ const UserOwnedServices = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ name: groupName }),
       });

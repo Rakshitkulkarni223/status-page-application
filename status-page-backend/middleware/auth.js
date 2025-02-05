@@ -14,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
             payload = jwt.verify(token, process.env.JWT_SECRET);
         } catch (err) {
             console.log(err)
-            return res.status(404).send({ message: "Not authorized..you have been logged out please login."});
+            return res.status(404).send({ message: "Access denied, you have been logged out please login."});
         }
 
         const { userId } = payload;
@@ -22,7 +22,7 @@ const authMiddleware = async (req, res, next) => {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).send({ message: "Not authorized..you have been logged out please login."});
+            return res.status(404).send({ message: "Access denied, you have been logged out please login."});
         }
 
         req.userId = user.id;

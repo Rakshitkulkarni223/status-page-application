@@ -14,15 +14,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
-
-const user = {
-    id: localStorage.getItem("userId"),
-    role: localStorage.getItem('role'),
-    owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
-};
-
+import { useAuth } from "../contexts/authContext";
 
 const Schedules = () => {
+
+    const { user, token } = useAuth();
+    
     const [maintenanceTitle, setMaintenanceTitle] = useState("");
     const [maintenanceStatus, setMaintenanceStatus] = useState("");
     const [maintenanceDescription, setMaintenanceDescription] = useState("");
@@ -88,7 +85,7 @@ const Schedules = () => {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(maintenanceData),
             });

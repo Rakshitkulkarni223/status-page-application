@@ -16,15 +16,12 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { apiUrl } from "../config/appConfig";
-
-const user = {
-    id: localStorage.getItem("userId"),
-    role: localStorage.getItem('role'),
-    owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
-};
+import { useAuth } from "../contexts/authContext";
 
 
 const Incidents = () => {
+    const { user, token } = useAuth();
+  
     const [incidentTitle, setIncidentTitle] = useState("");
     const [incidentStatus, setIncidentStatus] = useState("");
     const [incidentDescription, setIncidentDescription] = useState("");
@@ -83,7 +80,7 @@ const Incidents = () => {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(updatedIncident),
             });

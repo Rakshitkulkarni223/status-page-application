@@ -2,18 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { apiUrl } from '../config/appConfig';
-
-const user = {
-  id: localStorage.getItem("userId"),
-  role: localStorage.getItem('role'),
-  owned_service_groups: localStorage.getItem('owned_service_groups')?.split(',')
-};
+import { useAuth } from '../contexts/authContext';
 
 const DashboardHome = () => {
   const [expandedGroups, setExpandedGroups] = useState([]);
   const [serviceStatuses, setServiceStatuses] = useState({});
 
   const [changedServiceStatuses, setChangedServiceStatuses] = useState({});
+  const { user, setOwnedServices, token } = useAuth();
 
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
@@ -34,6 +30,7 @@ const DashboardHome = () => {
       [serviceId]: true,
     }));
   };
+
   const [services, setServices] = useState([]);
 
   const fetchServices = async () => {
@@ -57,7 +54,7 @@ const DashboardHome = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ status: serviceStatuses[id] }),
       });
@@ -85,13 +82,13 @@ const DashboardHome = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ serviceGroupId })
       });
 
       const data = await response.json();
-      localStorage.setItem("owned_service_groups", data.owned_service_groups.join(','))
+      setOwnedServices(data.owned_service_groups)
       if (response.ok) {
         alert('Subscribed successfully!');
         fetchServices();
@@ -123,18 +120,18 @@ const DashboardHome = () => {
                     <h4 className="text-lg font-semibold">{group.name}</h4>
                   </div>
                   <div className="flex flex-row justify-between items-center cursor-pointer gap-2">
-                    <button disabled={user.owned_service_groups.includes(group.id)} className={user.owned_service_groups.includes(group.id) ? "bg-gray-600 text-white text-[12px] py-1 px-2 rounded-[5px]" : "bg-[#237479] text-white text-[12px] py-1 px-2 rounded-[5px] hover:bg-[#1a5f5d]"}
+                    <button disabled={user?.owned_service_groups?.includes(group.id)} className={user?.owned_service_groups?.includes(group.id) ? "bg-gray-600 text-white text-[12px] py-1 px-2 rounded-[5px]" : "bg-[#237479] text-white text-[12px] py-1 px-2 rounded-[5px] hover:bg-[#1a5f5d]"}
                       onClick={(e) => {
                         e.stopPropagation();
                         subscribeToService(group.id);
                       }}>
                       Subscribe
                     </button>
-                    <span>{expandedGroups.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
+                    <span>{expandedGroups?.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
                   </div>
 
                 </div>
-                {expandedGroups.includes(group.id) && (
+                {expandedGroups?.includes(group.id) && (
                   <ul className="mt-4 space-y-2">
                     {group.services.map((service) => (
                       <li key={service.id} className="flex justify-between items-center py-3 border-b-[1px]">
@@ -167,9 +164,9 @@ const DashboardHome = () => {
                 onClick={() => toggleGroup(group.id)}
               >
                 <h4 className="text-lg font-semibold">{group.name}</h4>
-                <span>{expandedGroups.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
+                <span>{expandedGroups?.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
               </div>
-              {expandedGroups.includes(group.id) && (
+              {expandedGroups?.includes(group.id) && (
                 <ul className="mt-2 space-y-2">
                   {group.services.map((service) => (
                     <li key={service.id} className="flex justify-between items-center py-2 border-b-[1px]">
