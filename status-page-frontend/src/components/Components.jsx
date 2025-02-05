@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Pencil, Trash, AlertTriangle, CalendarClock, PlusCircle } from "lucide-react";
+import { Pencil, Trash, AlertTriangle, CalendarClock, PlusCircle, CalendarMinus } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -32,6 +32,7 @@ const Components = () => {
     const [problemTitle, setProblemTitle] = useState("");
     const [problemOccurredAt, setProblemOccurredAt] = useState("");
     const [problemAffectedServcie, setProblemAffectedServcie] = useState("");
+    const [problemStatusContent, setProblemStatusContent] = useState("");
 
     const [serviceLink, setServiceLink] = useState("");
     const [maintenanceTime, setMaintenanceTime] = useState("");
@@ -45,9 +46,9 @@ const Components = () => {
     const [maintenanceDescription, setMaintenanceDescription] = useState("");
     const [maintenanceScheduledStart, setMaintenanceScheduledStart] = useState("");
     const [maintenanceScheduledEnd, setMaintenanceScheduledEnd] = useState("");
+    const [maintenanceStatusContent, setMaintenanceStatusContent] = useState("");
 
     const [serviceStatuses, setServiceStatuses] = useState({});
-
 
     const handleStatusChange = (incidentId, newStatus) => {
         setServiceStatuses((prevStatuses) => ({
@@ -161,8 +162,8 @@ const Components = () => {
 
     const handleScheduleMaintenance = async (id, status) => {
 
-        if (!maintenanceTitle || !maintenanceDescription || !maintenanceScheduledStart || !maintenanceScheduledEnd) {
-            alert("Maintenance title, description, start date or end date cannot be empty. Please fill all the required fields.");
+        if (!maintenanceTitle || !maintenanceDescription || !maintenanceScheduledStart || !maintenanceScheduledEnd || !maintenanceStatusContent) {
+            alert("Maintenance title, description, status content, start date or end date cannot be empty. Please fill all the required fields.");
             return;
         }
 
@@ -171,10 +172,12 @@ const Components = () => {
         if (status === "Operational" && !serviceStatuses[id]) {
             alert("Please select the service status.");
             return;
+        } else if (!serviceStatuses[id]) {
+            alert("Please select the service status.");
+            return;
         } else {
             updatedStatus = serviceStatuses[id];
         }
-
 
         const maintenanceData = {
             title: maintenanceTitle,
@@ -183,7 +186,8 @@ const Components = () => {
             affected_services: id,
             scheduled_start: maintenanceScheduledStart,
             scheduled_end: maintenanceScheduledEnd,
-            serviceStatus: updatedStatus
+            serviceStatus: updatedStatus,
+            timeline: [{ status: "Scheduled", content: maintenanceStatusContent }],
         }
         try {
             const response = await fetch(`${apiUrl}/api/maintenance`, {
@@ -192,7 +196,7 @@ const Components = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ maintenanceData }),
+                body: JSON.stringify(maintenanceData),
             });
 
             const data = await response.json();
@@ -273,11 +277,11 @@ const Components = () => {
                             New Service
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                    <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                         <DialogHeader>
                             <DialogTitle>Create New Service</DialogTitle>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
+                        <div className=" grid gap-4 max-h-[60vh] overflow-y-auto py-4 px-3">
                             <div className="grid grid-cols-4 items-center gap-2">
                                 <Label htmlFor="new-service-name" className="text-right">
                                     Service name
@@ -292,7 +296,7 @@ const Components = () => {
 
                             <div className="grid grid-cols-4 items-center gap-3 mt-2">
                                 <Label className="text-right">Service status</Label>
-                                <div className="col-span-3 flex flex-wrap gap-2">
+                                <div className="col-span-3 flex flex-wrap gap-3">
                                     <ToggleGroup
                                         type="single"
                                         value={newServiceStatus}
@@ -300,28 +304,28 @@ const Components = () => {
                                     >
                                         <ToggleGroupItem
                                             value="Operational"
-                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px] ${newServiceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                         >
                                             Operational
                                         </ToggleGroupItem>
                                         <ToggleGroupItem
                                             disabled
                                             value="Degraded Performance"
-                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px]  ${newServiceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                         >
                                             Degraded
                                         </ToggleGroupItem>
                                         <ToggleGroupItem
                                             disabled
                                             value="Partial Outage"
-                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px]  ${newServiceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                         >
                                             Partial Outage
                                         </ToggleGroupItem>
                                         <ToggleGroupItem
                                             disabled
                                             value="Major Outage"
-                                            className={`px-2 py-1 rounded-[10px] text-sm ${newServiceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px] ${newServiceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                         >
                                             Major Outage
                                         </ToggleGroupItem>
@@ -424,11 +428,11 @@ const Components = () => {
                                                 <Pencil size={16} />
                                             </button>
                                         </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white">
+                                        <DialogContent className="sm:max-w-[550px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                                             <DialogHeader>
                                                 <DialogTitle>Edit Service</DialogTitle>
                                             </DialogHeader>
-                                            <div className="grid gap-4 py-4">
+                                            <div className=" grid gap-4 max-h-[60vh] overflow-y-auto py-4 px-3">
                                                 <div className="grid grid-cols-4 items-center gap-2">
                                                     <Label htmlFor="name" className="text-right">
                                                         Name
@@ -553,19 +557,20 @@ const Components = () => {
                                                 setMaintenanceDescription('');
                                                 setMaintenanceScheduledStart('');
                                                 setMaintenanceScheduledEnd('');
+                                                setMaintenanceStatusContent('');
                                                 setServiceStatuses({});
                                             }
                                         }}>
                                             <DialogTrigger asChild>
-                                                <button className="text-green-500 hover:text-green-700">
-                                                    <CalendarClock size={16} />
-                                                </button>
+                                                {!service.maintenanceScheduled
+                                                    ? <button className="text-green-500 hover:text-green-700"> <CalendarClock size={16} /> </button> :
+                                                    <button disabled className="text-red-500 hover:text-red-700">   <CalendarMinus size={16} /> </button>}
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white">
+                                            <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                                                 <DialogHeader>
                                                     <DialogTitle>Schedule Maintenance</DialogTitle>
                                                 </DialogHeader>
-                                                <div className="grid gap-5 py-4">
+                                                <div className="grid gap-5 max-h-[60vh] overflow-y-auto py-4 px-3">
                                                     <div className="grid grid-cols-4 items-center gap-2">
                                                         <Label htmlFor="maintenance-title" className="text-right">
                                                             Title
@@ -578,7 +583,7 @@ const Components = () => {
                                                         />
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                                    <div className="grid grid-cols-4 items-center gap-2">
                                                         <Label htmlFor="maintenance-description" className="text-right">
                                                             Description
                                                         </Label>
@@ -590,34 +595,49 @@ const Components = () => {
                                                         />
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                                        <Label htmlFor="maintenance-scheduled-start" className="text-right">
-                                                            Scheduled Start
+
+                                                    <div className="grid grid-cols-4 items-center gap-2">
+                                                        <Label htmlFor="maintenance-status-description" className="text-right">
+                                                            Status description
                                                         </Label>
-                                                        <Input
-                                                            id="maintenance-scheduled-start"
-                                                            value={maintenanceScheduledStart}
-                                                            onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
+                                                        <Textarea
+                                                            id="maintenance-status-description"
+                                                            value={maintenanceStatusContent}
+                                                            onChange={(e) => setMaintenanceStatusContent(e.target.value)}
                                                             className="col-span-3 rounded-[5px]"
-                                                            type="datetime-local"
                                                         />
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                                        <Label htmlFor="maintenance-scheduled-end" className="text-right">
-                                                            Scheduled End
-                                                        </Label>
-                                                        <Input
-                                                            disabled={["Completed", "Canceled"].includes(maintenanceStatus)}
-                                                            id="maintenance-scheduled-end"
-                                                            value={maintenanceScheduledEnd}
-                                                            onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
-                                                            className="col-span-3 rounded-[5px]"
-                                                            type="datetime-local"
-                                                        />
+                                                    <div className="grid grid-cols-4 items-center gap-3">
+                                                        <div>
+                                                            <Label htmlFor="maintenance-scheduled-start" className="text-right">
+                                                                Scheduled Start
+                                                            </Label>
+                                                            <Input
+                                                                id="maintenance-scheduled-start"
+                                                                value={maintenanceScheduledStart}
+                                                                onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
+                                                                className="col-span-3 rounded-[5px]"
+                                                                type="datetime-local"
+                                                            />
+                                                        </div>
+
+                                                        <div>
+                                                            <Label htmlFor="maintenance-scheduled-end" className="text-right">
+                                                                Scheduled End
+                                                            </Label>
+                                                            <Input
+                                                                disabled={["Completed", "Canceled"].includes(maintenanceStatus)}
+                                                                id="maintenance-scheduled-end"
+                                                                value={maintenanceScheduledEnd}
+                                                                onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
+                                                                className="col-span-3 rounded-[5px]"
+                                                                type="datetime-local"
+                                                            />
+                                                        </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-3 mt-2">
+                                                    <div className="grid grid-cols-4 items-center gap-3">
                                                         <Label className="text-right">Change service status</Label>
                                                         <div className="col-span-3 flex flex-wrap gap-2">
                                                             <ToggleGroup

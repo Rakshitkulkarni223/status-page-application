@@ -28,8 +28,6 @@ const Incidents = () => {
     const [incidentTitle, setIncidentTitle] = useState("");
     const [incidentStatus, setIncidentStatus] = useState("");
     const [incidentDescription, setIncidentDescription] = useState("");
-    const [incidentLink, setIncidentLink] = useState("");
-    const [incidentTime, setIncidentTime] = useState("");
     const [incidentContent, setIncidentContent] = useState("");
 
     const [serviceStatuses, setServiceStatuses] = useState({});
@@ -46,8 +44,6 @@ const Incidents = () => {
         setIncidentTitle(incident.title);
         setIncidentStatus(incident.status);
         setIncidentDescription(incident.description);
-        setIncidentLink(incident.link);
-        setIncidentTime(incident.occurredAt);
         setIncidentContent(incident.content || "");
         setServiceStatuses((prevStatuses) => ({
             ...prevStatuses,
@@ -58,7 +54,7 @@ const Incidents = () => {
     const handleSave = async (e, incidentId) => {
         e.preventDefault();
         let serviceStatus = serviceStatuses[incidentId];
-        
+
         if (!incidentStatus || !serviceStatus || !incidentContent) {
             alert("Incident status, content or service status cannnot be empty. Please fill all the required fields.");
             return;
@@ -70,8 +66,9 @@ const Incidents = () => {
                 return;
             }
         }
-        
+
         if (incidentStatus === "Fixed") {
+            alert("When an incident is Fixed service status will be set to Operational.");
             serviceStatus = "Operational";
         }
 
@@ -158,17 +155,25 @@ const Incidents = () => {
                             <td className="px-6 py-3 text-sm">{incident.occurred_at}</td>
                             {user.role === "Admin" && <td className="px-6 py-3 flex space-x-3">
 
-                                <Dialog>
+                                <Dialog onOpenChange={(isOpen) => {
+                                    if (!isOpen) {
+                                        setIncidentContent('');
+                                        setIncidentDescription('');
+                                        setIncidentStatus('');
+                                        setIncidentTitle('');
+                                        setServiceStatuses({});
+                                    }
+                                }}>
                                     <DialogTrigger asChild>
                                         <button onClick={() => handleEditClick(incident)} className="text-blue-500 hover:text-blue-700">
                                             <Pencil size={16} />
                                         </button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white">
+                                    <DialogContent className="sm:max-w-[700px] bg-gray-900 text-white max-h-[80vh] overflow-auto">
                                         <DialogHeader>
                                             <DialogTitle>Edit Incident</DialogTitle>
                                         </DialogHeader>
-                                        <div className="grid gap-4 py-4">
+                                        <div className="grid gap-4 max-h-[60vh] overflow-y-auto py-4 px-3">
                                             <div className="grid grid-cols-4 items-center gap-2">
                                                 <Label htmlFor="incident-title" className="text-right">
                                                     Title
@@ -182,14 +187,22 @@ const Incidents = () => {
                                                 />
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                            <div className="grid grid-cols-4 items-center gap-2">
                                                 <Label className="text-right">Status</Label>
                                                 <div className="col-span-3 flex flex-wrap gap-2">
                                                     {statusOptions.map((status) => (
                                                         <Button
                                                             disabled={(user.role === "Admin" && status === "Reported")}
                                                             key={status}
-                                                            onClick={() => setIncidentStatus(status)}
+                                                            onClick={() => {
+                                                                if (status === "Fixed") {
+                                                                    handleStatusChange(incident._id, "Operational")
+                                                                } else if (["Identified", "Monitoring"].includes(status) && serviceStatuses[incident._id] && serviceStatuses[incident._id] === "Operational") {
+                                                                    handleStatusChange(incident._id, "");
+                                                                }
+                                                                setIncidentStatus(status);
+                                                            }
+                                                            }
                                                             className={incidentStatus === status ? "rounded-[10px] bg-blue-500" : "rounded-[10px] bg-gray-500"}
                                                         >
                                                             {status}
@@ -198,12 +211,12 @@ const Incidents = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                                <Label htmlFor="incident-description" className="text-right">
+                                            <div className="grid grid-cols-4 items-center gap-2">
+                                                <Label htmlFor="incident-status-description" className="text-right">
                                                     Status description
                                                 </Label>
                                                 <Textarea
-                                                    id="incident-description"
+                                                    id="incident-status-description"
                                                     value={incidentContent}
                                                     onChange={(e) => setIncidentContent(e.target.value)}
                                                     className="col-span-3 rounded-[5px]"
@@ -211,7 +224,7 @@ const Incidents = () => {
                                             </div>
 
 
-                                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                            <div className="grid grid-cols-4 items-center gap-2">
                                                 <Label htmlFor="incident-description" className="text-right">
                                                     Description
                                                 </Label>
@@ -224,9 +237,7 @@ const Incidents = () => {
                                                 />
                                             </div>
 
-
-
-                                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
+                                            <div className="grid grid-cols-4 items-center gap-2">
                                                 <Label htmlFor="incident-time" className="text-right">
                                                     Reported On
                                                 </Label>
@@ -239,33 +250,38 @@ const Incidents = () => {
                                                 />
                                             </div>
 
-                                            {incidentStatus && <div className="mt-2 flex flex-wrap gap-3">
+                                            {incidentStatus && <div className="grid grid-cols-4 items-center gap-2">
                                                 <p className="text-[15px]">Change service status</p>
                                                 <ToggleGroup
+                                                    id="incident-status-description"
                                                     type="single"
                                                     value={serviceStatuses[incident._id]}
                                                     onValueChange={(newStatus) => handleStatusChange(incident._id, newStatus)}
                                                     className="flex flex-wrap gap-2"
                                                 >
                                                     <ToggleGroupItem
+                                                        disabled={["Identified", "Monitoring"].includes(incidentStatus)}
                                                         value="Operational"
                                                         className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                     >
                                                         Operational
                                                     </ToggleGroupItem>
                                                     <ToggleGroupItem
+                                                        disabled={incidentStatus === "Fixed"}
                                                         value="Degraded Performance"
                                                         className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                     >
                                                         Degraded Performance
                                                     </ToggleGroupItem>
                                                     <ToggleGroupItem
+                                                        disabled={incidentStatus === "Fixed"}
                                                         value="Partial Outage"
                                                         className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                     >
                                                         Partial Outage
                                                     </ToggleGroupItem>
                                                     <ToggleGroupItem
+                                                        disabled={incidentStatus === "Fixed"}
                                                         value="Major Outage"
                                                         className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                     >
@@ -273,7 +289,6 @@ const Incidents = () => {
                                                     </ToggleGroupItem>
                                                 </ToggleGroup>
                                             </div>}
-
 
                                         </div>
 

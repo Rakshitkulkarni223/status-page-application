@@ -3,52 +3,62 @@ const Maintenance = require('../models/Maintenance');
 const Service = require('../models/Service');
 const router = express.Router();
 
-router.post('/', async (req, res) => {
-  const { id, ...maintenanceData } = req.body;
 
-  let maintenance;
-  let data;
+router.put('/:id', async (req, res) => {
   try {
-    if (id) {
-      maintenance = await Maintenance.findById(id);
+    const { status, delayed_start, delayed_end, timeline } = req.body;
 
-      if (!maintenance) {
-        return res.status(404).json({ message: 'Scheduled maintenance not found' });
-      }
+    const id = req.params.id;
 
-      maintenance.status = maintenanceData.maintenanceData.status;
+    var maintenance = await Maintenance.findById(id);
 
-      if (maintenanceData.maintenanceData.status !== "Scheduled") {
-        maintenance.timeline.push({
-          status: maintenanceData.maintenanceData.status,
-          timestamp: new Date(),
-          content: maintenanceData.maintenanceData.content || `Status updated to ${maintenanceData.maintenanceData.status}`
-        });
-      }
-      await maintenance.save();
-
-    } else {
-
-      data = {
-        ...maintenanceData.maintenanceData,
-        timeline: [
-          {
-            status: maintenanceData.maintenanceData.status,
-            timestamp: new Date().toISOString(),
-            content: maintenanceData.maintenanceData.description
-          }
-        ]
-      }
-
-      maintenance = new Maintenance(data);
-      await maintenance.save();
-
-      let { affected_services: serviceId, serviceStatus: status } = maintenanceData.maintenanceData;
-      if (serviceId) {
-        await Service.findByIdAndUpdate(serviceId, { status });
-      }
+    if (!maintenance) {
+      return res.status(404).json({ message: 'Scheduled maintenance not found' });
     }
 
+    if (status === "Delayed" && timeline) {
+      maintenance.scheduled_start = delayed_start;
+      maintenance.scheduled_end = delayed_end;
+      maintenance.delayed_start = delayed_start;
+      maintenance.delayed_end = delayed_end;
+      maintenance.status = "Scheduled";
+      maintenance.timeline.push({
+        status,
+        timestamp: new Date(),
+        content: timeline[0].content || `Status updated to ${status} state.`
+      });
+    }
+
+    if (!["Scheduled", "Delayed"].includes(status) && timeline) {
+      maintenance.status = status || maintenance.status;
+      maintenance.timeline.push({
+        status,
+        timestamp: new Date(),
+        content: timeline[0].content || `Status updated to ${status} state.`
+      });
+    }
+
+    await maintenance.save();
+    res.status(201).json(maintenance);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/', async (req, res) => {
+  const { timeline } = req.body;
+  try {
+    const data = {
+      ...req.body,
+      timeline: [
+        {
+          ...timeline[0],
+          timestamp: new Date()
+        }
+      ]
+    }
+    const maintenance = new Maintenance(data);
+    await maintenance.save();
     res.status(201).json(maintenance);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -63,5 +73,57 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+const updateMaintenanceStatus = async () => {
+  try {
+    const now = new Date();
+
+    const maintenances = await Maintenance.find({
+      status: { $ne: "Completed" }
+    });
+
+    for (let maintenance of maintenances) {
+      if (new Date(maintenance.scheduled_end) < now && maintenance.status !== "Completed") {
+        maintenance.status = "Completed";
+        maintenance.timeline.push({
+          status: "Completed",
+          timestamp: now,
+          content: "Maintenance completed successfully."
+        });
+        let { affected_services: serviceId } = maintenance;
+        if (serviceId) {
+          await Service.findByIdAndUpdate(serviceId, { status: "Operational" });
+        }
+      }
+      else if (new Date(maintenance.scheduled_start) < now && maintenance.status === "Scheduled") {
+        maintenance.status = "Delayed";
+        maintenance.timeline.push({
+          status: "Delayed",
+          timestamp: now,
+          content: "Maintenance start delayed."
+        });
+      }
+      else if (new Date(maintenance.scheduled_start).toISOString().slice(0, 16) === now.toISOString().slice(0, 16) && maintenance.status === "Scheduled") {
+        maintenance.status = "In Progress";
+        maintenance.timeline.push({
+          status: "In Progress",
+          timestamp: now,
+          content: "Maintenance is now in progress."
+        });
+
+        let { affected_services: serviceId, serviceStatus } = maintenance;
+        if (serviceId) {
+          await Service.findByIdAndUpdate(serviceId, { status: serviceStatus });
+        }
+      }
+
+      await maintenance.save();
+    }
+  } catch (error) {
+    console.error("Error updating maintenance status:", error);
+  }
+};
+
+setInterval(updateMaintenanceStatus, 60 * 1000);
 
 module.exports = router;

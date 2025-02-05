@@ -18,12 +18,12 @@ router.post('/', authMiddleware, async (req, res) => {
     status: "Reported",
     affected_services,
     occurred_at,
-    updated_at: new Date().toISOString(),
+    updated_at: new Date(),
     reported_by: req.userId,
     timeline: [
       {
         status: "Reported",
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
         content: `${title} reported. Our team is assessing the issue. ${description}`
       }
     ]
@@ -54,7 +54,7 @@ router.put('/:id', async (req, res) => {
       incident.timeline.push({
         status,
         timestamp: new Date(),
-        content: timeline.content || `Status updated to ${status} state.`
+        content: timeline[0].content || `Status updated to ${status} state.`
       });
     }
 
@@ -101,8 +101,6 @@ router.get('/service-status/:id', authMiddleware, async (req, res) => {
         if (!incident) {
             return res.status(404).json({ message: "Incident not found" });
         }
-        console.log(incident)
-
         res.json(incident);
     } catch (error) {
         console.error("Error fetching incident:", error);

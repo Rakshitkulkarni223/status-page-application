@@ -1,14 +1,13 @@
 const express = require('express');
 const ServiceGroup = require('../models/ServiceGroup');
+const Maintenance = require('../models/Maintenance');
 const Service = require('../models/Service');
 const router = express.Router();
 
 
 router.post('/', async (req, res) => {
   const { newServiceName, newServiceStatus, newGroupName, newServiceLink } = req.body;
-
   try {
-
     const newService = new Service({
       name: newServiceName,
       status: newServiceStatus,
@@ -65,15 +64,34 @@ router.get('/', async (req, res) => {
   try {
     const serviceGroups = await ServiceGroup.find().populate('services');
 
-    const groupedServices = serviceGroups.map(group => ({
-      id: group._id,
-      name: group.name,
-      services: group.services.map(service => ({
-        id: service._id,
-        name: service.name,
-        status: service.status,
-        link: service.link
-      }))
+    const groupedServices = await Promise.all(serviceGroups.map(async (group) => {
+      const servicesWithMaintenance = await Promise.all(group.services.map(async (service) => {
+        const maintenance = await Maintenance.findOne({
+          affected_services: service._id,
+          status: { $in: ["Scheduled", "In Progress", "Delayed"] }
+        });
+
+        return {
+          id: service._id,
+          name: service.name,
+          status: service.status,
+          link: service.link,
+          maintenanceScheduled: maintenance ? true : false,
+          maintenanceDetails: maintenance ? {
+            id: maintenance._id,
+            title: maintenance.title,
+            status: maintenance.status,
+            scheduled_start: maintenance.scheduled_start,
+            scheduled_end: maintenance.scheduled_end
+          } : null
+        };
+      }));
+
+      return {
+        id: group._id,
+        name: group.name,
+        services: servicesWithMaintenance
+      };
     }));
 
     res.status(200).json(groupedServices);
@@ -81,5 +99,6 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 module.exports = router;
