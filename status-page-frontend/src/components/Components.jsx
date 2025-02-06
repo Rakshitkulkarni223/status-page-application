@@ -16,11 +16,13 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
+import { useSocket } from "../contexts/socketContext";
 
 const Components = () => {
 
     const { user, token } = useAuth();
-  
+    const { socket } = useSocket();
+
     const [ownedGroupNames, setOwnedGroupNames] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const [serviceStatus, setServiceStatus] = useState("");
@@ -75,6 +77,46 @@ const Components = () => {
     useEffect(() => {
         fetchServices();
     }, [])
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "SERVICE_STATUS_UPDATE") {
+                setOwnedGroupNames((prevGroups) => {
+                    return (user.role === "Admin"
+                        ? prevGroups
+                        : prevGroups.filter(group => user.owned_service_groups.includes(group.id))
+                    ).map((group) => {
+                        const updatedServices = group.services.map((service) => {
+                            if (service.id === data.updatedService._id) {
+                                return {
+                                    ...service,
+                                    status: data.updatedService.status,
+                                    name: data.updatedService.name,
+                                    link: data.updatedService.link
+                                };
+                            }
+                            return service;
+                        });
+
+                        return {
+                            ...group,
+                            services: updatedServices
+                        };
+                    });
+                });
+            } else if(data.type === "CREATE_NEW_SERVICE"){
+               fetchServices();
+            }
+        };
+
+        return () => {
+            socket.onmessage = null;
+        };
+    }, [socket]);
 
     const handleChange = (e) => {
         const newDateTime = e.target.value;
@@ -279,7 +321,7 @@ const Components = () => {
                             New Service
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
+                    <DialogContent className="sm:max-w-[560px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                         <DialogHeader>
                             <DialogTitle>Create New Service</DialogTitle>
                         </DialogHeader>
@@ -315,7 +357,7 @@ const Components = () => {
                                             value="Degraded Performance"
                                             className={`px-2 py-1 rounded-[10px] text-[12px]  ${newServiceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                         >
-                                            Degraded
+                                            Degraded Performance
                                         </ToggleGroupItem>
                                         <ToggleGroupItem
                                             disabled
@@ -430,7 +472,7 @@ const Components = () => {
                                                 <Pencil size={16} />
                                             </button>
                                         </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[520px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
+                                        <DialogContent className="sm:max-w-[560px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                                             <DialogHeader>
                                                 <DialogTitle>Edit Service</DialogTitle>
                                             </DialogHeader>
@@ -466,7 +508,7 @@ const Components = () => {
                                                                 value="Degraded Performance"
                                                                 className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
-                                                                Degraded
+                                                                Degraded Performance
                                                             </ToggleGroupItem>
                                                             <ToggleGroupItem
                                                                 value="Partial Outage"

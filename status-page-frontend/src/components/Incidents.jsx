@@ -17,11 +17,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
+import { useSocket } from "../contexts/socketContext";
 
 
 const Incidents = () => {
     const { user, token } = useAuth();
-  
+
+    const { socket } = useSocket();
+
     const [incidentTitle, setIncidentTitle] = useState("");
     const [incidentStatus, setIncidentStatus] = useState("");
     const [incidentDescription, setIncidentDescription] = useState("");
@@ -127,6 +130,46 @@ const Incidents = () => {
     useEffect(() => {
         fetchIncidents();
     }, [])
+
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "REPORT_NEW_INCIDENT") {
+                setFilteredIncidents((prev) => {
+                    return (
+                        user.role === "Admin"
+                            ? [...prev, data.incident]
+                            : [...prev.filter(incident => incident.reported_by === user.id), data.incident]
+                    )
+                })
+            }else if(data.type === "UPDATE_INCIDENT"){
+                setFilteredIncidents((prev) => {
+                    return (
+                        user.role === "Admin"
+                            ? prev
+                            : prev.filter(incident => incident.reported_by === user.id)
+                    ).map((incidentItem) => {
+                        if(incidentItem._id === data.incident._id){
+                            return {
+                                ...data.incident
+                            }
+                        }
+                        return {
+                            ...incidentItem
+                        };
+                    })
+                })
+            }
+        };
+
+        return () => {
+            socket.onmessage = null;
+        };
+    }, [socket]);
 
 
     return (

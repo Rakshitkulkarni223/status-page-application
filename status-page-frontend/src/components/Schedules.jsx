@@ -15,11 +15,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
+import { useSocket } from "../contexts/socketContext";
 
 const Schedules = () => {
 
     const { user, token } = useAuth();
-    
+    const { socket } = useSocket();
+
     const [maintenanceTitle, setMaintenanceTitle] = useState("");
     const [maintenanceStatus, setMaintenanceStatus] = useState("");
     const [maintenanceDescription, setMaintenanceDescription] = useState("");
@@ -58,6 +60,26 @@ const Schedules = () => {
     useEffect(() => {
         fetchMaintence();
     }, [])
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "SCHEDULE_NEW_MAINTENANCE") {
+                setMaintenance((prev)=>[
+                    ...prev,
+                    data.maintenance
+                ]);
+            }
+        };
+
+        return () => {
+            socket.onmessage = null;
+        };
+    }, [socket]);
+
 
     const handleSave = async (id) => {
 

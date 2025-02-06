@@ -2,6 +2,7 @@ const express = require('express');
 const Incident = require('../models/Incident');
 const Service = require('../models/Service');
 const authMiddleware = require('../middleware/auth');
+const { broadcast } = require('../utils/websocketManager');
 const router = express.Router();
 
 router.post('/', authMiddleware, async (req, res) => {
@@ -36,9 +37,10 @@ router.post('/', authMiddleware, async (req, res) => {
       }
     ]
   });
-
+  
   try {
     const savedIncident = await newIncident.save();
+    broadcast({ type: "REPORT_NEW_INCIDENT", incident: savedIncident });
     res.status(201).json(savedIncident);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -67,11 +69,13 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 
     const updatedIncident = await incident.save();
+    let updatedService;
 
     if (updatedIncident.affected_services) {
-      await Service.findByIdAndUpdate(updatedIncident.affected_services, { status: serviceStatus })
+      updatedService = await Service.findByIdAndUpdate(updatedIncident.affected_services, { status: serviceStatus }, {new: true})
     }
-
+    broadcast({ type: "UPDATE_INCIDENT", incident: updatedIncident });
+    broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
     res.status(200).json(updatedIncident);
   } catch (err) {
     res.status(400).json({ message: err.message });

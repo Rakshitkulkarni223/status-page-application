@@ -2,6 +2,7 @@ const express = require('express');
 const Maintenance = require('../models/Maintenance');
 const Service = require('../models/Service');
 const authMiddleware = require('../middleware/auth');
+const { broadcast } = require('../utils/websocketManager');
 const router = express.Router();
 
 
@@ -60,6 +61,7 @@ router.post('/',authMiddleware,  async (req, res) => {
     }
     const maintenance = new Maintenance(data);
     await maintenance.save();
+    broadcast({ type: "SCHEDULE_NEW_MAINTENANCE", maintenance });
     res.status(201).json(maintenance);
   } catch (err) {
     res.status(400).json({ message: err.message });

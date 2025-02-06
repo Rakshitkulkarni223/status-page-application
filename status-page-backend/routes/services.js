@@ -27,6 +27,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 
     const savedServiceGroup = await serviceGroup.save();
+    broadcast({ type: "CREATE_NEW_SERVICE", savedServiceGroup });
     res.status(201).json(savedServiceGroup);
   } catch (err) {
     res.status(400).json({ message: err.message });
