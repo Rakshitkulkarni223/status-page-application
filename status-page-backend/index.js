@@ -16,7 +16,8 @@ const { setupWebSocket } = require('./utils/websocketManager');
 
 dotenv.config();
 const app = express();
-setupWebSocket();
+const server = http.createServer(app);
+setupWebSocket(server);
 
 const port = process.env.PORT || 5000;
 

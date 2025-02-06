@@ -2,8 +2,8 @@ const WebSocket = require("ws");
 
 const clients = new Set();
 
-const setupWebSocket = () => {    
-    const wss = new WebSocket.Server({ port: 5001 });
+const setupWebSocket = (server) => {    
+    const wss = new WebSocket.Server({ server });
 
     wss.on("connection", (ws) => {
         console.log("New WebSocket connection");
