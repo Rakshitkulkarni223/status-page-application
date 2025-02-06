@@ -15,7 +15,7 @@ export const SocketProvider = ({ children }) => {
         const socketInstance = new WebSocket(
             window.location.protocol === 'https:' 
               ? `wss://${apiUrl}`
-              : 'ws://localhost:5001'
+              : 'ws://localhost:5000'
           );
           
 
