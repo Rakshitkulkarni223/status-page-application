@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { apiUrl } from '../config/appConfig';
 import { useAuth } from '../contexts/authContext';
+import { useSocket } from '../contexts/socketContext';
 
 const DashboardHome = () => {
   const [expandedGroups, setExpandedGroups] = useState([]);
@@ -10,6 +11,8 @@ const DashboardHome = () => {
 
   const [changedServiceStatuses, setChangedServiceStatuses] = useState({});
   const { user, setOwnedServices, token } = useAuth();
+
+  const { socket } = useSocket();
 
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
@@ -103,6 +106,41 @@ const DashboardHome = () => {
   useEffect(() => {
     fetchServices();
   }, [])
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "SERVICE_STATUS_UPDATE") {
+        setServices((prevGroups) => {
+          return prevGroups.map((group) => {
+            const updatedServices = group.services.map((service) => {
+              if (service.id === data.updatedService._id) {
+                return {
+                  ...service,
+                  status: data.updatedService.status,
+                  name: data.updatedService.name,
+                  link: data.updatedService.link
+                };
+              }
+              return service;
+            });
+
+            return {
+              ...group,
+              services: updatedServices
+            };
+          });
+        });
+      }
+    };
+
+    return () => {
+      socket.onmessage = null;
+    };
+  }, [socket]);
 
   const renderUserDashboard = () => {
     return (

@@ -15,17 +15,50 @@ import { Button } from "@/components/ui/button"
 import { apiUrl } from "../config/appConfig";
 import { PencilIcon } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
+import { useSocket } from "../contexts/socketContext";
 
 const UserOwnedServices = () => {
 
   const [groupName, setGroupName] = useState("");
   const { user, token } = useAuth();
 
+  const { socket } = useSocket();
+
   const [ownedGroupNames, setOwnedGroupNames] = useState([]);
 
   const handleEdit = (group) => {
     setGroupName(group.name);
   };
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "GROUP_NAME_UPDATE") {
+        setOwnedGroupNames((prevGroups) => {
+          return (user.role === "Admin"
+            ? prevGroups
+            : prevGroups.filter(group => user.owned_service_groups.includes(group.id))
+          ).map((group) => {
+            if (group.id === data.updatedService._id) {
+              return {
+                ...group,
+                name: data.updatedService.name,
+                services: group.services
+              };
+            }
+            return group;
+          });
+        });
+      }
+    };
+
+    return () => {
+      socket.onmessage = null;
+    };
+  }, [socket]);
 
   const handleSave = async (id) => {
     if (!groupName || groupName?.trim() === "") {

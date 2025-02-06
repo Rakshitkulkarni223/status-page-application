@@ -3,6 +3,7 @@ const ServiceGroup = require('../models/ServiceGroup');
 const Maintenance = require('../models/Maintenance');
 const Service = require('../models/Service');
 const authMiddleware = require('../middleware/auth');
+const { broadcast } = require('../utils/websocketManager');
 const router = express.Router();
 
 
@@ -33,16 +34,18 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 
-router.post('/:id',authMiddleware, async (req, res) => {
+router.post('/:id', authMiddleware, async (req, res) => {
   const { name, status, link } = req.body;
   try {
     const id = req.params.id;
+    console.log(id, status)
     var updatedService;
-    if(name){
-       updatedService = await Service.findByIdAndUpdate(id, { name, status, link })
-    }else{
-      updatedService = await Service.findByIdAndUpdate(id, { status, link })
+    if (name) {
+      updatedService = await Service.findByIdAndUpdate(id, { name, status, link }, { new: true })
+    } else {
+      updatedService = await Service.findByIdAndUpdate(id, { status, link }, { new: true })
     }
+    broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
     res.status(200).json(updatedService);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -54,7 +57,8 @@ router.put('/group/:id', authMiddleware, async (req, res) => {
   try {
     const { name } = req.body;
     const id = req.params.id;
-    const updatedService = await ServiceGroup.findByIdAndUpdate(id, { name });
+    const updatedService = await ServiceGroup.findByIdAndUpdate(id, { name }, { new: true });
+    broadcast({ type: "GROUP_NAME_UPDATE", updatedService });
     res.status(200).json(updatedService);
   } catch (err) {
     res.status(400).json({ message: err.message });

@@ -1,18 +1,23 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const cors = require('cors');
+
+const http = require("http");
+
 const serviceRoutes = require('./routes/services');
 const incidentRoutes = require('./routes/incidents');
 const maintenanceRoutes = require('./routes/maintenance');
 const userRoutes = require('./routes/users');
 const authRooutes = require('./routes/auth');
 const subscriptionRoutes = require('./routes/subscription');
+const { setupWebSocket } = require('./utils/websocketManager');
 
 dotenv.config();
 const app = express();
+setupWebSocket();
+
 const port = process.env.PORT || 5000;
 
 const isDev = app.get('env') === 'development';
@@ -34,6 +39,7 @@ app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRooutes);
 app.use('/api/subscription', subscriptionRoutes);
+
 
 
 app.get('/', (req, res) => {
