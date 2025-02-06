@@ -4,6 +4,7 @@ import TimeLine from './TimeLinePage';
 import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/appConfig';
 import { LayoutDashboard } from 'lucide-react';
+import { useSocket } from '../contexts/socketContext';
 
 const ServiceStatusPage = () => {
 
@@ -12,6 +13,8 @@ const ServiceStatusPage = () => {
     const [maintenance, setMaintenance] = useState([]);
     const [incidents, setIncidents] = useState([]);
     const navigate = useNavigate();
+
+    const { socket } = useSocket();
 
     const fetchMaintence = async () => {
         try {
@@ -58,6 +61,89 @@ const ServiceStatusPage = () => {
     useEffect(() => {
         fetchServices();
     }, [])
+
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "SERVICE_STATUS_UPDATE") {
+                setServices((prevGroups) => {
+                    return prevGroups.map((group) => {
+                        const updatedServices = group.services.map((service) => {
+                            if (service.id === data.updatedService._id) {
+                                return {
+                                    ...service,
+                                    status: data.updatedService.status,
+                                    name: data.updatedService.name,
+                                    link: data.updatedService.link
+                                };
+                            }
+                            return service;
+                        });
+
+                        return {
+                            ...group,
+                            services: updatedServices
+                        };
+                    });
+                });
+            } else if (data.type === "CREATE_NEW_SERVICE") {
+                fetchServices();
+            } else if (data.type === "GROUP_NAME_UPDATE") {
+                setServices((prevGroups) => {
+                    return prevGroups.map((group) => {
+                        if (group.id === data.updatedService._id) {
+                            return {
+                                ...group,
+                                name: data.updatedService.name,
+                                services: group.services
+                            };
+                        }
+                        return group;
+                    });
+                });
+            } else if (data.type === "REPORT_NEW_INCIDENT") {
+                setIncidents((prev) => [...prev, data.incident])
+            } else if (data.type === "UPDATE_INCIDENT") {
+                setIncidents((prev) => {
+                    return prev.map((incidentItem) => {
+                        if (incidentItem._id === data.incident._id) {
+                            return {
+                                ...data.incident
+                            }
+                        }
+                        return {
+                            ...incidentItem
+                        };
+                    })
+                })
+            } else if (data.type === "SCHEDULE_NEW_MAINTENANCE") {
+                setMaintenance((prev) => [
+                    ...prev,
+                    data.maintenance
+                ]);
+            } else if (data.type === "UPDATE_SCHEDULE_MAINTENANCE") {
+                setMaintenance((prev) => {
+                    return prev.map((maintenanceItem) => {
+                        if (maintenanceItem._id === data.maintenance._id) {
+                            return {
+                                ...data.maintenance
+                            }
+                        }
+                        return {
+                            ...maintenanceItem
+                        };
+                    })
+                })
+            }
+        };
+
+        return () => {
+            socket.onmessage = null;
+        };
+    }, [socket]);
 
     const toggleService = (id) => {
         setActiveServices((prevState) => ({

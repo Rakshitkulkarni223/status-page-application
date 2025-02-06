@@ -139,7 +139,6 @@ const Components = () => {
         setProblemOccurredAt(newDateTime);
     };
 
-
     const handleEditClick = async (service) => {
         setServiceName(service.name);
         setServiceStatus(service.status);

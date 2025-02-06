@@ -41,13 +41,14 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 
     await maintenance.save();
+    broadcast({ type: "UPDATE_SCHEDULE_MAINTENANCE", maintenance });
     res.status(201).json(maintenance);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
 
-router.post('/',authMiddleware,  async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   const { timeline } = req.body;
   try {
     const data = {
@@ -95,7 +96,8 @@ const updateMaintenanceStatus = async () => {
         });
         let { affected_services: serviceId } = maintenance;
         if (serviceId) {
-          await Service.findByIdAndUpdate(serviceId, { status: "Operational" });
+          const updatedService = await Service.findByIdAndUpdate(serviceId, { status: "Operational" }, { new: true });
+          broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
         }
       }
       else if (new Date(maintenance.scheduled_start) < now && maintenance.status === "Scheduled") {
@@ -116,11 +118,13 @@ const updateMaintenanceStatus = async () => {
 
         let { affected_services: serviceId, serviceStatus } = maintenance;
         if (serviceId) {
-          await Service.findByIdAndUpdate(serviceId, { status: serviceStatus });
+          const updatedService = await Service.findByIdAndUpdate(serviceId, { status: serviceStatus }, { new: true });
+          broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
         }
       }
 
       await maintenance.save();
+      broadcast({ type: "UPDATE_SCHEDULE_MAINTENANCE", maintenance });
     }
   } catch (error) {
     console.error("Error updating maintenance status:", error);

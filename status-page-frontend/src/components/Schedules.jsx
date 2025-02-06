@@ -68,10 +68,23 @@ const Schedules = () => {
             const data = JSON.parse(event.data);
 
             if (data.type === "SCHEDULE_NEW_MAINTENANCE") {
-                setMaintenance((prev)=>[
+                setMaintenance((prev) => [
                     ...prev,
                     data.maintenance
                 ]);
+            } else if (data.type === "UPDATE_SCHEDULE_MAINTENANCE") {
+                setMaintenance((prev) => {
+                    return prev.map((maintenanceItem) => {
+                        if (maintenanceItem._id === data.maintenance._id) {
+                            return {
+                                ...data.maintenance
+                            }
+                        }
+                        return {
+                            ...maintenanceItem
+                        };
+                    })
+                })
             }
         };
 
