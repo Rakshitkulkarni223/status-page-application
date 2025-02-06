@@ -33,15 +33,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Routes
 app.use('/api/services', serviceRoutes);
 app.use('/api/incidents', incidentRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRooutes);
 app.use('/api/subscription', subscriptionRoutes);
-
-
 
 app.get('/', (req, res) => {
     return res.json("Running..")
