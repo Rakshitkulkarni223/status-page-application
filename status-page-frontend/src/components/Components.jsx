@@ -110,7 +110,23 @@ const Components = () => {
                 });
             } else if(data.type === "CREATE_NEW_SERVICE"){
                fetchServices();
-            }
+            } else if (data.type === "GROUP_NAME_UPDATE") {
+                setOwnedGroupNames((prevGroups) => {
+                  return (user.role === "Admin"
+                    ? prevGroups
+                    : prevGroups.filter(group => user.owned_service_groups.includes(group.id))
+                  ).map((group) => {
+                    if (group.id === data.updatedService._id) {
+                      return {
+                        ...group,
+                        name: data.updatedService.name,
+                        services: group.services
+                      };
+                    }
+                    return group;
+                  });
+                });
+              }
         };
 
         return () => {

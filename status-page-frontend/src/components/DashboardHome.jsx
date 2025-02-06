@@ -134,6 +134,21 @@ const DashboardHome = () => {
             };
           });
         });
+      } else if (data.type === "CREATE_NEW_SERVICE") {
+        fetchServices();
+      } else if (data.type === "GROUP_NAME_UPDATE") {
+        setServices((prevGroups) => {
+          return prevGroups.map((group) => {
+            if (group.id === data.updatedService._id) {
+              return {
+                ...group,
+                name: data.updatedService.name,
+                services: group.services
+              };
+            }
+            return group;
+          });
+        });
       }
     };
 
