@@ -181,7 +181,7 @@ const Components = () => {
         e.preventDefault();
 
         if (!problemTitle || !problemDescription || !problemOccurredAt || !problemStatusContent) {
-            alert('Missing required fields: title, description, status, occurred_at. Please fill all the required fields.');
+            alert('Missing required fields for Title, Description, Status description, Reported on fields. Please fill all the required fields.');
             return;
         }
 
@@ -497,31 +497,31 @@ const Components = () => {
                                                     <div className="flex flex-col items-start gap-2">
                                                         <Label className="text-left">Status</Label>
                                                         <div className="flex flex-row gap-2">
-                                                                <Button
-                                                                    onClick={() => setServiceStatus("Operational")}
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Operational
-                                                                </Button>
-                                                                <Button
-                                                                    onClick={() => setServiceStatus("Degraded Performance")}
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white  hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Degraded Performance
-                                                                </Button>
-                                                                <Button
-                                                                    onClick={() => setServiceStatus("Partial Outage")}
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Partial Outage
-                                                                </Button>
-                                                                <Button
-                                                                    onClick={() => setServiceStatus("Major Outage")}
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Major Outage" ? "bg-red-800 text-white hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Major Outage
-                                                                </Button>
-                                                            </div>
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Operational")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Operational
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Degraded Performance")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white  hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Degraded Performance
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Partial Outage")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Partial Outage
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Major Outage")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Major Outage" ? "bg-red-800 text-white hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Major Outage
+                                                            </Button>
+                                                        </div>
                                                     </div>
 
                                                     <div className="flex flex-col items-start gap-2">
@@ -557,23 +557,23 @@ const Components = () => {
                                             <DialogTrigger asChild>
                                                 {service.status === "Operational" ? <Button className="bg-transparent text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
                                                     <AlertTriangle size={16} />
-                                                </Button> : <Button disabled className="text-yellow-500" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                </Button> : <Button disabled className="bg-transparent text-yellow-500" onClick={() => { setProblemAffectedServcie(service.id) }}>
                                                     <AlertTriangle size={16} opacity={0.56} />
                                                 </Button>}
 
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[720px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
+                                            <DialogContent className="sm:max-w-[650px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
                                                 <DialogHeader>
                                                     <DialogTitle>Report an Incident</DialogTitle>
                                                 </DialogHeader>
                                                 <div className="flex flex-col gap-4 items-start max-h-[60vh] overflow-y-auto py-4">
-                                                <div className="flex flex-col items-start gap-2">
+                                                    <div className="flex flex-col items-start gap-2">
                                                         <Label htmlFor="incident-title" className="text-left">Title</Label>
-                                                        <Input id="incident-title" value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
+                                                        <Input id="incident-title" className="w-64 rounded-[5px]" value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
                                                     </div>
-                                                    <div className="grid gap-2">
+                                                    <div className="flex flex-col items-start gap-2">
                                                         <Label>Describe the issue</Label>
-                                                        <Textarea value={problemDescription} onChange={(e) => setProblemDescription(e.target.value)} />
+                                                        <Textarea value={problemDescription} className="w-96 rounded-[5px]" onChange={(e) => setProblemDescription(e.target.value)} />
                                                     </div>
 
                                                     <div className="flex flex-col items-start gap-2">
@@ -596,13 +596,13 @@ const Components = () => {
                                                             id="incident-occured-at"
                                                             value={problemOccurredAt ? problemOccurredAt.slice(0, 16) : ''}
                                                             onChange={handleChange}
-                                                            className="w-96 rounded-[5px]"
+                                                            className="rounded-[5px]"
                                                             type="datetime-local"
                                                         />
                                                     </div>
                                                 </div>
-                                                <DialogFooter>
-                                                    <Button onClick={handleReportProblem} className="w-full rounded-[5px] py-2 text-[12px]">Submit</Button>
+                                                <DialogFooter className="flex items-end space-x-4">
+                                                    <Button onClick={handleReportProblem} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">Submit</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
@@ -629,7 +629,7 @@ const Components = () => {
                                                     <DialogTitle>Schedule Maintenance</DialogTitle>
                                                 </DialogHeader>
                                                 <div className="flex flex-col gap-5 items-start max-h-[60vh] overflow-y-auto py-4">
-                                                <div className="flex flex-col items-start gap-2">
+                                                    <div className="flex flex-col items-start gap-2">
                                                         <Label htmlFor="maintenance-title" className="text-left">
                                                             Title
                                                         </Label>
@@ -727,7 +727,7 @@ const Components = () => {
 
                                                     </div>
                                                 </div>
-                                                 <DialogFooter className="flex items-end space-x-4">
+                                                <DialogFooter className="flex items-end space-x-4">
                                                     <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">Schedule</Button>
                                                 </DialogFooter>
                                             </DialogContent>
