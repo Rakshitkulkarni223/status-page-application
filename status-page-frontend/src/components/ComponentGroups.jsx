@@ -118,40 +118,50 @@ const UserOwnedServices = () => {
           <div key={group.id}>
             <Dialog>
               <DialogTrigger asChild>
-                <div onClick={() => handleEdit(group)} className="flex justify-between items-center p-4 border-b hover:bg-gray-800 cursor-pointer">
+                <div
+                  onClick={() => handleEdit(group)}
+                  className="flex justify-between items-center p-4 border-b hover:bg-gray-800 cursor-pointer"
+                >
                   <span>{group.name}</span>
-                  {user?.role === "Admin" && <button className="text-blue-500 hover:text-blue-700"> <PencilIcon size={16} /> </button>}
+                  {user?.role === "Admin" && (
+                    <button className="text-blue-500 hover:text-blue-700">
+                      <PencilIcon size={16} />
+                    </button>
+                  )}
                 </div>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px] bg-gray-900">
+              <DialogContent className="sm:max-w-[425px] bg-gray-900 flex flex-col max-h-[80vh]">
                 <DialogHeader>
                   <DialogTitle>Edit Component Group</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-4 py-4 px-3">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">
-                      Name
-                    </Label>
-                    <Input
-                      required
-                      disabled={user.role !== "Admin"}
-                      id="name"
-                      value={groupName}
-                      onChange={(e) => setGroupName(e.target.value)}
-                      className="col-span-3 rounded-[5px]"
-                    />
+                <div className="flex-1 min-h-0 overflow-y-auto py-4">
+                <div className="flex flex-col items-start gap-2">
+                    <div>
+                      <Label htmlFor="name" className="text-right w-1/4">
+                        Name
+                      </Label>
+                    </div>
+                    <div className="flex w-full">
+                      <Input
+                        required
+                        disabled={user.role !== "Admin"}
+                        id="name"
+                        value={groupName}
+                        onChange={(e) => setGroupName(e.target.value)}
+                        className="flex-1 rounded-[5px]"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <DialogFooter>
-                  <Button disabled={user.role !== "Admin"} onClick={() => handleSave(group.id)} className="w-full rounded-[5px] py-2 text-sm">
+                <DialogFooter className="flex items-end space-x-4">
+                  <Button
+                    disabled={user.role !== "Admin"}
+                    onClick={() => handleSave(group.id)}
+                    className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600"
+                  >
                     Save changes
                   </Button>
-                  <DialogClose asChild>
-                    <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
-                      ✕
-                    </button>
-                  </DialogClose>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

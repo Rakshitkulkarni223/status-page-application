@@ -121,7 +121,7 @@ function Dashboard() {
 
     return (
         <div className="flex h-screen">
-            <div className="w-2 bg-gray-1500 text-gray p-4">
+         <div className="w-64 bg-gray-900 text-white p-4"> 
                 <div className="text-xl font-bold mb-6 cursor-pointer" onClick={() => navigate('/')}>Status Page</div>
                 <div>
                     {items.map((item) => (

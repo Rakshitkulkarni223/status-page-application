@@ -10,7 +10,7 @@ import {
     DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Textarea } from "@/components/ui/textarea";
@@ -108,25 +108,25 @@ const Components = () => {
                         };
                     });
                 });
-            } else if(data.type === "CREATE_NEW_SERVICE"){
-               fetchServices();
+            } else if (data.type === "CREATE_NEW_SERVICE") {
+                fetchServices();
             } else if (data.type === "GROUP_NAME_UPDATE") {
                 setOwnedGroupNames((prevGroups) => {
-                  return (user.role === "Admin"
-                    ? prevGroups
-                    : prevGroups.filter(group => user.owned_service_groups.includes(group.id))
-                  ).map((group) => {
-                    if (group.id === data.updatedService._id) {
-                      return {
-                        ...group,
-                        name: data.updatedService.name,
-                        services: group.services
-                      };
-                    }
-                    return group;
-                  });
+                    return (user.role === "Admin"
+                        ? prevGroups
+                        : prevGroups.filter(group => user.owned_service_groups.includes(group.id))
+                    ).map((group) => {
+                        if (group.id === data.updatedService._id) {
+                            return {
+                                ...group,
+                                name: data.updatedService.name,
+                                services: group.services
+                            };
+                        }
+                        return group;
+                    });
                 });
-              }
+            }
         };
 
         return () => {
@@ -356,39 +356,33 @@ const Components = () => {
                             <div className="grid grid-cols-4 items-center gap-3 mt-2">
                                 <Label className="text-right">Service status</Label>
                                 <div className="col-span-3 flex flex-wrap gap-3">
-                                    <ToggleGroup
-                                        type="single"
-                                        value={newServiceStatus}
-                                        className="flex flex-wrap gap-2"
-                                    >
-                                        <ToggleGroupItem
+                                        <Button
                                             value="Operational"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px] ${newServiceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px] ${newServiceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                         >
                                             Operational
-                                        </ToggleGroupItem>
-                                        <ToggleGroupItem
+                                        </Button>
+                                        <Button
                                             disabled
                                             value="Degraded Performance"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px]  ${newServiceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
                                         >
                                             Degraded Performance
-                                        </ToggleGroupItem>
-                                        <ToggleGroupItem
+                                        </Button>
+                                        <Button
                                             disabled
                                             value="Partial Outage"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px]  ${newServiceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
                                         >
                                             Partial Outage
-                                        </ToggleGroupItem>
-                                        <ToggleGroupItem
+                                        </Button>
+                                        <Button
                                             disabled
                                             value="Major Outage"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px] ${newServiceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                            className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
                                         >
                                             Major Outage
-                                        </ToggleGroupItem>
-                                    </ToggleGroup>
+                                        </Button>
                                 </div>
                             </div>
 
@@ -450,9 +444,9 @@ const Components = () => {
                                 Create Service
                             </Button>
                             <DialogClose asChild>
-                                <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
+                                <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                     ✕
-                                </button>
+                                </Button>
                             </DialogClose>
                         </DialogFooter>
                     </DialogContent>
@@ -483,9 +477,9 @@ const Components = () => {
                                 <td className="px-6 py-3 flex space-x-3">
                                     {user.role === "Admin" && <Dialog>
                                         <DialogTrigger asChild>
-                                            <button onClick={() => handleEditClick(service)} className="text-blue-500 hover:text-blue-700">
+                                            <Button onClick={() => handleEditClick(service)} className="bg-transparent text-blue-500 hover:text-blue-700">
                                                 <Pencil size={16} />
-                                            </button>
+                                            </Button>
                                         </DialogTrigger>
                                         <DialogContent className="sm:max-w-[560px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                                             <DialogHeader>
@@ -507,37 +501,32 @@ const Components = () => {
                                                 <div className="grid grid-cols-4 items-center gap-2 mt-2">
                                                     <Label className="text-right">Status</Label>
                                                     <div className="col-span-3 flex flex-wrap gap-2">
-                                                        <ToggleGroup
-                                                            type="single"
-                                                            value={serviceStatus}
-                                                            onValueChange={setServiceStatus}
-                                                            className="flex flex-wrap gap-2"
-                                                        >
-                                                            <ToggleGroupItem
-                                                                value="Operational"
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                        <div className="flex flex-wrap gap-2">
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Operational")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Operational
-                                                            </ToggleGroupItem>
-                                                            <ToggleGroupItem
-                                                                value="Degraded Performance"
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Degraded Performance")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white  hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Degraded Performance
-                                                            </ToggleGroupItem>
-                                                            <ToggleGroupItem
-                                                                value="Partial Outage"
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Partial Outage")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Partial Outage
-                                                            </ToggleGroupItem>
-                                                            <ToggleGroupItem
-                                                                value="Major Outage"
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => setServiceStatus("Major Outage")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Major Outage" ? "bg-red-800 text-white hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                             >
                                                                 Major Outage
-                                                            </ToggleGroupItem>
-                                                        </ToggleGroup>
+                                                            </Button>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -559,9 +548,9 @@ const Components = () => {
                                                     Save changes
                                                 </Button>
                                                 <DialogClose asChild>
-                                                    <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
+                                                    <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                                         ✕
-                                                    </button>
+                                                    </Button>
                                                 </DialogClose>
                                             </DialogFooter>
                                         </DialogContent>
@@ -577,11 +566,11 @@ const Components = () => {
                                             }
                                         }}>
                                             <DialogTrigger asChild>
-                                                {service.status === "Operational" ? <button className="text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                {service.status === "Operational" ? <Button className="bg-transparent text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
                                                     <AlertTriangle size={16} />
-                                                </button> : <button disabled className="text-yellow-500" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                </Button> : <Button disabled className="text-yellow-500" onClick={() => { setProblemAffectedServcie(service.id) }}>
                                                     <AlertTriangle size={16} opacity={0.56} />
-                                                </button>}
+                                                </Button>}
 
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
@@ -626,9 +615,9 @@ const Components = () => {
                                                 <DialogFooter>
                                                     <Button onClick={handleReportProblem} className="w-full rounded-[5px] py-2 text-[12px]">Submit</Button>
                                                     <DialogClose asChild>
-                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
+                                                        <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                                             ✕
-                                                        </button>
+                                                        </Button>
                                                     </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
@@ -648,8 +637,8 @@ const Components = () => {
                                         }}>
                                             <DialogTrigger asChild>
                                                 {!service.maintenanceScheduled
-                                                    ? <button className="text-green-500 hover:text-green-700"> <CalendarClock size={16} /> </button> :
-                                                    <button disabled className="text-red-500 hover:text-red-700">   <CalendarMinus size={16} /> </button>}
+                                                    ? <Button className="bg-transparent text-green-500 hover:text-green-700"> <CalendarClock size={16} /> </Button> :
+                                                    <Button disabled className="bg-transparent text-red-500 hover:text-red-700">   <CalendarMinus size={16} /> </Button>}
                                             </DialogTrigger>
                                             <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
                                                 <DialogHeader>
@@ -725,38 +714,31 @@ const Components = () => {
                                                     <div className="grid grid-cols-4 items-center gap-3">
                                                         <Label className="text-right">Change service status</Label>
                                                         <div className="col-span-3 flex flex-wrap gap-2">
-                                                            <ToggleGroup
-                                                                type="single"
-                                                                value={serviceStatuses[service.id]}
-                                                                onValueChange={(newStatus) => handleStatusChange(service.id, newStatus)}
-                                                                className="flex flex-wrap gap-2"
+                                                            <Button
+                                                                disabled
+                                                                onClick={() => handleStatusChange(service.id, "Operational")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
                                                             >
-                                                                <ToggleGroupItem
-                                                                    disabled
-                                                                    value="Operational"
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Operational
-                                                                </ToggleGroupItem>
-                                                                <ToggleGroupItem
-                                                                    value="Degraded Performance"
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Degraded Performance
-                                                                </ToggleGroupItem>
-                                                                <ToggleGroupItem
-                                                                    value="Partial Outage"
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Partial Outage
-                                                                </ToggleGroupItem>
-                                                                <ToggleGroupItem
-                                                                    value="Major Outage"
-                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                                >
-                                                                    Major Outage
-                                                                </ToggleGroupItem>
-                                                            </ToggleGroup>
+                                                                Operational
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => handleStatusChange(service.id, "Degraded Performance")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Degraded Performance" ? "bg-purple-700 text-white hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Degraded Performance
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => handleStatusChange(service.id, "Partial Outage")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Partial Outage
+                                                            </Button>
+                                                            <Button
+                                                                onClick={() => handleStatusChange(service.id, "Major Outage")}
+                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Major Outage" ? "bg-red-800 text-white hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                            >
+                                                                Major Outage
+                                                            </Button>
                                                         </div>
 
                                                     </div>
@@ -764,18 +746,18 @@ const Components = () => {
                                                 <DialogFooter>
                                                     <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="w-full rounded-[5px] py-2 text-[12px]">Schedule</Button>
                                                     <DialogClose asChild>
-                                                        <button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
+                                                        <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
                                                             ✕
-                                                        </button>
+                                                        </Button>
                                                     </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
                                     )}
 
-                                    {user.role === "Admin" && <button className="text-red-500 hover:text-red-700">
+                                    {user.role === "Admin" && <Button className="bg-transparent text-red-500 hover:text-red-700">
                                         <Trash size={16} />
-                                    </button>}
+                                    </Button>}
                                 </td>
                             </tr>
                         ))

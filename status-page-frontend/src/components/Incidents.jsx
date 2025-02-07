@@ -146,14 +146,14 @@ const Incidents = () => {
                             : [...prev.filter(incident => incident.reported_by === user.id), data.incident]
                     )
                 })
-            }else if(data.type === "UPDATE_INCIDENT"){
+            } else if (data.type === "UPDATE_INCIDENT") {
                 setFilteredIncidents((prev) => {
                     return (
                         user.role === "Admin"
                             ? prev
                             : prev.filter(incident => incident.reported_by === user.id)
                     ).map((incidentItem) => {
-                        if(incidentItem._id === data.incident._id){
+                        if (incidentItem._id === data.incident._id) {
                             return {
                                 ...data.incident
                             }
@@ -292,42 +292,34 @@ const Incidents = () => {
 
                                             {incidentStatus && <div className="grid grid-cols-4 items-center gap-2">
                                                 <p className="text-[15px]">Change service status</p>
-                                                <ToggleGroup
-                                                    id="incident-status-description"
-                                                    type="single"
-                                                    value={serviceStatuses[incident._id]}
-                                                    onValueChange={(newStatus) => handleStatusChange(incident._id, newStatus)}
-                                                    className="flex flex-wrap gap-2"
+                                                <Button
+                                                    disabled={["Identified", "Monitoring"].includes(incidentStatus)}
+                                                    onClick={() => handleStatusChange(incident._id, "Operational")}
+                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Operational" ? "bg-green-700 text-white hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                                                 >
-                                                    <ToggleGroupItem
-                                                        disabled={["Identified", "Monitoring"].includes(incidentStatus)}
-                                                        value="Operational"
-                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Operational" ? "bg-green-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                    >
-                                                        Operational
-                                                    </ToggleGroupItem>
-                                                    <ToggleGroupItem
-                                                        disabled={incidentStatus === "Fixed"}
-                                                        value="Degraded Performance"
-                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Degraded Performance" ? "bg-purple-700 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                    >
-                                                        Degraded Performance
-                                                    </ToggleGroupItem>
-                                                    <ToggleGroupItem
-                                                        disabled={incidentStatus === "Fixed"}
-                                                        value="Partial Outage"
-                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Partial Outage" ? "bg-red-600 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                    >
-                                                        Partial Outage
-                                                    </ToggleGroupItem>
-                                                    <ToggleGroupItem
-                                                        disabled={incidentStatus === "Fixed"}
-                                                        value="Major Outage"
-                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Major Outage" ? "bg-red-800 text-white" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                    >
-                                                        Major Outage
-                                                    </ToggleGroupItem>
-                                                </ToggleGroup>
+                                                    Operational
+                                                </Button>
+                                                <Button
+                                                    disabled={incidentStatus === "Fixed"}
+                                                    onClick={() => handleStatusChange(incident._id, "Degraded Performance")}
+                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Degraded Performance" ? "bg-purple-700 text-white hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                >
+                                                    Degraded Performance
+                                                </Button>
+                                                <Button
+                                                    disabled={incidentStatus === "Fixed"}
+                                                    onClick={() => handleStatusChange(incident._id, "Partial Outage")}
+                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                >
+                                                    Partial Outage
+                                                </Button>
+                                                <Button
+                                                    disabled={incidentStatus === "Fixed"}
+                                                    onClick={() => handleStatusChange(incident._id, "Major Outage")}
+                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Major Outage" ? "bg-red-800 text-white  hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                >
+                                                    Major Outage
+                                                </Button>
                                             </div>}
 
                                         </div>
