@@ -336,59 +336,59 @@ const Components = () => {
                             New Service
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[560px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
+                    <DialogContent className="sm:max-w-[600px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
                         <DialogHeader>
                             <DialogTitle>Create New Service</DialogTitle>
                         </DialogHeader>
-                        <div className=" grid gap-4 max-h-[60vh] overflow-y-auto py-4 px-3">
-                            <div className="grid grid-cols-4 items-center gap-2">
-                                <Label htmlFor="new-service-name" className="text-right">
+                        <div className="flex flex-col gap-5 items-start max-h-[60vh] overflow-y-auto py-4">
+                            <div className="flex flex-col items-start gap-2">
+                                <Label htmlFor="new-service-name" className="text-left">
                                     Service name
                                 </Label>
                                 <Input
                                     id="new-service-name"
                                     value={newServiceName}
                                     onChange={(e) => setNewServiceName(e.target.value)}
-                                    className="col-span-3 rounded-[5px]"
+                                    className="w-96 rounded-[5px]"
                                 />
                             </div>
 
-                            <div className="grid grid-cols-4 items-center gap-3 mt-2">
-                                <Label className="text-right">Service status</Label>
-                                <div className="col-span-3 flex flex-wrap gap-3">
-                                        <Button
-                                            value="Operational"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px] ${newServiceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                        >
-                                            Operational
-                                        </Button>
-                                        <Button
-                                            disabled
-                                            value="Degraded Performance"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
-                                        >
-                                            Degraded Performance
-                                        </Button>
-                                        <Button
-                                            disabled
-                                            value="Partial Outage"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
-                                        >
-                                            Partial Outage
-                                        </Button>
-                                        <Button
-                                            disabled
-                                            value="Major Outage"
-                                            className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
-                                        >
-                                            Major Outage
-                                        </Button>
+                            <div className="flex flex-col items-start gap-2">
+                                <Label className="text-left">Status</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    <Button
+                                        value="Operational"
+                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${newServiceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                    >
+                                        Operational
+                                    </Button>
+                                    <Button
+                                        disabled
+                                        value="Degraded Performance"
+                                        className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
+                                    >
+                                        Degraded Performance
+                                    </Button>
+                                    <Button
+                                        disabled
+                                        value="Partial Outage"
+                                        className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
+                                    >
+                                        Partial Outage
+                                    </Button>
+                                    <Button
+                                        disabled
+                                        value="Major Outage"
+                                        className={`px-2 py-1 rounded-[10px] text-[12px]  bg-gray-800 text-gray-300`}
+                                    >
+                                        Major Outage
+                                    </Button>
                                 </div>
                             </div>
 
 
-                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                <Label htmlFor="group-selection" className="text-right">
+                            <div className="flex flex-col items-start gap-2">
+                                <Label htmlFor="group-selection" className="text-left">
                                     Group name
                                 </Label>
 
@@ -404,7 +404,7 @@ const Components = () => {
                                             setNewGroupName(e.target.value);
                                         }
                                     }}
-                                    className="col-span-3 text-[14px] rounded-[5px] p-1 border border-gray-300 bg-gray-900 text-white"
+                                    className="flex-1 text-[14px] rounded-[5px] p-1 border border-gray-300 bg-gray-900 text-white"
                                 >
                                     <option value="" disabled>Select a group</option>
                                     {ownedGroupNames.map((group) => (
@@ -421,26 +421,26 @@ const Components = () => {
                                         placeholder="Enter new group name"
                                         value={newGroupName}
                                         onChange={(e) => setNewGroupName(e.target.value)}
-                                        className="col-span-3 rounded-[5px] mt-2"
+                                        className="w-96 rounded-[5px]"
                                     />
                                 )}
                             </div>
 
-                            <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                <Label htmlFor="new-service-link" className="text-right">
+                            <div className="flex flex-col items-start gap-2">
+                                <Label htmlFor="new-service-link" className="text-left">
                                     An optional link to the Service Link
                                 </Label>
                                 <Input
                                     id="new-service-link"
                                     value={newServiceLink}
                                     onChange={(e) => setNewServiceLink(e.target.value)}
-                                    className="col-span-3 rounded-[5px]"
+                                    className="w-96 rounded-[5px]"
                                 />
                             </div>
                         </div>
 
-                        <DialogFooter>
-                            <Button onClick={handleCreateNewService} className="w-full rounded-[5px] py-2 text-[12px]">
+                        <DialogFooter className="flex items-end space-x-4">
+                            <Button onClick={handleCreateNewService} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                 Create Service
                             </Button>
                         </DialogFooter>
@@ -470,81 +470,80 @@ const Components = () => {
                                 </td>
                                 <td className="px-6 py-3 text-sm">{group.name}</td>
                                 <td className="px-6 py-3 flex space-x-3">
-                                    {user.role === "Admin" && <Dialog>
-                                        <DialogTrigger asChild>
-                                            <Button onClick={() => handleEditClick(service)} className="bg-transparent text-blue-500 hover:text-blue-700">
-                                                <Pencil size={16} />
-                                            </Button>
-                                        </DialogTrigger>
-                                        <DialogContent className="sm:max-w-[560px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
-                                            <DialogHeader>
-                                                <DialogTitle>Edit Service</DialogTitle>
-                                            </DialogHeader>
-                                            <div className=" grid gap-4 max-h-[60vh] overflow-y-auto py-4 px-3">
-                                                <div className="grid grid-cols-4 items-center gap-2">
-                                                    <Label htmlFor="name" className="text-right">
-                                                        Name
-                                                    </Label>
-                                                    <Input
-                                                        id="name"
-                                                        value={serviceName}
-                                                        onChange={(e) => setServiceName(e.target.value)}
-                                                        className="col-span-3 rounded-[5px]"
-                                                    />
-                                                </div>
+                                    {user.role === "Admin" &&
+                                        <Dialog>
+                                            <DialogTrigger asChild>
+                                                <Button onClick={() => handleEditClick(service)} className="bg-transparent text-blue-500 hover:text-blue-700">
+                                                    <Pencil size={16} />
+                                                </Button>
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[560px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
+                                                <DialogHeader>
+                                                    <DialogTitle>Edit Service</DialogTitle>
+                                                </DialogHeader>
+                                                <div className="flex flex-col gap-5 items-start max-h-[60vh] overflow-y-auto py-4">
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="name" className="text-left">
+                                                            Name
+                                                        </Label>
+                                                        <Input
+                                                            id="name"
+                                                            value={serviceName}
+                                                            onChange={(e) => setServiceName(e.target.value)}
+                                                            className="w-96 rounded-[5px]"
+                                                        />
+                                                    </div>
 
-                                                <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                                    <Label className="text-right">Status</Label>
-                                                    <div className="col-span-3 flex flex-wrap gap-2">
-                                                        <div className="flex flex-wrap gap-2">
-                                                            <Button
-                                                                onClick={() => setServiceStatus("Operational")}
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                            >
-                                                                Operational
-                                                            </Button>
-                                                            <Button
-                                                                onClick={() => setServiceStatus("Degraded Performance")}
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white  hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                            >
-                                                                Degraded Performance
-                                                            </Button>
-                                                            <Button
-                                                                onClick={() => setServiceStatus("Partial Outage")}
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                            >
-                                                                Partial Outage
-                                                            </Button>
-                                                            <Button
-                                                                onClick={() => setServiceStatus("Major Outage")}
-                                                                className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Major Outage" ? "bg-red-800 text-white hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                            >
-                                                                Major Outage
-                                                            </Button>
-                                                        </div>
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label className="text-left">Status</Label>
+                                                        <div className="flex flex-row gap-2">
+                                                                <Button
+                                                                    onClick={() => setServiceStatus("Operational")}
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Operational" ? "bg-green-700 text-white  hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Operational
+                                                                </Button>
+                                                                <Button
+                                                                    onClick={() => setServiceStatus("Degraded Performance")}
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Degraded Performance" ? "bg-purple-700 text-white  hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Degraded Performance
+                                                                </Button>
+                                                                <Button
+                                                                    onClick={() => setServiceStatus("Partial Outage")}
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Partial Outage
+                                                                </Button>
+                                                                <Button
+                                                                    onClick={() => setServiceStatus("Major Outage")}
+                                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatus === "Major Outage" ? "bg-red-800 text-white hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                                >
+                                                                    Major Outage
+                                                                </Button>
+                                                            </div>
+                                                    </div>
+
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="new-service-link" className="text-left">
+                                                            An optional link to the Service Link
+                                                        </Label>
+                                                        <Input
+                                                            id="new-service-link"
+                                                            value={serviceLink}
+                                                            onChange={(e) => setServiceLink(e.target.value)}
+                                                            className="w-96 rounded-[5px]"
+                                                        />
                                                     </div>
                                                 </div>
 
-                                                <div className="grid grid-cols-4 items-center gap-2 mt-2">
-                                                    <Label htmlFor="new-service-link" className="text-right">
-                                                        An optional link to the Service Link
-                                                    </Label>
-                                                    <Input
-                                                        id="new-service-link"
-                                                        value={serviceLink}
-                                                        onChange={(e) => setServiceLink(e.target.value)}
-                                                        className="col-span-3 rounded-[5px]"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <DialogFooter>
-                                                <Button onClick={() => handleSave(service.id)} className="w-full rounded-[5px] py-2 text-[12px]">
-                                                    Save changes
-                                                </Button>
-                                            </DialogFooter>
-                                        </DialogContent>
-                                    </Dialog>}
+                                                <DialogFooter className="flex items-end space-x-4">
+                                                    <Button onClick={() => handleSave(service.id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                                                        Save changes
+                                                    </Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>}
                                     {user.role !== "Admin" && (
                                         <Dialog onOpenChange={(isOpen) => {
                                             if (!isOpen) {
@@ -563,13 +562,13 @@ const Components = () => {
                                                 </Button>}
 
                                             </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[600px] bg-gray-900 text-white max-h-[90vh] overflow-auto">
+                                            <DialogContent className="sm:max-w-[720px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
                                                 <DialogHeader>
                                                     <DialogTitle>Report an Incident</DialogTitle>
                                                 </DialogHeader>
-                                                <div className="grid gap-5 max-h-[60vh] overflow-y-auto py-4 px-3">
-                                                    <div className="grid gap-2">
-                                                        <Label htmlFor="incident-title" className="text-right">Title</Label>
+                                                <div className="flex flex-col gap-4 items-start max-h-[60vh] overflow-y-auto py-4">
+                                                <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="incident-title" className="text-left">Title</Label>
                                                         <Input id="incident-title" value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
                                                     </div>
                                                     <div className="grid gap-2">
@@ -577,27 +576,27 @@ const Components = () => {
                                                         <Textarea value={problemDescription} onChange={(e) => setProblemDescription(e.target.value)} />
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-2">
-                                                        <Label htmlFor="incident-status-description" className="text-right">
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="incident-status-description" className="text-left">
                                                             Status description
                                                         </Label>
                                                         <Textarea
                                                             id="incident-status-description"
                                                             value={problemStatusContent}
                                                             onChange={(e) => setProblemStatusContent(e.target.value)}
-                                                            className="col-span-3 rounded-[5px]"
+                                                            className="w-96 rounded-[5px]"
                                                         />
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-2">
-                                                        <Label htmlFor="incident-time" className="text-right">
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="incident-time" className="text-left">
                                                             Reported On
                                                         </Label>
                                                         <Input
                                                             id="incident-occured-at"
                                                             value={problemOccurredAt ? problemOccurredAt.slice(0, 16) : ''}
                                                             onChange={handleChange}
-                                                            className="col-span-3 rounded-[5px]"
+                                                            className="w-96 rounded-[5px]"
                                                             type="datetime-local"
                                                         />
                                                     </div>
@@ -629,60 +628,60 @@ const Components = () => {
                                                 <DialogHeader>
                                                     <DialogTitle>Schedule Maintenance</DialogTitle>
                                                 </DialogHeader>
-                                                <div className="grid gap-5 max-h-[60vh] overflow-y-auto py-4 px-3">
-                                                    <div className="grid grid-cols-4 items-center gap-2">
-                                                        <Label htmlFor="maintenance-title" className="text-right">
+                                                <div className="flex flex-col gap-5 items-start max-h-[60vh] overflow-y-auto py-4">
+                                                <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="maintenance-title" className="text-left">
                                                             Title
                                                         </Label>
                                                         <Input
                                                             id="maintenance-title"
                                                             value={maintenanceTitle}
                                                             onChange={(e) => setMaintenanceTitle(e.target.value)}
-                                                            className="col-span-3 rounded-[5px]"
+                                                            className="w-96 rounded-[5px]"
                                                         />
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-2">
-                                                        <Label htmlFor="maintenance-description" className="text-right">
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="maintenance-description" className="text-left">
                                                             Description
                                                         </Label>
                                                         <Textarea
                                                             id="maintenance-description"
                                                             value={maintenanceDescription}
                                                             onChange={(e) => setMaintenanceDescription(e.target.value)}
-                                                            className="col-span-3 rounded-[5px]"
+                                                            className="w-96 rounded-[5px]"
                                                         />
                                                     </div>
 
 
-                                                    <div className="grid grid-cols-4 items-center gap-2">
-                                                        <Label htmlFor="maintenance-status-description" className="text-right">
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="maintenance-status-description" className="text-left">
                                                             Status description
                                                         </Label>
                                                         <Textarea
                                                             id="maintenance-status-description"
                                                             value={maintenanceStatusContent}
                                                             onChange={(e) => setMaintenanceStatusContent(e.target.value)}
-                                                            className="col-span-3 rounded-[5px]"
+                                                            className="w-96 rounded-[5px]"
                                                         />
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-3">
+                                                    <div className="flex flex-row items-start gap-3">
                                                         <div>
-                                                            <Label htmlFor="maintenance-scheduled-start" className="text-right">
+                                                            <Label htmlFor="maintenance-scheduled-start" className="text-left">
                                                                 Scheduled Start
                                                             </Label>
                                                             <Input
                                                                 id="maintenance-scheduled-start"
                                                                 value={maintenanceScheduledStart}
                                                                 onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
-                                                                className="col-span-3 rounded-[5px]"
+                                                                className="w-50 rounded-[5px]"
                                                                 type="datetime-local"
                                                             />
                                                         </div>
 
                                                         <div>
-                                                            <Label htmlFor="maintenance-scheduled-end" className="text-right">
+                                                            <Label htmlFor="maintenance-scheduled-end" className="text-left">
                                                                 Scheduled End
                                                             </Label>
                                                             <Input
@@ -690,15 +689,15 @@ const Components = () => {
                                                                 id="maintenance-scheduled-end"
                                                                 value={maintenanceScheduledEnd}
                                                                 onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
-                                                                className="col-span-3 rounded-[5px]"
+                                                                className="w-50 rounded-[5px]"
                                                                 type="datetime-local"
                                                             />
                                                         </div>
                                                     </div>
 
-                                                    <div className="grid grid-cols-4 items-center gap-3">
-                                                        <Label className="text-right">Change service status</Label>
-                                                        <div className="col-span-3 flex flex-wrap gap-2">
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label className="text-[14px]">Change service status</Label>
+                                                        <div className="flex flex-row gap-2">
                                                             <Button
                                                                 disabled
                                                                 onClick={() => handleStatusChange(service.id, "Operational")}
@@ -728,8 +727,8 @@ const Components = () => {
 
                                                     </div>
                                                 </div>
-                                                <DialogFooter>
-                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="w-full rounded-[5px] py-2 text-[12px]">Schedule</Button>
+                                                 <DialogFooter className="flex items-end space-x-4">
+                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">Schedule</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>

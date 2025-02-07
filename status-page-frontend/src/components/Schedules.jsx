@@ -203,15 +203,15 @@ const Schedules = () => {
                                             </div>
 
                                             <div className="flex flex-col items-start gap-2">
-                                                <Label className="w-32 text-left">Status</Label>
-                                                <div className="w-full flex-1 flex flex-wrap gap-2">
+                                                <Label className="text-left">Status</Label>
+                                                <div className="flex flex-wrap gap-2">
                                                     {statusOptions.map((status, index) => (
                                                         <Button
                                                             disabled={index < 3}
                                                             key={status}
                                                             onClick={() => setMaintenanceStatus(status)}
                                                             className={`rounded-[10px] ${maintenanceStatus === status
-                                                                    ? "bg-blue-500 hover:bg-blue-600"
+                                                                    ? "bg-blue-600 hover:bg-blue-500"
                                                                     : "bg-gray-500 hover:bg-gray-600"
                                                                 }`}
                                                         >

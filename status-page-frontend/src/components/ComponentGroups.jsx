@@ -130,27 +130,23 @@ const UserOwnedServices = () => {
                   )}
                 </div>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px] bg-gray-900 flex flex-col max-h-[80vh]">
+              <DialogContent className="sm:max-w-[450px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
                 <DialogHeader>
                   <DialogTitle>Edit Component Group</DialogTitle>
                 </DialogHeader>
-                <div className="flex-1 min-h-0 overflow-y-auto py-4">
+                <div className="flex flex-col gap-4 items-start max-h-[60vh] overflow-y-auto py-4">
                   <div className="flex flex-col items-start gap-2">
-                    <div>
-                      <Label htmlFor="name" className="text-right w-1/4">
-                        Name
-                      </Label>
-                    </div>
-                    <div className="flex w-full">
-                      <Input
-                        required
-                        disabled={user.role !== "Admin"}
-                        id="name"
-                        value={groupName}
-                        onChange={(e) => setGroupName(e.target.value)}
-                        className="flex-1 rounded-[5px]"
-                      />
-                    </div>
+                    <Label htmlFor="name" className="text-left">
+                      Name
+                    </Label>
+                    <Input
+                      required
+                      disabled={user.role !== "Admin"}
+                      id="name"
+                      value={groupName}
+                      onChange={(e) => setGroupName(e.target.value)}
+                      className="w-96 rounded-[5px]"
+                    />
                   </div>
                 </div>
 

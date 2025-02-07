@@ -229,7 +229,7 @@ const Incidents = () => {
 
                                             <div className="flex flex-col items-start gap-2">
                                                 <Label className="w-32 text-left">Status</Label>
-                                                <div className="w-full flex-1 flex flex-wrap gap-2">
+                                                <div className="flex flex-wrap gap-2">
                                                     {statusOptions.map((status) => (
                                                         <Button
                                                             disabled={(user.role === "Admin" && status === "Reported")}
@@ -243,7 +243,7 @@ const Incidents = () => {
                                                                 setIncidentStatus(status);
                                                             }
                                                             }
-                                                            className={incidentStatus === status ? "rounded-[10px] text-[12px] bg-blue-500 hover:bg-blue-600"
+                                                            className={incidentStatus === status ? "rounded-[10px] text-[12px] bg-blue-600 hover:bg-blue-500"
                                                                 : "rounded-[10px] text-[12px] bg-gray-500 hover:bg-gray-600"}
                                                         >
                                                             {status}
@@ -285,7 +285,7 @@ const Incidents = () => {
                                                     disabled
                                                     id="incident-occured-at"
                                                     value={incident.occurred_at.replace('Z', '').slice(0, 16)}
-                                                    className="w-full rounded-[5px]"
+                                                    className="rounded-[5px]"
                                                     type="datetime-local"
                                                 />
                                             </div>
