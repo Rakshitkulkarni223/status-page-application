@@ -47,9 +47,11 @@ const ServiceStatusPage = () => {
     };
 
     const fetchServices = async () => {
+        console.log(apiUrl)
         try {
             const response = await fetch(`${apiUrl}/api/services/`);
             const data = await response.json();
+            console.log(data)
             setServices(data);
             fetchIncidents();
             fetchMaintence();
