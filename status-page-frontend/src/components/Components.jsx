@@ -443,11 +443,6 @@ const Components = () => {
                             <Button onClick={handleCreateNewService} className="w-full rounded-[5px] py-2 text-[12px]">
                                 Create Service
                             </Button>
-                            <DialogClose asChild>
-                                <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
-                                    ✕
-                                </Button>
-                            </DialogClose>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -547,11 +542,6 @@ const Components = () => {
                                                 <Button onClick={() => handleSave(service.id)} className="w-full rounded-[5px] py-2 text-[12px]">
                                                     Save changes
                                                 </Button>
-                                                <DialogClose asChild>
-                                                    <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
-                                                        ✕
-                                                    </Button>
-                                                </DialogClose>
                                             </DialogFooter>
                                         </DialogContent>
                                     </Dialog>}
@@ -614,11 +604,6 @@ const Components = () => {
                                                 </div>
                                                 <DialogFooter>
                                                     <Button onClick={handleReportProblem} className="w-full rounded-[5px] py-2 text-[12px]">Submit</Button>
-                                                    <DialogClose asChild>
-                                                        <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
-                                                            ✕
-                                                        </Button>
-                                                    </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
@@ -745,11 +730,6 @@ const Components = () => {
                                                 </div>
                                                 <DialogFooter>
                                                     <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="w-full rounded-[5px] py-2 text-[12px]">Schedule</Button>
-                                                    <DialogClose asChild>
-                                                        <Button id="close-dialog" className="absolute top-3 right-6 text-white text-[12px] hover:rounded-full">
-                                                            ✕
-                                                        </Button>
-                                                    </DialogClose>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>

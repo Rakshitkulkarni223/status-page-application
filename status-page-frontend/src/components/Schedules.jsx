@@ -7,7 +7,6 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogClose,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -185,13 +184,13 @@ const Schedules = () => {
                                             <PencilOff size={16} />
                                         </button>}
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[720px] bg-gray-900 text-white max-h-[80vh] overflow-auto">
+                                    <DialogContent className="sm:max-w-[720px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
                                         <DialogHeader>
                                             <DialogTitle>Edit Maintenance</DialogTitle>
                                         </DialogHeader>
-                                        <div className="grid gap-4 max-h-[60vh] overflow-y-auto py-4 px-3">
-                                            <div className="grid grid-cols-4 items-center gap-2">
-                                                <Label htmlFor="maintenance-title" className="text-right">
+                                        <div className="flex flex-col gap-4 items-start max-h-[60vh] overflow-y-auto py-4">
+                                            <div className="flex flex-col items-start gap-2">
+                                                <Label htmlFor="maintenance-title" className="w-32 text-left">
                                                     Title
                                                 </Label>
                                                 <Input
@@ -199,19 +198,22 @@ const Schedules = () => {
                                                     id="maintenance-title"
                                                     value={maintenanceTitle}
                                                     onChange={(e) => setMaintenanceTitle(e.target.value)}
-                                                    className="col-span-3 rounded-[5px]"
+                                                    className="flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2">
-                                                <Label className="text-right">Status</Label>
-                                                <div className="col-span-3 flex flex-wrap gap-2">
+                                            <div className="flex flex-col items-start gap-2">
+                                                <Label className="w-32 text-left">Status</Label>
+                                                <div className="w-full flex-1 flex flex-wrap gap-2">
                                                     {statusOptions.map((status, index) => (
                                                         <Button
                                                             disabled={index < 3}
                                                             key={status}
                                                             onClick={() => setMaintenanceStatus(status)}
-                                                            className={maintenanceStatus === status ? "bg-blue-500" : "bg-gray-500"}
+                                                            className={`rounded-[10px] ${maintenanceStatus === status
+                                                                    ? "bg-blue-500 hover:bg-blue-600"
+                                                                    : "bg-gray-500 hover:bg-gray-600"
+                                                                }`}
                                                         >
                                                             {status}
                                                         </Button>
@@ -219,20 +221,20 @@ const Schedules = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2">
-                                                <Label htmlFor="maintenance-status-description" className="text-right">
-                                                    Status description
+                                            <div className="flex flex-col items-start gap-2">
+                                                <Label htmlFor="maintenance-status-description" className="w-32 text-left">
+                                                    Status Description
                                                 </Label>
                                                 <Textarea
                                                     id="maintenance-status-description"
                                                     value={maintenanceStatusContent}
                                                     onChange={(e) => setMaintenanceStatusContent(e.target.value)}
-                                                    className="col-span-3 rounded-[5px]"
+                                                    className="w-96 flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2">
-                                                <Label htmlFor="maintenance-description" className="text-right">
+                                            <div className="flex flex-col items-start gap-2">
+                                                <Label htmlFor="maintenance-description" className="w-32 text-left">
                                                     Description
                                                 </Label>
                                                 <Textarea
@@ -240,13 +242,13 @@ const Schedules = () => {
                                                     id="maintenance-description"
                                                     value={maintenanceDescription}
                                                     onChange={(e) => setMaintenanceDescription(e.target.value)}
-                                                    className="col-span-3 rounded-[5px]"
+                                                    className="w-96 flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-3">
-                                                <div>
-                                                    <Label htmlFor="maintenance-scheduled-start" className="text-right">
+                                            <div className="flex gap-3">
+                                                <div className="flex-1">
+                                                    <Label htmlFor="maintenance-scheduled-start" className="text-left">
                                                         Scheduled Start
                                                     </Label>
                                                     <Input
@@ -254,13 +256,13 @@ const Schedules = () => {
                                                         id="maintenance-scheduled-start"
                                                         value={maintenanceScheduledStart}
                                                         onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
-                                                        className="col-span-3 rounded-[5px]"
+                                                        className="w-full rounded-[5px]"
                                                         type="datetime-local"
                                                     />
                                                 </div>
 
-                                                <div>
-                                                    <Label htmlFor="maintenance-scheduled-end" className="text-right">
+                                                <div className="flex-1">
+                                                    <Label htmlFor="maintenance-scheduled-end" className="text-left">
                                                         Scheduled End
                                                     </Label>
                                                     <Input
@@ -268,54 +270,47 @@ const Schedules = () => {
                                                         id="maintenance-scheduled-end"
                                                         value={maintenanceScheduledEnd}
                                                         onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
-                                                        className="col-span-3 rounded-[5px]"
+                                                        className="w-full rounded-[5px]"
                                                         type="datetime-local"
                                                     />
                                                 </div>
                                             </div>
 
-
-                                            {(maintenanceStatus === "Delayed" || maintenanceItem.status === "Delayed") &&
-                                                <div className="grid grid-cols-4 items-center gap-4">
-                                                    <div>
-                                                        <Label htmlFor="maintenance-delayed-start" className="text-right">
+                                            {(maintenanceStatus === "Delayed" || maintenanceItem.status === "Delayed") && (
+                                                <div className="flex gap-4">
+                                                    <div className="flex-1">
+                                                        <Label htmlFor="maintenance-delayed-start" className="text-left">
                                                             Delayed Start
                                                         </Label>
                                                         <Input
                                                             id="maintenance-delayed-start"
                                                             value={maintenanceDelayedStart}
                                                             onChange={(e) => setMaintenanceDelayedStart(e.target.value)}
-                                                            className="col-span-3 rounded-[5px]"
+                                                            className="w-full rounded-[5px]"
                                                             type="datetime-local"
                                                         />
                                                     </div>
 
-                                                    <div>
-                                                        <Label htmlFor="maintenance-delayed-end" className="text-right">
+                                                    <div className="flex-1">
+                                                        <Label htmlFor="maintenance-delayed-end" className="text-left">
                                                             Delayed End
                                                         </Label>
                                                         <Input
                                                             id="maintenance-delayed-end"
                                                             value={maintenanceDelayedEnd}
                                                             onChange={(e) => setMaintenanceDelayedEnd(e.target.value)}
-                                                            className="col-span-3 rounded-[5px]"
+                                                            className="w-full rounded-[5px]"
                                                             type="datetime-local"
                                                         />
                                                     </div>
                                                 </div>
-                                            }
-
+                                            )}
                                         </div>
 
-                                        <DialogFooter>
-                                            <Button onClick={() => handleSave(maintenanceItem._id)} className="w-full rounded-[5px] py-2 text-sm">
+                                        <DialogFooter className="flex items-end space-x-4">
+                                            <Button onClick={() => handleSave(maintenanceItem._id)}  className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                                 Save changes
                                             </Button>
-                                            <DialogClose asChild>
-                                                <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
-                                                    ✕
-                                                </button>
-                                            </DialogClose>
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>

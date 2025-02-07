@@ -209,13 +209,13 @@ const Incidents = () => {
                                             <Pencil size={16} />
                                         </button>
                                     </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[700px] bg-gray-900 text-white max-h-[80vh] overflow-auto">
+                                    <DialogContent className="sm:max-w-[720px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
                                         <DialogHeader>
                                             <DialogTitle>Edit Incident</DialogTitle>
                                         </DialogHeader>
-                                        <div className="grid gap-4 max-h-[60vh] overflow-y-auto py-4 px-3">
-                                            <div className="grid grid-cols-4 items-center gap-2">
-                                                <Label htmlFor="incident-title" className="text-right">
+                                        <div className="flex flex-col gap-4 items-start max-h-[60vh] overflow-y-auto py-4">
+                                            <div className="flex flex-col items-start gap-2">
+                                                <Label htmlFor="incident-title" className="w-32 text-left">
                                                     Title
                                                 </Label>
                                                 <Input
@@ -223,13 +223,13 @@ const Incidents = () => {
                                                     id="incident-title"
                                                     value={incidentTitle}
                                                     onChange={(e) => setIncidentTitle(e.target.value)}
-                                                    className="col-span-3 rounded-[5px]"
+                                                    className="flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2">
-                                                <Label className="text-right">Status</Label>
-                                                <div className="col-span-3 flex flex-wrap gap-2">
+                                            <div className="flex flex-col items-start gap-2">
+                                                <Label className="w-32 text-left">Status</Label>
+                                                <div className="w-full flex-1 flex flex-wrap gap-2">
                                                     {statusOptions.map((status) => (
                                                         <Button
                                                             disabled={(user.role === "Admin" && status === "Reported")}
@@ -243,7 +243,8 @@ const Incidents = () => {
                                                                 setIncidentStatus(status);
                                                             }
                                                             }
-                                                            className={incidentStatus === status ? "rounded-[10px] bg-blue-500" : "rounded-[10px] bg-gray-500"}
+                                                            className={incidentStatus === status ? "rounded-[10px] text-[12px] bg-blue-500 hover:bg-blue-600"
+                                                                : "rounded-[10px] text-[12px] bg-gray-500 hover:bg-gray-600"}
                                                         >
                                                             {status}
                                                         </Button>
@@ -251,7 +252,7 @@ const Incidents = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2">
+                                            <div className="flex flex-col items-start gap-2">
                                                 <Label htmlFor="incident-status-description" className="text-right">
                                                     Status description
                                                 </Label>
@@ -259,12 +260,11 @@ const Incidents = () => {
                                                     id="incident-status-description"
                                                     value={incidentContent}
                                                     onChange={(e) => setIncidentContent(e.target.value)}
-                                                    className="col-span-3 rounded-[5px]"
+                                                           className="w-96 flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
-
-                                            <div className="grid grid-cols-4 items-center gap-2">
+                                            <div className="flex flex-col items-start gap-2">
                                                 <Label htmlFor="incident-description" className="text-right">
                                                     Description
                                                 </Label>
@@ -273,11 +273,11 @@ const Incidents = () => {
                                                     id="incident-description"
                                                     value={incidentDescription}
                                                     onChange={(e) => setIncidentDescription(e.target.value)}
-                                                    className="col-span-3 rounded-[5px]"
+                                                 className="w-96 flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
-                                            <div className="grid grid-cols-4 items-center gap-2">
+                                            <div className="flex flex-col items-start gap-2">
                                                 <Label htmlFor="incident-time" className="text-right">
                                                     Reported On
                                                 </Label>
@@ -285,13 +285,14 @@ const Incidents = () => {
                                                     disabled
                                                     id="incident-occured-at"
                                                     value={incident.occurred_at.replace('Z', '').slice(0, 16)}
-                                                    className="col-span-3 rounded-[5px]"
+                                                    className="w-full rounded-[5px]"
                                                     type="datetime-local"
                                                 />
                                             </div>
 
-                                            {incidentStatus && <div className="grid grid-cols-4 items-center gap-2">
+                                            {incidentStatus && <div className="flex flex-col items-start gap-2">
                                                 <p className="text-[15px]">Change service status</p>
+                                                <div className="flex flex-row gap-2">
                                                 <Button
                                                     disabled={["Identified", "Monitoring"].includes(incidentStatus)}
                                                     onClick={() => handleStatusChange(incident._id, "Operational")}
@@ -320,19 +321,15 @@ const Incidents = () => {
                                                 >
                                                     Major Outage
                                                 </Button>
+                                                </div>
                                             </div>}
 
                                         </div>
 
-                                        <DialogFooter>
-                                            <Button onClick={(e) => handleSave(e, incident._id)} className="w-full rounded-[5px] py-2 text-sm">
+                                       <DialogFooter className="flex items-end space-x-4">
+                                            <Button onClick={(e) => handleSave(e, incident._id)}  className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                                 Save changes
                                             </Button>
-                                            <DialogClose asChild>
-                                                <button id="close-dialog" className="absolute top-3 right-6 text-white text-sm hover:rounded-full">
-                                                    ✕
-                                                </button>
-                                            </DialogClose>
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
