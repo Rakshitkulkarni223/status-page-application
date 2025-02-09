@@ -330,12 +330,12 @@ const getStatusClass = (status) => {
             return "bg-blue-700 text-white";
         case "In Progress":
             return "bg-yellow-700 text-white";
-        case "Verifying":
-            return "bg-orange-700 text-white";
         case "Completed":
             return "bg-green-700 text-white";
         case "Canceled":
             return "bg-red-700 text-white";
+        case "Delayed":
+            return "bg-amber-700 text-white";
         default:
             return "bg-gray-500 text-white";
     }

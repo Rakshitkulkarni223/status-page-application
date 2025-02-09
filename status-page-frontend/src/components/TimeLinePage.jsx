@@ -1,18 +1,20 @@
 import React from 'react';
 
 const colors = {
-    'Investigating': 'bg-yellow-600',
-    'Reported': 'bg-orange-600',
-    'Monitoring': 'bg-blue-600',
-    'Identified': 'bg-purple-600',
-    'Fixed': 'bg-green-600',
-    'Resolved': 'bg-green-800',
-    'Scheduled': 'bg-blue-600',
-    'In Progress': 'bg-yellow-600',
-    'Verifying': 'bg-purple-600',
-    'Completed': 'bg-green-600',
-    'Canceled': 'bg-red-600',
+    'Reported': 'bg-red-700',
+    'Investigating': 'bg-yellow-700', 
+    'Identified': 'bg-orange-700',
+    'Monitoring': 'bg-blue-700',
+    'Fixed': 'bg-green-700',
+    'Resolved': 'bg-teal-700',
+    'Scheduled': 'bg-blue-700',
+    'In Progress': 'bg-yellow-700',
+    'Completed': 'bg-green-700',
+    'Canceled': 'bg-red-700',
+    'Delayed': 'bg-amber-700',
 };
+
+
 
 const activeStatuses = [
     'Investigating',
