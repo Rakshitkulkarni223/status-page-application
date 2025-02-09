@@ -129,7 +129,6 @@ const Schedules = () => {
 
             if (response.ok) {
                 alert('Service maintenance updated successfully!');
-                document.getElementById("close-dialog").click();
                 fetchMaintence();
             } else {
                 alert(`Error: ${data.message}`);

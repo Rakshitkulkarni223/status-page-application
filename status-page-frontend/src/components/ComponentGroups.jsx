@@ -79,7 +79,6 @@ const UserOwnedServices = () => {
       const data = await response.json();
 
       if (response.ok) {
-        document.getElementById("close-dialog").click();
         alert('Component group name has been updated successfully!');
         fetchServices();
       } else {

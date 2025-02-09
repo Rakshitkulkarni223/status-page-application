@@ -11,12 +11,14 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
 
+    const [loading, setLoading] = useState(false);
+
     const { login, user, setAuthStatus, logout } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-
+        setLoading(true);
         try {
             const response = await fetch(`${apiUrl}/api/auth/signin`, {
                 method: 'POST',
@@ -48,6 +50,7 @@ const LoginPage = () => {
             logout();
             localStorage.removeItem('token');
         }
+        setLoading(false);
     };
 
     return (
@@ -79,11 +82,10 @@ const LoginPage = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="mt-4 w-full bg-[#237479] text-white py-2 rounded-[8px] hover:bg-[#277f85]">Sign in</button>
+                    <button type="submit" className="mt-4 w-full bg-[#237479] text-white py-2 rounded-[8px] hover:bg-[#277f85]">{!loading ? "Sign in" : "Signing in..."}</button>
                     <div className="flex flex-row gap-2">
                     <p>New to status page?</p><p className='text-[#1a7df3] cursor-pointer' onClick={()=>navigate('/signup')}>Create new account</p>
                     </div>
-                    
                 </form>
             </div>
         </div>

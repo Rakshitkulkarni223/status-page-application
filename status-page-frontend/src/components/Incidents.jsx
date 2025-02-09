@@ -26,6 +26,8 @@ const Incidents = () => {
 
     const { socket } = useSocket();
 
+    const [loading, setLoading] = useState(false);
+
     const [incidentTitle, setIncidentTitle] = useState("");
     const [incidentStatus, setIncidentStatus] = useState("");
     const [incidentDescription, setIncidentDescription] = useState("");
@@ -54,6 +56,7 @@ const Incidents = () => {
 
     const handleSave = async (e, incidentId) => {
         e.preventDefault();
+        setLoading(true);
         let serviceStatus = serviceStatuses[incidentId];
 
         if (!incidentStatus || !serviceStatus || !incidentContent) {
@@ -93,7 +96,6 @@ const Incidents = () => {
 
             if (response.ok) {
                 alert('Incident updated successfully!');
-                document.getElementById("close-dialog").click();
                 fetchIncidents();
             } else {
                 alert(`Error: ${data.message}`);
@@ -102,6 +104,7 @@ const Incidents = () => {
             console.error('Error updating incident:', error);
             alert('Error updating incident.');
         }
+        setLoading(false);
     };
 
     const statusOptions = ["Reported", "Investigating", "Identified", "Monitoring", "Fixed"];
@@ -329,11 +332,12 @@ const Incidents = () => {
 
                                        <DialogFooter className="flex items-end space-x-4">
                                             <Button onClick={(e) => handleSave(e, incident._id)}  className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
-                                                Save changes
+                                                {!loading ? "Update" : "Updating..."}
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
                                 </Dialog>
+
                             </td>
                             }
                         </tr>

@@ -24,6 +24,8 @@ const Components = () => {
     const { user, token } = useAuth();
     const { socket } = useSocket();
 
+    const [loading, setLoading] = useState(false);
+
     const [ownedGroupNames, setOwnedGroupNames] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const [serviceStatus, setServiceStatus] = useState("");
@@ -154,6 +156,7 @@ const Components = () => {
         }
 
         try {
+            setLoading(true);
             const response = await fetch(`${apiUrl}/api/services/${id}`, {
                 method: 'POST',
                 headers: {
@@ -167,7 +170,6 @@ const Components = () => {
 
             if (response.ok) {
                 alert('Service updated successfully!');
-                document.getElementById("close-dialog").click();
                 fetchServices();
             } else {
                 alert(`Error: ${data.message}`);
@@ -176,10 +178,13 @@ const Components = () => {
             console.error('Error Service updated failed:', error);
             alert('Error Service updated failed.');
         }
+        setLoading(false);
     };
 
     const handleReportProblem = async (e) => {
         e.preventDefault();
+
+        setLoading(true);
 
         if (!problemTitle || !problemDescription || !problemOccurredAt || !problemStatusContent) {
             alert('Missing required fields for Title, Description, Status description, Reported on fields. Please fill all the required fields.');
@@ -209,15 +214,15 @@ const Components = () => {
             const data = await response.json();
             if (response.ok) {
                 alert('Incident created successfully!');
-                document.getElementById("close-dialog").click();
             } else {
                 alert(`${data.message}`);
-                document.getElementById("close-dialog").click();
             }
         } catch (error) {
             console.error('Error creating incident:', error);
             alert('Error creating incident.');
         }
+
+        setLoading(false);
     };
 
     const handleScheduleMaintenance = async (id, status) => {
@@ -226,6 +231,8 @@ const Components = () => {
             alert("Maintenance title, description, status content, start date or end date cannot be empty. Please fill all the required fields.");
             return;
         }
+
+        setLoading(true);
 
         let updatedStatus = status;
 
@@ -269,7 +276,6 @@ const Components = () => {
                 setMaintenanceScheduledEnd('');
                 setServiceStatuses({});
                 fetchServices();
-                document.getElementById("close-dialog").click();
             } else {
                 alert(`Error: ${data.message}`);
             }
@@ -277,6 +283,7 @@ const Components = () => {
             console.error('Error creating Service maintenance scheduled:', error);
             alert('Error creating Service maintenance scheduled.');
         }
+        setLoading(false);
     };
 
 
@@ -287,6 +294,8 @@ const Components = () => {
             alert("Service name or status, Group name cannot be empty. Please fill all the required fields.");
             return;
         }
+
+        setLoading(true);
 
         try {
             const response = await fetch(`${apiUrl}/api/services`, {
@@ -302,7 +311,6 @@ const Components = () => {
 
             if (response.ok) {
                 alert('New service created successfully!');
-                document.getElementById("close-dialog").click();
                 setNewServiceName('');
                 setNewGroupName('');
                 setNewServiceLink('');
@@ -316,6 +324,7 @@ const Components = () => {
             console.error('Error creating new service: ', error);
             alert('Error creating new service.');
         }
+        setLoading(false);
     };
 
     return (
@@ -442,7 +451,7 @@ const Components = () => {
 
                         <DialogFooter className="flex items-end space-x-4">
                             <Button onClick={handleCreateNewService} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
-                                Create Service
+                                {!loading ? "Create Service" : "Creating..."}
                             </Button>
                         </DialogFooter>
                     </DialogContent>
@@ -540,7 +549,7 @@ const Components = () => {
 
                                                 <DialogFooter className="flex items-end space-x-4">
                                                     <Button onClick={() => handleSave(service.id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
-                                                        Save changes
+                                                        {!loading ?  "Save changes" : "Saving..."}
                                                     </Button>
                                                 </DialogFooter>
                                             </DialogContent>
@@ -603,7 +612,7 @@ const Components = () => {
                                                     </div>
                                                 </div>
                                                 <DialogFooter className="flex items-end space-x-4">
-                                                    <Button onClick={handleReportProblem} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">Submit</Button>
+                                                    <Button onClick={handleReportProblem} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Report" : "Reporting..."}</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
@@ -729,7 +738,7 @@ const Components = () => {
                                                     </div>
                                                 </div>
                                                 <DialogFooter className="flex items-end space-x-4">
-                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">Schedule</Button>
+                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Schedule" : "Scheduling..."}</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>

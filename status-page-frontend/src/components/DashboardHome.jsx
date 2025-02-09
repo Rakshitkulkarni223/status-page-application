@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { apiUrl } from '../config/appConfig';
 import { useAuth } from '../contexts/authContext';
 import { useSocket } from '../contexts/socketContext';
+import Loader from './Loader';
 
 const DashboardHome = () => {
   const [expandedGroups, setExpandedGroups] = useState([]);
@@ -14,6 +15,8 @@ const DashboardHome = () => {
   const { user, setOwnedServices, token } = useAuth();
 
   const { socket } = useSocket();
+
+  const [loading, setLoading] = useState(false);
 
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
@@ -54,6 +57,7 @@ const DashboardHome = () => {
 
   const handleSetStatus = async (id) => {
     try {
+      setLoading(true);
       const response = await fetch(`${apiUrl}/api/services/${id}`, {
         method: 'POST',
         headers: {
@@ -74,6 +78,7 @@ const DashboardHome = () => {
       console.error('Error status update failed:', error);
       alert('Error status update failed.');
     }
+    setLoading(false);
     setChangedServiceStatuses((prevStatuses) => ({
       ...prevStatuses,
       [id]: false,
@@ -82,6 +87,7 @@ const DashboardHome = () => {
 
   const subscribeToService = async (serviceGroupId) => {
     try {
+      setLoading(true);
       const response = await fetch(`${apiUrl}/api/subscription/subscribe`, {
         method: 'POST',
         headers: {
@@ -102,6 +108,7 @@ const DashboardHome = () => {
     } catch (error) {
       console.error('Error subscribing:', error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -163,7 +170,7 @@ const DashboardHome = () => {
       <>
         <h3 className="text-lg font-semibold">Dashboard</h3>
         <div className="space-y-4 mt-4">
-          {services
+          {services?.length > 0 ? services
             .map((group) => (
               <div key={group.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
                 <div
@@ -179,7 +186,7 @@ const DashboardHome = () => {
                         e.stopPropagation();
                         subscribeToService(group.id);
                       }}>
-                      Subscribe
+                      {!loading ? "Subscribe" : "Subscribing..."}
                     </button>
                     <span>{expandedGroups?.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
                   </div>
@@ -200,7 +207,7 @@ const DashboardHome = () => {
                   </ul>
                 )}
               </div>
-            ))}
+            )) : <Loader />}
         </div>
       </>
     );
@@ -211,7 +218,7 @@ const DashboardHome = () => {
       <>
         <h3 className="text-lg font-semibold">Service Groups</h3>
         <div className="space-y-4 mt-4">
-          {services.map((group) => (
+          {services?.length > 0 ? services.map((group) => (
             <div key={group.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
               <div
                 className="flex justify-between items-center cursor-pointer"
@@ -257,7 +264,7 @@ const DashboardHome = () => {
                             onClick={() => handleSetStatus(service.id)}
                             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-[12px] rounded-[10px] shadow-md transition-all duration-300"
                           >
-                            Update status
+                            {!loading ? "Update status" : "Updating..."}
                           </Button>
                             <Button
                               onClick={() => {
@@ -284,7 +291,7 @@ const DashboardHome = () => {
                 </ul>
               )}
             </div>
-          ))}
+          )) : <Loader />}
         </div>
       </>
     );
