@@ -31,9 +31,9 @@ Install dependencies
 
 Configure environment variables
 
-* ##### Create a ***.env*** file in the root of the ***status-page-backend*** directory.
+- ##### Create a ***.env*** file in the root of the ***status-page-backend*** directory.
 
-* ##### Add the following variables:
+- ##### Add the following variables:
 
 ```bash
 PORT=5000
