@@ -72,3 +72,15 @@ Start the application
 ```
 
 The application will be accessible at http://localhost:5173 by default.
+
+## Tech Stack
+
+**Client:** React, Vite, TailwindCSS, MongoDB, ShadcnUI
+
+**Server:** Node, Express
+
+
+## Deployment
+
+The application is deployed and can be accessed at
+[Link to application](https://staus-page-c0540.web.app)
