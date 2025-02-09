@@ -12,7 +12,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/label";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
@@ -37,7 +36,6 @@ const Components = () => {
     const [problemStatusContent, setProblemStatusContent] = useState("");
 
     const [serviceLink, setServiceLink] = useState("");
-    const [maintenanceTime, setMaintenanceTime] = useState("");
     const [newServiceName, setNewServiceName] = useState("");
     const [newGroupName, setNewGroupName] = useState("");
     const [newServiceStatus, setNewServiceStatus] = useState("Operational");
@@ -465,7 +463,7 @@ const Components = () => {
                         <th className="px-6 py-3 text-left text-sm font-semibold">Service Name</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold">Group</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
+                        <th className="px-8 py-3 text-left text-sm font-semibold">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -549,74 +547,11 @@ const Components = () => {
 
                                                 <DialogFooter className="flex items-end space-x-4">
                                                     <Button onClick={() => handleSave(service.id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
-                                                        {!loading ?  "Save changes" : "Saving..."}
+                                                        {!loading ? "Save changes" : "Saving..."}
                                                     </Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>}
-                                    {user.role !== "Admin" && (
-                                        <Dialog onOpenChange={(isOpen) => {
-                                            if (!isOpen) {
-                                                setProblemAffectedServcie('');
-                                                setProblemDescription('');
-                                                setProblemOccurredAt('');
-                                                setProblemStatusContent('');
-                                                setProblemTitle('');
-                                            }
-                                        }}>
-                                            <DialogTrigger asChild>
-                                                {service.status === "Operational" ? <Button className="bg-transparent text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
-                                                    <AlertTriangle size={16} />
-                                                </Button> : <Button disabled className="bg-transparent text-yellow-500" onClick={() => { setProblemAffectedServcie(service.id) }}>
-                                                    <AlertTriangle size={16} opacity={0.56} />
-                                                </Button>}
-
-                                            </DialogTrigger>
-                                            <DialogContent className="sm:max-w-[650px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
-                                                <DialogHeader>
-                                                    <DialogTitle>Report an Incident</DialogTitle>
-                                                </DialogHeader>
-                                                <div className="flex flex-col gap-4 items-start max-h-[60vh] overflow-y-auto py-4">
-                                                    <div className="flex flex-col items-start gap-2">
-                                                        <Label htmlFor="incident-title" className="text-left">Title</Label>
-                                                        <Input id="incident-title" className="w-64 rounded-[5px]" value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
-                                                    </div>
-                                                    <div className="flex flex-col items-start gap-2">
-                                                        <Label>Describe the issue</Label>
-                                                        <Textarea value={problemDescription} className="w-96 rounded-[5px]" onChange={(e) => setProblemDescription(e.target.value)} />
-                                                    </div>
-
-                                                    <div className="flex flex-col items-start gap-2">
-                                                        <Label htmlFor="incident-status-description" className="text-left">
-                                                            Status description
-                                                        </Label>
-                                                        <Textarea
-                                                            id="incident-status-description"
-                                                            value={problemStatusContent}
-                                                            onChange={(e) => setProblemStatusContent(e.target.value)}
-                                                            className="w-96 rounded-[5px]"
-                                                        />
-                                                    </div>
-
-                                                    <div className="flex flex-col items-start gap-2">
-                                                        <Label htmlFor="incident-time" className="text-left">
-                                                            Reported On
-                                                        </Label>
-                                                        <Input
-                                                            id="incident-occured-at"
-                                                            value={problemOccurredAt ? problemOccurredAt.slice(0, 16) : ''}
-                                                            onChange={handleChange}
-                                                            className="rounded-[5px]"
-                                                            type="datetime-local"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <DialogFooter className="flex items-end space-x-4">
-                                                    <Button onClick={handleReportProblem} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Report" : "Reporting..."}</Button>
-                                                </DialogFooter>
-                                            </DialogContent>
-                                        </Dialog>
-                                    )}
 
                                     {user.role === "Admin" && (
                                         <Dialog onOpenChange={(isOpen) => {
@@ -744,13 +679,73 @@ const Components = () => {
                                         </Dialog>
                                     )}
 
-                                    {user.role === "Admin" && <Button className="bg-transparent text-red-500 hover:text-red-700">
-                                        <Trash size={16} />
-                                    </Button>}
+                                    {user.role !== "Admin" && (
+                                        <Dialog onOpenChange={(isOpen) => {
+                                            if (!isOpen) {
+                                                setProblemAffectedServcie('');
+                                                setProblemDescription('');
+                                                setProblemOccurredAt('');
+                                                setProblemStatusContent('');
+                                                setProblemTitle('');
+                                            }
+                                        }}>
+                                            <DialogTrigger asChild>
+                                                {service.status === "Operational" ? <Button className="bg-transparent text-yellow-500 hover:text-yellow-700" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                    <AlertTriangle size={16} />
+                                                </Button> : <Button disabled className="bg-transparent text-yellow-500" onClick={() => { setProblemAffectedServcie(service.id) }}>
+                                                    <AlertTriangle size={16} opacity={0.56} />
+                                                </Button>}
+
+                                            </DialogTrigger>
+                                            <DialogContent className="sm:max-w-[650px] bg-gray-900 flex flex-col text-white max-h-[80vh] overflow-auto">
+                                                <DialogHeader>
+                                                    <DialogTitle>Report an Incident</DialogTitle>
+                                                </DialogHeader>
+                                                <div className="flex flex-col gap-4 items-start max-h-[60vh] overflow-y-auto py-4">
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="incident-title" className="text-left">Title</Label>
+                                                        <Input id="incident-title" className="w-64 rounded-[5px]" value={problemTitle} onChange={(e) => setProblemTitle(e.target.value)} />
+                                                    </div>
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label>Describe the issue</Label>
+                                                        <Textarea value={problemDescription} className="w-96 rounded-[5px]" onChange={(e) => setProblemDescription(e.target.value)} />
+                                                    </div>
+
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="incident-status-description" className="text-left">
+                                                            Status description
+                                                        </Label>
+                                                        <Textarea
+                                                            id="incident-status-description"
+                                                            value={problemStatusContent}
+                                                            onChange={(e) => setProblemStatusContent(e.target.value)}
+                                                            className="w-96 rounded-[5px]"
+                                                        />
+                                                    </div>
+
+                                                    <div className="flex flex-col items-start gap-2">
+                                                        <Label htmlFor="incident-time" className="text-left">
+                                                            Reported On
+                                                        </Label>
+                                                        <Input
+                                                            id="incident-occured-at"
+                                                            value={problemOccurredAt ? problemOccurredAt.slice(0, 16) : ''}
+                                                            onChange={handleChange}
+                                                            className="rounded-[5px]"
+                                                            type="datetime-local"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <DialogFooter className="flex items-end space-x-4">
+                                                    <Button onClick={handleReportProblem} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Report" : "Reporting..."}</Button>
+                                                </DialogFooter>
+                                            </DialogContent>
+                                        </Dialog>
+                                    )}
                                 </td>
                             </tr>
                         ))
-                    ) : <Loader loaderText="Fetching services..." /> }
+                    ) : <Loader loaderText="Fetching services..." />}
                 </tbody>
             </table>
         </div>
