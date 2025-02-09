@@ -14,7 +14,7 @@ Clone the project
   git clone https://github.com/Rakshitkulkarni223/status-page-application.git
 ```
 
-## Backend Setup (server)
+## Backend Setup
 
 
 Go to the project directory
