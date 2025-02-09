@@ -16,6 +16,7 @@ import { apiUrl } from "../config/appConfig";
 import { PencilIcon } from "lucide-react";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
+import Loader from './Loader';
 
 const UserOwnedServices = () => {
 
@@ -114,7 +115,7 @@ const UserOwnedServices = () => {
   return (
     <div className="border-[1px]">
       <div>
-        {ownedGroupNames.map((group) => (
+        {ownedGroupNames?.length > 0 ? ownedGroupNames.map((group) => (
           <div key={group.id}>
             <Dialog>
               <DialogTrigger asChild>
@@ -162,7 +163,7 @@ const UserOwnedServices = () => {
               </DialogContent>
             </Dialog>
           </div>
-        ))}
+        )) : <Loader loaderText="Fetching groups..." /> }
       </div>
     </div>
   );

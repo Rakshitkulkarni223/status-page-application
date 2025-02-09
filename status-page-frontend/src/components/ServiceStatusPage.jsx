@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiUrl } from '../config/appConfig';
 import { LayoutDashboard } from 'lucide-react';
 import { useSocket } from '../contexts/socketContext';
+import Loader from './Loader';
 
 const ServiceStatusPage = () => {
 
@@ -47,11 +48,9 @@ const ServiceStatusPage = () => {
     };
 
     const fetchServices = async () => {
-        console.log(apiUrl)
         try {
             const response = await fetch(`${apiUrl}/api/services/`);
             const data = await response.json();
-            console.log(data)
             setServices(data);
             fetchIncidents();
             fetchMaintence();
@@ -174,7 +173,7 @@ const ServiceStatusPage = () => {
             <main className="flex-1 p-6 space-y-6 w-full max-w-5xl mx-auto">
                 <section className="services-list space-y-4">
                     <h2 className="text-2xl font-semibold">Services</h2>
-                    {services.map((group) => {
+                    {services?.length > 0 ? services.map((group) => {
                         const affectedIncidents = [];
                         return (
                             <div
@@ -234,11 +233,11 @@ const ServiceStatusPage = () => {
                                 )}
                             </div>
                         );
-                    })}
+                    }) : <Loader loaderText='Fetching services...' />}
                 </section>
 
-                <TimeLine timelines={incidents} type={"Incident"} />
-                <TimeLine timelines={maintenance} type={"Maintenance"} />
+                {incidents?.length > 0 ? <TimeLine timelines={incidents} type={"Incident"} /> : <Loader loaderText='Fetching incidents...' />}
+                {maintenance?.length > 0 ? <TimeLine timelines={maintenance} type={"Maintenance"} /> : <Loader loaderText='Fetching scheduled jobs...' />}
 
             </main>
         </div>

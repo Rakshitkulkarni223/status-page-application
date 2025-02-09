@@ -18,6 +18,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
+import Loader from "./Loader";
 
 
 const Incidents = () => {
@@ -184,7 +185,7 @@ const Incidents = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredIncidents.map((incident) => (
+                    {filteredIncidents?.length > 0 ? filteredIncidents.map((incident) => (
                         <tr key={incident._id} className="border-t hover:bg-gray-800">
                             <td className="px-6 py-3 text-sm">{incident.title}</td>
                             <td className="px-6 py-3 text-sm">
@@ -336,7 +337,7 @@ const Incidents = () => {
                             </td>
                             }
                         </tr>
-                    ))}
+                    ))  : <Loader loaderText="Fetching incidents..." /> }
                 </tbody>
             </table>
         </div>

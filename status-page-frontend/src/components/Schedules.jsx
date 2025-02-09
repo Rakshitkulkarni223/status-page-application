@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
+import Loader from "./Loader";
 
 const Schedules = () => {
 
@@ -154,7 +155,7 @@ const Schedules = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {maintenance.map((maintenanceItem) => (
+                    {maintenance?.length > 0 ? maintenance.map((maintenanceItem) => (
                         <tr key={maintenanceItem._id} className="border-t hover:bg-gray-800">
                             <td className="px-6 py-3 text-sm">{maintenanceItem.title}</td>
                             <td className="px-6 py-3 text-sm">
@@ -317,7 +318,7 @@ const Schedules = () => {
                             </td>
                             }
                         </tr>
-                    ))}
+                    )) : <Loader loaderText="Fetching scheduled jobs..." /> }
                 </tbody>
             </table>
         </div >

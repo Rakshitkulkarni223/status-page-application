@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
+import Loader from "./Loader";
 
 const Components = () => {
 
@@ -459,7 +460,7 @@ const Components = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {ownedGroupNames.map((group) =>
+                    {ownedGroupNames?.length > 0 ? ownedGroupNames.map((group) =>
                         group.services.map((service) => (
                             <tr key={service.id} className="border-t hover:bg-gray-800">
                                 <td className="px-6 py-3 text-sm">{service.name}</td>
@@ -740,7 +741,7 @@ const Components = () => {
                                 </td>
                             </tr>
                         ))
-                    )}
+                    ) : <Loader loaderText="Fetching services..." /> }
                 </tbody>
             </table>
         </div>
