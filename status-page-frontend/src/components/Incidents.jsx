@@ -347,7 +347,7 @@ const Incidents = () => {
                     ))}
                 </tbody>
             </table> : <div className='flex flex-col gap-3'>
-          <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No incident has been reported yet.</p>
+          <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>{user.role === "Admin" ? "No incident has been reported yet." : "No incident has been reported yet by you."}</p>
         </div>}
         </div>
     );

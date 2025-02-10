@@ -755,7 +755,7 @@ const Components = () => {
                     )}
                 </tbody>
             </table> : <div className='flex flex-col gap-3'>
-                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found.</p>
+                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>{user.role === "Admin" ? "No services found." : "You haven't subscribed to any services yet."}</p>
             </div>}
         </div>
     );

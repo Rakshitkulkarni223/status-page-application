@@ -226,7 +226,7 @@ const DashboardHome = () => {
   const renderAdminDashboard = () => {
     return (
       <>
-        <h3 className="text-lg font-semibold">Service Groups</h3>
+        <h3 className="text-lg font-semibold">Dashboard</h3>
         <div className="space-y-4 mt-4">
           {isLoading ? <Loader /> : services?.length > 0 ? services.map((group) => (
             <div key={group.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">

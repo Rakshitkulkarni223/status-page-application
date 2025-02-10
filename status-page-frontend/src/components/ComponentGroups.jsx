@@ -173,7 +173,7 @@ const UserOwnedServices = () => {
             </Dialog>
           </div>
         )) : <div className='flex flex-col gap-3'>
-          <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No component groups found.</p>
+          <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>{user.role === "Admin" ? "No component groups found." : "You haven't subscribed to any services yet."}</p>
         </div>}
       </div>
     </div>
