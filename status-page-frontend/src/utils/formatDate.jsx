@@ -19,8 +19,15 @@ const formatDate = (dateString) => {
     });
   
     return `${formattedDate.replace(/\d+/, day + suffix)}, ${formattedTime}`;
-  };
+};
+
+const parseFormattedDate = (dateString) => {
+  if (!dateString) return null;
+  const cleanDate = dateString.replace(/(\d+)(st|nd|rd|th)/, "$1");
+  return new Date(cleanDate);
+};
 
 export {
-    formatDate
+    formatDate,
+    parseFormattedDate
 }

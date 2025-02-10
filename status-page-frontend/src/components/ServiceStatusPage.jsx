@@ -256,25 +256,26 @@ const ServiceStatusPage = () => {
                                 );
                             }) : <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found</p>}
                         </section>
-                        
-                        {incidents.length > 0 ? (
-                            <TimeLine timelines={incidents} type="Incident" />
-                        ) : (
-                            <div className='flex flex-col gap-3'>
-                                <h2 className="text-2xl font-semibold text-left">Incidents</h2>
-                                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>All systems are operational. No incidents reported at this time.
-                                </p>
-                            </div>
-                        )}
 
-                        {maintenance.length > 0 ? (
-                            <TimeLine timelines={maintenance} type="Maintenance" />
-                        ) : (
-                            <div className='flex flex-col gap-3'>
-                                <h2 className="text-2xl font-semibold text-left">Maintenance</h2>
+
+                        <div className='flex flex-col gap-3'>
+                            <h2 className="text-2xl font-semibold text-left">Incidents</h2>
+                            {incidents.length > 0 ? (
+                                <TimeLine timelines={incidents} type="Incident" />
+                            ) : (
+                                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No incidents reported at this time.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className='flex flex-col gap-3'>
+                            <h2 className="text-2xl font-semibold text-left">Maintenance</h2>
+                            {maintenance.length > 0 ? (
+                                <TimeLine timelines={maintenance} type="Maintenance" />
+                            ) : (
                                 <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No planned maintenance for now. We'll keep you updated if anything changes.</p>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </>
                 )}
 

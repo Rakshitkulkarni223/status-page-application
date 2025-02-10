@@ -18,6 +18,9 @@ import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
 import Loader from "./Loader";
 
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+
+
 const Components = () => {
 
     const { user, token } = useAuth();
@@ -191,7 +194,7 @@ const Components = () => {
     const handleReportProblem = async (e) => {
         e.preventDefault();
 
-        
+
         if (!problemTitle || !problemDescription || !problemOccurredAt || !problemStatusContent) {
             alert('Missing required fields for Title, Description, Status description, Reported on fields. Please fill all the required fields.');
             return;
@@ -332,6 +335,48 @@ const Components = () => {
         setLoading(false);
     };
 
+    const statusPriority = [
+        "Operational",
+        "Degraded Performance",
+        "Partial Outage",
+        "Major Outage"
+    ];
+
+    const [sortConfig, setSortConfig] = useState({ key: "", direction: "asc" });
+
+    const handleSort = (key) => {
+        setSortConfig((prev) => ({
+            key,
+            direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+        }));
+    };
+
+    const sortedGroups = ownedGroupNames.map(group => ({
+        ...group,
+        services: [...(group.services || [])].sort((a, b) => {
+            const indexA = statusPriority.indexOf(a.status);
+            const indexB = statusPriority.indexOf(b.status);
+            return sortConfig.direction === "asc" ? indexA - indexB : indexB - indexA;
+        })
+    }));
+
+    const finalSortedGroups = sortedGroups.sort((a, b) => {
+        const highestStatusA = Math.min(...a.services.map(service => statusPriority.indexOf(service.status)));
+        const highestStatusB = Math.min(...b.services.map(service => statusPriority.indexOf(service.status)));
+
+        return sortConfig.direction === "asc" ? highestStatusA - highestStatusB : highestStatusB - highestStatusA;
+    });
+
+    const renderSortIcon = (key) => {
+        if (sortConfig.key !== key) return <ArrowUpDown className="inline ml-2 w-4 h-4" />;
+        return sortConfig.direction === "asc" ? (
+            <ArrowUp className="inline ml-2 w-4 h-4" />
+        ) : (
+            <ArrowDown className="inline ml-2 w-4 h-4" />
+        );
+    };
+
+
     return (
         <div className="rounded-b-[10px]">
 
@@ -467,14 +512,20 @@ const Components = () => {
             {isLoading ? <Loader loaderText="Fetching services..." /> : ownedGroupNames?.length > 0 ? <table className="border-[1px] min-w-full table-auto">
                 <thead>
                     <tr className="bg-gray-700 text-white">
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Service Name</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Group</th>
+                        <th onClick={() => handleSort("name")} className="px-6 py-3 text-left text-sm font-semibold cursor-pointer">
+                            Service Name
+                        </th>
+                        <th onClick={() => handleSort("status")} className="px-6 py-3 text-left text-sm font-semibold cursor-pointer">
+                            Status {renderSortIcon("status")}
+                        </th>
+                        <th onClick={() => handleSort("group")} className="px-6 py-3 text-left text-sm font-semibold cursor-pointer">
+                            Group
+                        </th>
                         <th className="px-8 py-3 text-left text-sm font-semibold">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {ownedGroupNames.map((group) =>
+                    {finalSortedGroups.map((group) =>
                         group.services.map((service) => (
                             <tr key={service.id} className="border-t hover:bg-gray-800">
                                 <td className="px-6 py-3 text-sm">{service.name}</td>
@@ -629,7 +680,7 @@ const Components = () => {
                                                                 onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
                                                                 className="w-50 rounded-[5px]"
                                                                 type="datetime-local"
-                                                                min={new Date().toISOString().slice(0, 16)} 
+                                                                min={new Date().toISOString().slice(0, 16)}
                                                             />
                                                         </div>
 
@@ -644,7 +695,7 @@ const Components = () => {
                                                                 onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
                                                                 className="w-50 rounded-[5px]"
                                                                 type="datetime-local"
-                                                                min={new Date().toISOString().slice(0, 16)} 
+                                                                min={new Date().toISOString().slice(0, 16)}
                                                             />
                                                         </div>
                                                     </div>
@@ -742,7 +793,7 @@ const Components = () => {
                                                             onChange={handleChange}
                                                             className="rounded-[5px]"
                                                             type="datetime-local"
-                                                            max={new Date().toISOString().slice(0, 16)} 
+                                                            max={new Date().toISOString().slice(0, 16)}
                                                         />
                                                     </div>
                                                 </div>

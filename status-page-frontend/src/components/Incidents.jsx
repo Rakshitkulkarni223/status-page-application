@@ -16,7 +16,8 @@ import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
 import Loader from "./Loader";
-import { formatDate } from "../utils/formatDate";
+import { formatDate, parseFormattedDate } from "../utils/formatDate";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 
 const Incidents = () => {
@@ -189,20 +190,81 @@ const Incidents = () => {
     }, [socket]);
 
 
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+    const sortedIncidents = [...filteredIncidents].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+
+        const valueA = a[sortConfig.key];
+        const valueB = b[sortConfig.key];
+
+        if (!valueA || !valueB) return 0;
+
+        if (sortConfig.key === "status") {
+            const indexA = statusOptions.indexOf(valueA);
+            const indexB = statusOptions.indexOf(valueB);
+
+            return sortConfig.direction === "asc" ? indexA - indexB : indexB - indexA;
+        }
+
+        if (sortConfig.key === "occurred_at") {
+            const dateA = parseFormattedDate(valueA);
+            const dateB = parseFormattedDate(valueB);
+            return sortConfig.direction === "asc" ? dateA - dateB : dateB - dateA;
+        }
+
+        if (sortConfig.key === "updatedAt") {
+            return sortConfig.direction === "asc"
+                ? new Date(valueA) - new Date(valueB)
+                : new Date(valueB) - new Date(valueA);
+        }
+
+        return sortConfig.direction === "asc"
+            ? valueA.toString().localeCompare(valueB.toString())
+            : valueB.toString().localeCompare(valueA.toString());
+    });
+
+    const requestSort = (key) => {
+        setSortConfig((prev) => ({
+            key,
+            direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+        }));
+    };
+
+    const renderSortIcon = (key) => {
+        if (sortConfig.key !== key) return <ArrowUpDown className="inline ml-2 w-4 h-4" />;
+        return sortConfig.direction === "asc" ? (
+            <ArrowUp className="inline ml-2 w-4 h-4" />
+        ) : (
+            <ArrowDown className="inline ml-2 w-4 h-4" />
+        );
+    };
+
+
+
+
     return (
         <div className="rounded-b-[10px]">
             {isLoading ? <Loader loaderText="Fetching incidents..." /> : filteredIncidents?.length > 0 ? <table className="border-[1px] min-w-full table-auto">
                 <thead>
-                    <tr className="bg-gray-700 text-white">
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Incident Title</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Occurred On</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Updated On</th>
+                    <tr className="bg-gray-700">
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("title")}>
+                            Incident Title {renderSortIcon("title")}
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("status")}>
+                            Status {renderSortIcon("status")}
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("occurred_at")}>
+                            Occurred On {renderSortIcon("occurred_at")}
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("updatedAt")}>
+                            Updated On {renderSortIcon("updatedAt")}
+                        </th>
                         {user.role === "Admin" && <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredIncidents.map((incident) => (
+                    {sortedIncidents.map((incident) => (
                         <tr key={incident._id} className="border-t hover:bg-gray-800">
                             <td className="px-6 py-3 text-sm">{incident.title}</td>
                             <td className="px-6 py-3 text-sm">

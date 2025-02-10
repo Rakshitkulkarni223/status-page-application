@@ -31,7 +31,7 @@ const TimeLine = ({ timelines, type }) => {
 
     return (
         <section className="incident-timeline space-y-4">
-            {activeTimelines.length > 0 && activeTimelines.map((activity) => (
+            {activeTimelines.length > 0 ? activeTimelines.map((activity) => (
                 <div key={activity._id} className="bg-gray-800 rounded-lg shadow-md">
                     <div className="flex justify-between items-start p-4">
                         <div className="space-y-2 flex flex-col items-start">
@@ -65,7 +65,10 @@ const TimeLine = ({ timelines, type }) => {
                         ))}
                     </div>
                 </div>
-            ))}
+            )) : type === "Maintenance" ? <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>There are no ongoing maintenance activities at this time.</p> 
+            : 
+            <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>All incidents have been resolved. Services are fully operational</p>
+            }
         </section>
     );
 }

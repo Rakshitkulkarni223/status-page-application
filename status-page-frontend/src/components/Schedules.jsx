@@ -15,8 +15,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
-import { formatDate } from "../utils/formatDate";
+import { formatDate, parseFormattedDate } from "../utils/formatDate";
 import Loader from "./Loader";
+
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 
 const Schedules = () => {
 
@@ -80,8 +82,8 @@ const Schedules = () => {
                 setMaintenance((prev) => [
                     {
                         ...data.maintenance,
-                        scheduled_start : formatDate(data.maintenance.scheduled_start),
-                        scheduled_end : formatDate(data.maintenance.scheduled_end),
+                        scheduled_start: formatDate(data.maintenance.scheduled_start),
+                        scheduled_end: formatDate(data.maintenance.scheduled_end),
                         updated_at: formatDate(data.incident.updated_at)
                     },
                     ...prev
@@ -92,8 +94,8 @@ const Schedules = () => {
                         if (maintenanceItem._id === data.maintenance._id) {
                             return {
                                 ...data.maintenance,
-                                scheduled_start : formatDate(data.maintenance.scheduled_start),
-                                scheduled_end : formatDate(data.maintenance.scheduled_end)
+                                scheduled_start: formatDate(data.maintenance.scheduled_start),
+                                scheduled_end: formatDate(data.maintenance.scheduled_end)
                             }
                         }
                         return {
@@ -112,12 +114,12 @@ const Schedules = () => {
 
     const handleSave = async (e, id) => {
         e.preventDefault();
-        
+
         if (!maintenanceStatusContent) {
             alert("Status description cannot be empty. Please fill all the required fields.");
             return;
         }
-        
+
         if (maintenanceStatus === "Delayed") {
             if (!maintenanceStatusContent || !maintenanceDelayedStart || !maintenanceDelayedEnd) {
                 alert("Status description, Delayed start date and end date cannot be empty. Please fill all the required fields.");
@@ -160,20 +162,72 @@ const Schedules = () => {
 
     const statusOptions = ["Scheduled", "In Progress", "Completed", "Canceled", "Delayed"];
 
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+    const sortedMaintenances = [...maintenance].sort((a, b) => {
+        if (!sortConfig.key) return 0;
+
+        const valueA = a[sortConfig.key];
+        const valueB = b[sortConfig.key];
+
+        if (!valueA || !valueB) return 0;
+
+        if (sortConfig.key === "status") {
+            const indexA = statusOptions.indexOf(valueA);
+            const indexB = statusOptions.indexOf(valueB);
+            return sortConfig.direction === "asc" ? indexA - indexB : indexB - indexA;
+        }
+
+        if (sortConfig.key === "scheduled_start" || sortConfig.key === "scheduled_end") {
+            const dateA = parseFormattedDate(valueA);
+            const dateB = parseFormattedDate(valueB);
+            return sortConfig.direction === "asc" ? dateA - dateB : dateB - dateA;
+        }
+
+        return sortConfig.direction === "asc"
+            ? valueA.toString().localeCompare(valueB.toString())
+            : valueB.toString().localeCompare(valueA.toString());
+    });
+
+    const requestSort = (key) => {
+        setSortConfig((prev) => ({
+            key,
+            direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+        }));
+    };
+
+    const renderSortIcon = (key) => {
+        if (sortConfig.key !== key) return <ArrowUpDown className="inline ml-2 w-4 h-4" />;
+        return sortConfig.direction === "asc" ? (
+            <ArrowUp className="inline ml-2 w-4 h-4" />
+        ) : (
+            <ArrowDown className="inline ml-2 w-4 h-4" />
+        );
+    };
+
+
     return (
         <div className="rounded-b-[10px]">
             {isLoading ? <Loader loaderText="Fetching scheduled jobs..." /> : maintenance?.length > 0 ? <table className="border-[1px] min-w-full table-auto">
                 <thead>
-                    <tr className="bg-gray-700 text-white">
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Maintenance Title</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Scheduled Start</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Scheduled End</th>
+                    <tr className="bg-gray-700">
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("title")}>
+                            Maintenance Title {renderSortIcon("title")}
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("status")}>
+                            Status {renderSortIcon("status")}
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("scheduled_start")}>
+                            Scheduled Start {renderSortIcon("scheduled_start")}
+                        </th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold cursor-pointer" onClick={() => requestSort("scheduled_end")}>
+                            Scheduled End {renderSortIcon("scheduled_end")}
+                        </th>
                         {user.role === "Admin" && <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>}
                     </tr>
                 </thead>
                 <tbody>
-                    {maintenance.map((maintenanceItem) => (
+                    {sortedMaintenances.map((maintenanceItem) => (
                         <tr key={maintenanceItem._id} className="border-t hover:bg-gray-800">
                             <td className="px-6 py-3 text-sm">{maintenanceItem.title}</td>
                             <td className="px-6 py-3 text-sm">
@@ -244,7 +298,7 @@ const Schedules = () => {
                                                 <Label htmlFor="maintenance-status-description" className="w-32 text-left">
                                                     Status Description
                                                 </Label>
-                                                <Textarea 
+                                                <Textarea
                                                     id="maintenance-status-description"
                                                     value={maintenanceStatusContent}
                                                     onChange={(e) => setMaintenanceStatusContent(e.target.value)}
@@ -307,7 +361,7 @@ const Schedules = () => {
                                                             onChange={(e) => setMaintenanceDelayedStart(e.target.value)}
                                                             className="w-full rounded-[5px]"
                                                             type="datetime-local"
-                                                            min={new Date().toISOString().slice(0, 16)} 
+                                                            min={new Date().toISOString().slice(0, 16)}
                                                         />
                                                     </div>
 
@@ -321,7 +375,7 @@ const Schedules = () => {
                                                             onChange={(e) => setMaintenanceDelayedEnd(e.target.value)}
                                                             className="w-full rounded-[5px]"
                                                             type="datetime-local"
-                                                            min={new Date().toISOString().slice(0, 16)} 
+                                                            min={new Date().toISOString().slice(0, 16)}
                                                         />
                                                     </div>
                                                 </div>
@@ -329,8 +383,8 @@ const Schedules = () => {
                                         </div>
 
                                         <DialogFooter className="flex items-end space-x-4">
-                                            <Button disabled={loading} onClick={(e) => handleSave(e,maintenanceItem._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
-                                               {!loading ? "Update" : "Updating..."}
+                                            <Button disabled={loading} onClick={(e) => handleSave(e, maintenanceItem._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                                                {!loading ? "Update" : "Updating..."}
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
