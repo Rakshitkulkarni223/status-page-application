@@ -186,75 +186,77 @@ const ServiceStatusPage = () => {
             </nav>
 
             <main className="flex-1 p-6 space-y-6 w-full max-w-5xl mx-auto">
-                <section className="services-list space-y-4">
-                    <h2 className="text-2xl font-semibold">Services</h2>
-                    {services?.length > 0 ? services.map((group) => {
-                        const affectedIncidents = [];
-                        return (
-                            <div
-                                key={group.id}
-                                className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl"
-                            >
-                                <div className="flex justify-between items-center p-4">
-                                    <div className="flex items-center space-x-2">
-                                        <div>
-                                            <span className="font-medium text-md">{group.name}</span>
-                                        </div>
-                                        <div className='cursor-pointer'>
-                                            <ChevronDownIcon
-                                                className={`h-8 w-8 transition-transform ${activeServices[group.id] ? 'rotate-180' : ''}`}
-                                                onClick={() => toggleService(group.id)}
-                                            />
-                                        </div>
-                                    </div>
-                                    {affectedIncidents.length !== 0 ?
-                                        <div className="flex">
-                                            <span className="font-medium text-gray-300 text-[10px] p-1 px-2 border border-gray-300 rounded-[4px]">
-                                                {`${affectedIncidents.length} Incident${affectedIncidents.length !== 1 ? 's' : ''}`}
-                                            </span>
-                                        </div> : undefined}
-                                </div>
 
-                                {activeServices[group.id] && (
-                                    <div className="space-y-2">
-                                        <ul className="space-y-2">
-                                            {group.services.map((service) => (
-                                                <li
-                                                    key={service.id}
-                                                    className="flex justify-between items-center p-4 border-b border-gray-60"
-                                                >
-                                                    <div className='flex flex-col gap-2'>
-                                                        <span className="text-gray-200 text-[15px]">{service.name}</span>
-                                                        {service.link && <a href={service.link} target='_blank' className="text-[#d4d4d8] text-[12px] underline">Visit Website</a>}
-                                                    </div>
-                                                    <div>
-                                                        <span
-                                                            className={`inline-block px-2 py-0 rounded-[5px] text-[12px] text-white ${service.status === 'Operational'
-                                                                ? 'bg-green-700'
-                                                                : service.status === 'Degraded Performance'
-                                                                    ? 'bg-[#533969]'
-                                                                    : service.status === 'Partial Outage' ?
-                                                                        'bg-red-600' :
-                                                                        'bg-red-800'
-                                                                }`}
-                                                        >
-                                                            {service.status}
-                                                        </span>
-                                                    </div>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    }) : !isLoading ? <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found</p> : <Loader loaderText='Fetching services...' />}
-                </section>
 
                 {isLoading ? (
-                    <Loader loaderText="Fetching data..." />
+                    <Loader loaderText="Fetching services..." />
                 ) : (
                     <>
+                        <section className="services-list space-y-4">
+                            <h2 className="text-2xl font-semibold">Services</h2>
+                            {services?.length > 0 ? services.map((group) => {
+                                const affectedIncidents = [];
+                                return (
+                                    <div
+                                        key={group.id}
+                                        className="bg-gray-800 rounded-lg shadow-md hover:shadow-xl"
+                                    >
+                                        <div className="flex justify-between items-center p-4">
+                                            <div className="flex items-center space-x-2">
+                                                <div>
+                                                    <span className="font-medium text-md">{group.name}</span>
+                                                </div>
+                                                <div className='cursor-pointer'>
+                                                    <ChevronDownIcon
+                                                        className={`h-8 w-8 transition-transform ${activeServices[group.id] ? 'rotate-180' : ''}`}
+                                                        onClick={() => toggleService(group.id)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            {affectedIncidents.length !== 0 ?
+                                                <div className="flex">
+                                                    <span className="font-medium text-gray-300 text-[10px] p-1 px-2 border border-gray-300 rounded-[4px]">
+                                                        {`${affectedIncidents.length} Incident${affectedIncidents.length !== 1 ? 's' : ''}`}
+                                                    </span>
+                                                </div> : undefined}
+                                        </div>
+
+                                        {activeServices[group.id] && (
+                                            <div className="space-y-2">
+                                                <ul className="space-y-2">
+                                                    {group.services.map((service) => (
+                                                        <li
+                                                            key={service.id}
+                                                            className="flex justify-between items-center p-4 border-b border-gray-60"
+                                                        >
+                                                            <div className='flex flex-col gap-2'>
+                                                                <span className="text-gray-200 text-[15px]">{service.name}</span>
+                                                                {service.link && <a href={service.link} target='_blank' className="text-[#d4d4d8] text-[12px] underline">Visit Website</a>}
+                                                            </div>
+                                                            <div>
+                                                                <span
+                                                                    className={`inline-block px-2 py-0 rounded-[5px] text-[12px] text-white ${service.status === 'Operational'
+                                                                        ? 'bg-green-700'
+                                                                        : service.status === 'Degraded Performance'
+                                                                            ? 'bg-[#533969]'
+                                                                            : service.status === 'Partial Outage' ?
+                                                                                'bg-red-600' :
+                                                                                'bg-red-800'
+                                                                        }`}
+                                                                >
+                                                                    {service.status}
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }) : <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found</p>}
+                        </section>
+                        
                         {incidents.length > 0 ? (
                             <TimeLine timelines={incidents} type="Incident" />
                         ) : (
@@ -270,7 +272,7 @@ const ServiceStatusPage = () => {
                         ) : (
                             <div className='flex flex-col gap-3'>
                                 <h2 className="text-2xl font-semibold text-left">Maintenance</h2>
-                            <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No planned maintenance for now. We'll keep you updated if anything changes.</p>
+                                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No planned maintenance for now. We'll keep you updated if anything changes.</p>
                             </div>
                         )}
                     </>
