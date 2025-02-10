@@ -8,13 +8,18 @@ const SignupPage = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
-        password: ''
+        password: '',
+        isAdmin: false
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value, type, checked } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
     };
 
     const handleSubmit = async (e) => {
@@ -34,7 +39,7 @@ const SignupPage = () => {
             const data = await response.json();
             if (response.ok) {
                 navigate('/login')
-                setFormData({ username: '', email: '', password: '' }); 
+                setFormData({ username: '', email: '', password: '', isAdmin: false }); 
             } else {
                 setMessage(data.message || 'Failed to register');
             }
@@ -84,6 +89,16 @@ const SignupPage = () => {
                             className="w-full p-2 rounded bg-gray-700 text-white focus:outline-none"
                             required
                         />
+                    </div>
+                    <div className="flex items-center">
+                        <input
+                            type="checkbox"
+                            name="isAdmin"
+                            checked={formData.isAdmin}
+                            onChange={handleChange}
+                            className="mr-2"
+                        />
+                        <label className="text-gray-300 text-sm">Sign up as Admin</label>
                     </div>
                     <button
                         type="submit"

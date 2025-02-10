@@ -97,7 +97,7 @@ const Incidents = () => {
 
             if (response.ok) {
                 alert('Incident updated successfully!');
-                fetchIncidents();
+                // fetchIncidents();
             } else {
                 alert(`Error: ${data.message}`);
             }
@@ -178,7 +178,7 @@ const Incidents = () => {
                         return {
                             ...incidentItem
                         };
-                    }).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+                    }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
                 })
             }
         };

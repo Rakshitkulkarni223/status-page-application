@@ -8,7 +8,7 @@ const moment = require('moment');
 
 
 router.post('/signup', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, isAdmin } = req.body;
 
     try {
         const existingUser = await User.findOne({ email });
@@ -20,7 +20,7 @@ router.post('/signup', async (req, res) => {
             username,
             email,
             password,
-            role: "User",
+            role: isAdmin ? "Admin" : "User",
             status: "Active",
             owned_service_groups: []
         });
