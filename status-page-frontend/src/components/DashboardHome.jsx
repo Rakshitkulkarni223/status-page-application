@@ -20,6 +20,8 @@ const DashboardHome = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [loadingGroup, setLoadingGroup] = useState(null);
+
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
       prev.includes(groupId)
@@ -57,7 +59,7 @@ const DashboardHome = () => {
     } catch (error) {
       setIsLoading(false);
       alert(error);
-      console.error('Error subscribing:', error);
+      console.error('Error fetching services:', error);
     }
   };
 
@@ -93,7 +95,7 @@ const DashboardHome = () => {
 
   const subscribeToService = async (serviceGroupId) => {
     try {
-      setLoading(true);
+      setLoadingGroup(serviceGroupId);
       const response = await fetch(`${apiUrl}/api/subscription/subscribe`, {
         method: 'POST',
         headers: {
@@ -114,7 +116,7 @@ const DashboardHome = () => {
     } catch (error) {
       console.error('Error subscribing:', error);
     }
-    setLoading(false);
+    setLoadingGroup(null);
   };
 
   useEffect(() => {
@@ -192,7 +194,7 @@ const DashboardHome = () => {
                         e.stopPropagation();
                         subscribeToService(group.id);
                       }}>
-                      {!loading ? "Subscribe" : "Subscribing..."}
+                      {loadingGroup !== group.id ? "Subscribe" : "Subscribing..."}
                     </button>
                     <span>{expandedGroups?.includes(group.id) ? <ChevronUp /> : <ChevronDown />}</span>
                   </div>

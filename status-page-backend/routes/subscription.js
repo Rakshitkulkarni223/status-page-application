@@ -3,6 +3,7 @@ const User = require('../models/User');
 const ServiceGroup = require('../models/ServiceGroup');
 const router = express.Router();
 const authMiddleware = require('../middleware/auth');
+const { broadcast } = require('../utils/websocketManager');
 
 router.post('/subscribe', authMiddleware, async (req, res) => {
     const { serviceGroupId } = req.body;
@@ -26,6 +27,8 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
 
         user.owned_service_groups.push(serviceGroupId);
         await user.save();
+
+        broadcast({ type: "CREATE_NEW_SERVICE" });
 
         res.status(200).json({ message: 'Subscribed successfully', owned_service_groups: user.owned_service_groups });
     } catch (error) {
