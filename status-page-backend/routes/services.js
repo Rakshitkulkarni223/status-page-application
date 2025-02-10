@@ -39,7 +39,6 @@ router.post('/:id', authMiddleware, async (req, res) => {
   const { name, status, link } = req.body;
   try {
     const id = req.params.id;
-    console.log(id, status)
     var updatedService;
     if (name) {
       updatedService = await Service.findByIdAndUpdate(id, { name, status, link }, { new: true })
