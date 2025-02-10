@@ -82,7 +82,7 @@ const LoginPage = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="mt-4 w-full bg-[#237479] text-white py-2 rounded-[8px] hover:bg-[#277f85]">{!loading ? "Sign in" : "Signing in..."}</button>
+                    <button  disabled={loading} type="submit" className="mt-4 w-full bg-[#237479] text-white py-2 rounded-[8px] hover:bg-[#277f85]">{!loading ? "Sign in" : "Signing in..."}</button>
                     <div className="flex flex-row gap-2">
                     <p>New to status page?</p><p className='text-[#1a7df3] cursor-pointer' onClick={()=>navigate('/signup')}>Create new account</p>
                     </div>

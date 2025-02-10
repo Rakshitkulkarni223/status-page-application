@@ -162,7 +162,7 @@ const UserOwnedServices = () => {
 
                 <DialogFooter className="flex items-end space-x-4">
                   <Button
-                    disabled={user.role !== "Admin"}
+                    disabled={loading || user.role !== "Admin"}
                     onClick={() => handleSave(group.id)}
                     className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600"
                   >

@@ -346,7 +346,7 @@ const Incidents = () => {
                                         </div>
 
                                         <DialogFooter className="flex items-end space-x-4">
-                                            <Button onClick={(e) => handleSave(e, incident._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                                            <Button disabled={loading} onClick={(e) => handleSave(e, incident._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                                 {!loading ? "Update" : "Updating..."}
                                             </Button>
                                         </DialogFooter>

@@ -455,7 +455,7 @@ const Components = () => {
                         </div>
 
                         <DialogFooter className="flex items-end space-x-4">
-                            <Button onClick={handleCreateNewService} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                            <Button disabled={loading} onClick={handleCreateNewService} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                 {!loading ? "Create Service" : "Creating..."}
                             </Button>
                         </DialogFooter>
@@ -553,7 +553,7 @@ const Components = () => {
                                                 </div>
 
                                                 <DialogFooter className="flex items-end space-x-4">
-                                                    <Button onClick={() => handleSave(service.id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                                                    <Button disabled={loading} onClick={() => handleSave(service.id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                                         {!loading ? "Save changes" : "Saving..."}
                                                     </Button>
                                                 </DialogFooter>
@@ -680,7 +680,7 @@ const Components = () => {
                                                     </div>
                                                 </div>
                                                 <DialogFooter className="flex items-end space-x-4">
-                                                    <Button onClick={() => handleScheduleMaintenance(service.id, service.status)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Schedule" : "Scheduling..."}</Button>
+                                                    <Button disabled={loading} onClick={() => handleScheduleMaintenance(service.id, service.status)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Schedule" : "Scheduling..."}</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>
@@ -744,7 +744,7 @@ const Components = () => {
                                                     </div>
                                                 </div>
                                                 <DialogFooter className="flex items-end space-x-4">
-                                                    <Button onClick={handleReportProblem} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Report" : "Reporting..."}</Button>
+                                                    <Button disabled={loading} onClick={handleReportProblem} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">{!loading ? "Report" : "Reporting..."}</Button>
                                                 </DialogFooter>
                                             </DialogContent>
                                         </Dialog>

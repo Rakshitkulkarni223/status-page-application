@@ -272,6 +272,7 @@ const DashboardHome = () => {
                             </Button>
                           </div>
                           {changedServiceStatuses[service.id] && <div className='flex gap-2'> <Button
+                          disabled={loading}
                             onClick={() => handleSetStatus(service.id)}
                             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-[12px] rounded-[10px] shadow-md transition-all duration-300"
                           >
