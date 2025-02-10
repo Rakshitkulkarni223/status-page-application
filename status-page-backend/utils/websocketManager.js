@@ -8,7 +8,7 @@ const setupWebSocket = (server) => {
     wss.on("connection", (ws) => {
         console.log("New WebSocket connection");
         clients.add(ws);
-
+        console.log(clients?.size)
         ws.on("close", () => {
             clients.delete(ws);
         });
@@ -19,7 +19,6 @@ const setupWebSocket = (server) => {
 
 const broadcast = (data) => {
     const message = JSON.stringify(data);
-    console.log(clients.size)
     clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
             client.send(message);

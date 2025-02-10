@@ -109,7 +109,6 @@ const DashboardHome = () => {
       setOwnedServices(data.owned_service_groups)
       if (response.ok) {
         alert('Subscribed successfully!');
-        fetchServices();
       } else {
         alert(`Error: ${data.message}`);
       }
