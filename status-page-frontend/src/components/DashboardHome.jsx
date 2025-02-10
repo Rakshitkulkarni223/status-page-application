@@ -247,24 +247,28 @@ const DashboardHome = () => {
                         <div className="mt-2 flex flex-wrap gap-3">
                           <div key={service.id} className="flex flex-wrap gap-2">
                             <Button
+                              disabled={service.maintenanceScheduled}
                               onClick={() => handleStatusChange(service.id, "Operational")}
                               className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Operational" || (!serviceStatuses[service.id] && service.status === "Operational") ? "bg-green-700 text-white hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                             >
                               Operational
                             </Button>
                             <Button
+                              disabled={service.maintenanceScheduled}
                               onClick={() => handleStatusChange(service.id, "Degraded Performance")}
                               className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Degraded Performance" || (!serviceStatuses[service.id] && service.status === "Degraded Performance") ? "bg-purple-700 text-white hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                             >
                               Degraded Performance
                             </Button>
                             <Button
+                              disabled={service.maintenanceScheduled}
                               onClick={() => handleStatusChange(service.id, "Partial Outage")}
                               className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Partial Outage" || (!serviceStatuses[service.id] && service.status === "Partial Outage") ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                             >
                               Partial Outage
                             </Button>
                             <Button
+                              disabled={service.maintenanceScheduled}
                               onClick={() => handleStatusChange(service.id, "Major Outage")}
                               className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[service.id] === "Major Outage" || (!serviceStatuses[service.id] && service.status === "Major Outage") ? "bg-red-800 text-white hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
                             >

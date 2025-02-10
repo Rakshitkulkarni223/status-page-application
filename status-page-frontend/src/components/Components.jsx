@@ -629,6 +629,7 @@ const Components = () => {
                                                                 onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
                                                                 className="w-50 rounded-[5px]"
                                                                 type="datetime-local"
+                                                                min={new Date().toISOString().slice(0, 16)} 
                                                             />
                                                         </div>
 
@@ -643,6 +644,7 @@ const Components = () => {
                                                                 onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
                                                                 className="w-50 rounded-[5px]"
                                                                 type="datetime-local"
+                                                                min={new Date().toISOString().slice(0, 16)} 
                                                             />
                                                         </div>
                                                     </div>
@@ -740,6 +742,7 @@ const Components = () => {
                                                             onChange={handleChange}
                                                             className="rounded-[5px]"
                                                             type="datetime-local"
+                                                            max={new Date().toISOString().slice(0, 16)} 
                                                         />
                                                     </div>
                                                 </div>

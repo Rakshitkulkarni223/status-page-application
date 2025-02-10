@@ -307,6 +307,7 @@ const Schedules = () => {
                                                             onChange={(e) => setMaintenanceDelayedStart(e.target.value)}
                                                             className="w-full rounded-[5px]"
                                                             type="datetime-local"
+                                                            min={new Date().toISOString().slice(0, 16)} 
                                                         />
                                                     </div>
 
@@ -320,6 +321,7 @@ const Schedules = () => {
                                                             onChange={(e) => setMaintenanceDelayedEnd(e.target.value)}
                                                             className="w-full rounded-[5px]"
                                                             type="datetime-local"
+                                                            min={new Date().toISOString().slice(0, 16)} 
                                                         />
                                                     </div>
                                                 </div>

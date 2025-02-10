@@ -98,7 +98,7 @@ const updateMaintenanceStatus = async () => {
     });
 
     for (let maintenance of maintenances) {
-      if (new Date(maintenance.scheduled_end).toISOString().slice(0, 16) < now.toISOString().slice(0, 16) && maintenance.status !== "Completed") {
+      if (new Date(maintenance.scheduled_end) < now && maintenance.status !== "Completed") {
         maintenance.status = "Completed";
         maintenance.updated_at = new Date();
         maintenance.timeline.push({
@@ -112,7 +112,7 @@ const updateMaintenanceStatus = async () => {
           broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
         }
       }
-      else if (new Date(maintenance.scheduled_start).toISOString().slice(0, 16) < now.toISOString().slice(0, 16) && maintenance.status === "Scheduled") {
+      else if (new Date(maintenance.scheduled_start) < now && maintenance.status === "Scheduled") {
         maintenance.status = "Delayed";
         maintenance.updated_at = new Date();
         maintenance.timeline.push({
@@ -121,7 +121,7 @@ const updateMaintenanceStatus = async () => {
           content: "Maintenance start delayed."
         });
       }
-      else if (new Date(maintenance.scheduled_start).toISOString().slice(0, 16) === now.toISOString().slice(0, 16) && maintenance.status === "Scheduled") {
+      else if (new Date(maintenance.scheduled_start) <= now && maintenance.status === "Scheduled") {
         maintenance.status = "In Progress";
         maintenance.updated_at = new Date();
         maintenance.timeline.push({
