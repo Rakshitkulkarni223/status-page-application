@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const Maintenance = require('../models/Maintenance');
 const Service = require('../models/Service');
 const authMiddleware = require('../middleware/auth');
@@ -71,7 +72,14 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const maintenance = await Maintenance.find().populate('affected_services');
+    var maintenance = await Maintenance.find().populate('affected_services');
+    maintenance = maintenance.map((item) => ({
+      ...item.toObject(),
+      scheduled_start: moment.utc(item.scheduled_start).local().format("MMMM Do YYYY, h:mm A"),
+      scheduled_end: moment.utc(item.scheduled_end).local().format("MMMM Do YYYY, h:mm A"),
+      delayed_start: moment.utc(item.delayed_start).local().format("MMMM Do YYYY, h:mm A"),
+      delayed_end: moment.utc(item.delayed_end).local().format("MMMM Do YYYY, h:mm A"),
+    }));
     res.status(200).json(maintenance);
   } catch (err) {
     res.status(500).json({ message: err.message });

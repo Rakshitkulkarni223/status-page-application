@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const Incident = require('../models/Incident');
 const Service = require('../models/Service');
 const authMiddleware = require('../middleware/auth');
@@ -96,7 +97,12 @@ router.get('/', async (req, res) => {
       query.affected_services = service;
     }
 
-    const incidents = await Incident.find(query).populate('affected_services');
+    var incidents = await Incident.find(query).populate('affected_services');
+    incidents = incidents.map((incident) => ({
+      ...incident.toObject(),
+      occurred_at : moment.utc(incident.occurred_at).local().format("MMMM Do YYYY, h:mm A"),
+      created_at: moment.utc(incident.created_at).local().format("MMMM Do YYYY, h:mm A"),
+    }));
     res.status(200).json(incidents);
   } catch (err) {
     res.status(500).json({ message: err.message });
