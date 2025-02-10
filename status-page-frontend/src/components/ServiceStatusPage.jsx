@@ -13,12 +13,14 @@ const ServiceStatusPage = () => {
     const [services, setServices] = useState([]);
     const [maintenance, setMaintenance] = useState([]);
     const [incidents, setIncidents] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const { socket } = useSocket();
 
     const fetchMaintence = async () => {
         try {
+            setIsLoading(true);
             const response = await fetch(`${apiUrl}/api/maintenance`, {
                 method: 'GET',
                 headers: {
@@ -27,13 +29,17 @@ const ServiceStatusPage = () => {
             });
             const data = await response.json();
             setMaintenance(data);
+            setIsLoading(false);
         } catch (error) {
+            setIsLoading(false);
+            alert(error);
             console.error('Error subscribing:', error);
         }
     };
 
     const fetchIncidents = async () => {
         try {
+            setIsLoading(true);
             const response = await fetch(`${apiUrl}/api/incidents`, {
                 method: 'GET',
                 headers: {
@@ -42,19 +48,28 @@ const ServiceStatusPage = () => {
             });
             const data = await response.json();
             setIncidents(data);
+            setIsLoading(false);
         } catch (error) {
+            setIsLoading(false);
+            alert(error);
             console.error('Error subscribing:', error);
         }
     };
 
     const fetchServices = async () => {
         try {
+            setIsLoading(true);
             const response = await fetch(`${apiUrl}/api/services/`);
             const data = await response.json();
             setServices(data);
+            setIsLoading(true);
             fetchIncidents();
+            setIsLoading(true);
             fetchMaintence();
+            setIsLoading(false);
         } catch (error) {
+            alert(error);
+            setIsLoading(false);
             console.error('Error fetching services:', error);
         }
     };
@@ -233,11 +248,33 @@ const ServiceStatusPage = () => {
                                 )}
                             </div>
                         );
-                    }) : <Loader loaderText='Fetching services...' />}
+                    }) : !isLoading ? <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found</p> : <Loader loaderText='Fetching services...' />}
                 </section>
 
-                {incidents?.length > 0 ? <TimeLine timelines={incidents} type={"Incident"} /> : <Loader loaderText='Fetching incidents...' />}
-                {maintenance?.length > 0 ? <TimeLine timelines={maintenance} type={"Maintenance"} /> : <Loader loaderText='Fetching scheduled jobs...' />}
+                {isLoading ? (
+                    <Loader loaderText="Fetching data..." />
+                ) : (
+                    <>
+                        {incidents.length > 0 ? (
+                            <TimeLine timelines={incidents} type="Incident" />
+                        ) : (
+                            <div className='flex flex-col gap-3'>
+                                <h2 className="text-2xl font-semibold text-left">Incidents</h2>
+                                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>All systems are operational. No incidents reported at this time.
+                                </p>
+                            </div>
+                        )}
+
+                        {maintenance.length > 0 ? (
+                            <TimeLine timelines={maintenance} type="Maintenance" />
+                        ) : (
+                            <div className='flex flex-col gap-3'>
+                                <h2 className="text-2xl font-semibold text-left">Maintenance</h2>
+                            <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No planned maintenance for now. We'll keep you updated if anything changes.</p>
+                            </div>
+                        )}
+                    </>
+                )}
 
             </main>
         </div>

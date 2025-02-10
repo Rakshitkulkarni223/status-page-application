@@ -18,6 +18,8 @@ const DashboardHome = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const toggleGroup = (groupId) => {
     setExpandedGroups((prev) =>
       prev.includes(groupId)
@@ -42,6 +44,7 @@ const DashboardHome = () => {
 
   const fetchServices = async () => {
     try {
+      setIsLoading(true);
       const response = await fetch(`${apiUrl}/api/services`, {
         method: 'GET',
         headers: {
@@ -50,7 +53,10 @@ const DashboardHome = () => {
       });
       const data = await response.json();
       setServices(data);
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
+      alert(error);
       console.error('Error subscribing:', error);
     }
   };
@@ -170,7 +176,7 @@ const DashboardHome = () => {
       <>
         <h3 className="text-lg font-semibold">Dashboard</h3>
         <div className="space-y-4 mt-4">
-          {services?.length > 0 ? services
+          {isLoading ? <Loader loaderText='Fetching services...' /> : services?.length > 0 ? services
             .map((group) => (
               <div key={group.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
                 <div
@@ -207,7 +213,11 @@ const DashboardHome = () => {
                   </ul>
                 )}
               </div>
-            )) : <Loader />}
+            ))
+            : <div className='flex flex-col gap-3'>
+              <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found.</p>
+            </div>}
+
         </div>
       </>
     );
@@ -218,7 +228,7 @@ const DashboardHome = () => {
       <>
         <h3 className="text-lg font-semibold">Service Groups</h3>
         <div className="space-y-4 mt-4">
-          {services?.length > 0 ? services.map((group) => (
+          {isLoading ? <Loader /> : services?.length > 0 ? services.map((group) => (
             <div key={group.id} className="bg-gray-800 p-4 rounded-lg shadow-lg">
               <div
                 className="flex justify-between items-center cursor-pointer"
@@ -291,7 +301,9 @@ const DashboardHome = () => {
                 </ul>
               )}
             </div>
-          )) : <Loader />}
+          )) : <div className='flex flex-col gap-3'>
+            <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found.</p>
+          </div>}
         </div>
       </>
     );

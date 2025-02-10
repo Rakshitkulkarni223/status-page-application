@@ -23,6 +23,10 @@ const UserOwnedServices = () => {
   const [groupName, setGroupName] = useState("");
   const { user, token } = useAuth();
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
   const { socket } = useSocket();
 
   const [ownedGroupNames, setOwnedGroupNames] = useState([]);
@@ -62,6 +66,7 @@ const UserOwnedServices = () => {
   }, [socket]);
 
   const handleSave = async (id) => {
+    setLoading(true);
     if (!groupName || groupName?.trim() === "") {
       alert("Group name cannot be empty!");
       return;
@@ -88,10 +93,12 @@ const UserOwnedServices = () => {
       console.error('Error component group name update failed:', error);
       alert('Error component group name update failed.');
     }
+    setLoading(false);
 
   };
 
   const fetchServices = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch(`${apiUrl}/api/services`, {
         method: 'GET',
@@ -102,7 +109,10 @@ const UserOwnedServices = () => {
       const data = await response.json();
       setOwnedGroupNames(user.role === "Admin" ? data : data
         .filter(group => user.owned_service_groups.includes(group.id)))
+      setIsLoading(false);
     } catch (error) {
+      alert(error);
+      setIsLoading(false);
       console.error('Error subscribing:', error);
     }
   };
@@ -114,7 +124,7 @@ const UserOwnedServices = () => {
   return (
     <div className="border-[1px]">
       <div>
-        {ownedGroupNames?.length > 0 ? ownedGroupNames.map((group) => (
+        {isLoading ? <Loader loaderText='Fetching services...' /> : ownedGroupNames?.length > 0 ? ownedGroupNames.map((group) => (
           <div key={group.id}>
             <Dialog>
               <DialogTrigger asChild>
@@ -156,13 +166,15 @@ const UserOwnedServices = () => {
                     onClick={() => handleSave(group.id)}
                     className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600"
                   >
-                    Save changes
+                    {!loading ? "Update": "Updating..."}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
           </div>
-        )) : <Loader loaderText="Fetching groups..." /> }
+        )) : <div className='flex flex-col gap-3'>
+          <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No component groups found.</p>
+        </div>}
       </div>
     </div>
   );

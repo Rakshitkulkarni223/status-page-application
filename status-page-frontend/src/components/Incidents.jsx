@@ -6,15 +6,12 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogClose,
+    DialogTrigger
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
@@ -32,6 +29,8 @@ const Incidents = () => {
     const [incidentStatus, setIncidentStatus] = useState("");
     const [incidentDescription, setIncidentDescription] = useState("");
     const [incidentContent, setIncidentContent] = useState("");
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [serviceStatuses, setServiceStatuses] = useState({});
 
@@ -114,6 +113,7 @@ const Incidents = () => {
     const [incidents, setIncidents] = useState([]);
 
     const fetchIncidents = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch(`${apiUrl}/api/incidents`, {
                 method: 'GET',
@@ -126,7 +126,10 @@ const Incidents = () => {
                 (incident) => incident.reported_by === user.id
             ));
             setIncidents(data);
+            setIsLoading(false);
         } catch (error) {
+            setIsLoading(false);
+            alert(error);
             console.error('Error subscribing:', error);
         }
     };
@@ -178,7 +181,7 @@ const Incidents = () => {
 
     return (
         <div className="rounded-b-[10px]">
-            <table className="border-[1px] min-w-full table-auto">
+            {isLoading ? <Loader loaderText="Fetching incidents..." /> : filteredIncidents?.length > 0 ? <table className="border-[1px] min-w-full table-auto">
                 <thead>
                     <tr className="bg-gray-700 text-white">
                         <th className="px-6 py-3 text-left text-sm font-semibold">Incident Title</th>
@@ -188,7 +191,7 @@ const Incidents = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {filteredIncidents?.length > 0 ? filteredIncidents.map((incident) => (
+                    {filteredIncidents.map((incident) => (
                         <tr key={incident._id} className="border-t hover:bg-gray-800">
                             <td className="px-6 py-3 text-sm">{incident.title}</td>
                             <td className="px-6 py-3 text-sm">
@@ -264,7 +267,7 @@ const Incidents = () => {
                                                     id="incident-status-description"
                                                     value={incidentContent}
                                                     onChange={(e) => setIncidentContent(e.target.value)}
-                                                           className="w-96 flex-1 rounded-[5px]"
+                                                    className="w-96 flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
@@ -277,7 +280,7 @@ const Incidents = () => {
                                                     id="incident-description"
                                                     value={incidentDescription}
                                                     onChange={(e) => setIncidentDescription(e.target.value)}
-                                                 className="w-96 flex-1 rounded-[5px]"
+                                                    className="w-96 flex-1 rounded-[5px]"
                                                 />
                                             </div>
 
@@ -288,50 +291,50 @@ const Incidents = () => {
                                                 <Input
                                                     disabled
                                                     id="incident-occured-at"
-                                                    value={incident.occurred_at.replace('Z', '').slice(0, 16)}
-                                                    className="rounded-[5px]"
-                                                    type="datetime-local"
+                                                    value={incident.occurred_at}
+                                                    className="w-60 rounded-[5px]"
+                                                    type="text"
                                                 />
                                             </div>
 
                                             {incidentStatus && <div className="flex flex-col items-start gap-2">
                                                 <p className="text-[15px]">Change service status</p>
                                                 <div className="flex flex-row gap-2">
-                                                <Button
-                                                    disabled={["Identified", "Monitoring"].includes(incidentStatus)}
-                                                    onClick={() => handleStatusChange(incident._id, "Operational")}
-                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Operational" ? "bg-green-700 text-white hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                >
-                                                    Operational
-                                                </Button>
-                                                <Button
-                                                    disabled={incidentStatus === "Fixed"}
-                                                    onClick={() => handleStatusChange(incident._id, "Degraded Performance")}
-                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Degraded Performance" ? "bg-purple-700 text-white hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                >
-                                                    Degraded Performance
-                                                </Button>
-                                                <Button
-                                                    disabled={incidentStatus === "Fixed"}
-                                                    onClick={() => handleStatusChange(incident._id, "Partial Outage")}
-                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                >
-                                                    Partial Outage
-                                                </Button>
-                                                <Button
-                                                    disabled={incidentStatus === "Fixed"}
-                                                    onClick={() => handleStatusChange(incident._id, "Major Outage")}
-                                                    className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Major Outage" ? "bg-red-800 text-white  hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
-                                                >
-                                                    Major Outage
-                                                </Button>
+                                                    <Button
+                                                        disabled={["Identified", "Monitoring"].includes(incidentStatus)}
+                                                        onClick={() => handleStatusChange(incident._id, "Operational")}
+                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Operational" ? "bg-green-700 text-white hover:bg-green-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                    >
+                                                        Operational
+                                                    </Button>
+                                                    <Button
+                                                        disabled={incidentStatus === "Fixed"}
+                                                        onClick={() => handleStatusChange(incident._id, "Degraded Performance")}
+                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Degraded Performance" ? "bg-purple-700 text-white hover:bg-purple-800" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                    >
+                                                        Degraded Performance
+                                                    </Button>
+                                                    <Button
+                                                        disabled={incidentStatus === "Fixed"}
+                                                        onClick={() => handleStatusChange(incident._id, "Partial Outage")}
+                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Partial Outage" ? "bg-red-600 text-white hover:bg-red-700" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                    >
+                                                        Partial Outage
+                                                    </Button>
+                                                    <Button
+                                                        disabled={incidentStatus === "Fixed"}
+                                                        onClick={() => handleStatusChange(incident._id, "Major Outage")}
+                                                        className={`px-2 py-1 rounded-[10px] text-[12px] ${serviceStatuses[incident._id] === "Major Outage" ? "bg-red-800 text-white  hover:bg-red-900" : "bg-gray-600 text-gray-200 hover:bg-gray-700"}`}
+                                                    >
+                                                        Major Outage
+                                                    </Button>
                                                 </div>
                                             </div>}
 
                                         </div>
 
-                                       <DialogFooter className="flex items-end space-x-4">
-                                            <Button onClick={(e) => handleSave(e, incident._id)}  className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                                        <DialogFooter className="flex items-end space-x-4">
+                                            <Button onClick={(e) => handleSave(e, incident._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                                 {!loading ? "Update" : "Updating..."}
                                             </Button>
                                         </DialogFooter>
@@ -341,9 +344,11 @@ const Incidents = () => {
                             </td>
                             }
                         </tr>
-                    ))  : <Loader loaderText="Fetching incidents..." /> }
+                    ))}
                 </tbody>
-            </table>
+            </table> : <div className='flex flex-col gap-3'>
+          <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No incident has been reported yet.</p>
+        </div>}
         </div>
     );
 };

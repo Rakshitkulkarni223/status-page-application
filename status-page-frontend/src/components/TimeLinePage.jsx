@@ -2,7 +2,7 @@ import React from 'react';
 
 const colors = {
     'Reported': 'bg-red-700',
-    'Investigating': 'bg-yellow-700', 
+    'Investigating': 'bg-yellow-700',
     'Identified': 'bg-orange-700',
     'Monitoring': 'bg-blue-700',
     'Fixed': 'bg-green-700',
@@ -31,17 +31,16 @@ const TimeLine = ({ timelines, type }) => {
 
     return (
         <section className="incident-timeline space-y-4">
-            <h2 className="text-2xl font-semibold text-left">{type}</h2>
-            {activeTimelines.length > 0 ? activeTimelines.map((activity) => (
+            {activeTimelines.length > 0 && activeTimelines.map((activity) => (
                 <div key={activity._id} className="bg-gray-800 rounded-lg shadow-md">
                     <div className="flex justify-between items-start p-4">
                         <div className="space-y-2 flex flex-col items-start">
                             <h3 className="text-xl font-semibold">{activity.title}</h3>
                             <p className="text-sm text-gray-400">{activity.description}</p>
                             {type !== "Maintenance" ?
-                                <p className="text-sm text-gray-400">{new Date(activity.created_at).toLocaleString()}</p>
+                                <p className="text-sm text-gray-400">{activity.created_at}</p>
                                 :
-                                <p className="text-sm text-gray-400">{new Date(activity.scheduled_start).toLocaleString()}</p>
+                                <p className="text-sm text-gray-400">{activity.scheduled_start}</p>
                             }
                         </div>
 
@@ -66,10 +65,7 @@ const TimeLine = ({ timelines, type }) => {
                         ))}
                     </div>
                 </div>
-            )) : <div>
-                {type === "Incident" ? <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>All systems are operational. No incidents reported at this time.
-                </p> : <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No planned maintenance for now. We'll keep you updated if anything changes.</p>}
-            </div>}
+            ))}
         </section>
     );
 }

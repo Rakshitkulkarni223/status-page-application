@@ -32,17 +32,22 @@ const Schedules = () => {
     const [maintenanceDelayedStart, setMaintenanceDelayedStart] = useState("");
     const [maintenanceDelayedEnd, setMaintenanceDelayedEnd] = useState("");
 
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+
     const handleEditClick = (maintenanceItem) => {
         setMaintenanceTitle(maintenanceItem.title);
         setMaintenanceStatus(maintenanceItem.status);
         setMaintenanceDescription(maintenanceItem.description);
-        setMaintenanceScheduledStart(maintenanceItem.scheduled_start.replace('Z', '').slice(0, 16));
-        setMaintenanceScheduledEnd(maintenanceItem.scheduled_end.replace('Z', '').slice(0, 16));
+        setMaintenanceScheduledStart(maintenanceItem.scheduled_start);
+        setMaintenanceScheduledEnd(maintenanceItem.scheduled_end);
     };
 
     const [maintenance, setMaintenance] = useState([]);
 
     const fetchMaintence = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch(`${apiUrl}/api/maintenance`, {
                 method: 'GET',
@@ -52,7 +57,10 @@ const Schedules = () => {
             });
             const data = await response.json();
             setMaintenance(data);
+            setIsLoading(false);
         } catch (error) {
+            alert(error);
+            setIsLoading(true);
             console.error('Error subscribing:', error);
         }
     };
@@ -96,6 +104,8 @@ const Schedules = () => {
 
     const handleSave = async (id) => {
 
+        setLoading(true);
+
         if (!maintenanceStatusContent) {
             alert("Status description cannot be empty. Please fill all the required fields.");
             return;
@@ -137,13 +147,14 @@ const Schedules = () => {
             console.error('Error updating service maintenance schedule:', error);
             alert('Error updating service maintenance scheduled.');
         }
+        setLoading(false);
     };
 
     const statusOptions = ["Scheduled", "In Progress", "Completed", "Canceled", "Delayed"];
 
     return (
         <div className="rounded-b-[10px]">
-            <table className="border-[1px] min-w-full table-auto">
+            {isLoading ? <Loader loaderText="Fetching scheduled jobs..." /> : maintenance?.length > 0 ? <table className="border-[1px] min-w-full table-auto">
                 <thead>
                     <tr className="bg-gray-700 text-white">
                         <th className="px-6 py-3 text-left text-sm font-semibold">Maintenance Title</th>
@@ -154,7 +165,7 @@ const Schedules = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {maintenance?.length > 0 ? maintenance.map((maintenanceItem) => (
+                    {maintenance.map((maintenanceItem) => (
                         <tr key={maintenanceItem._id} className="border-t hover:bg-gray-800">
                             <td className="px-6 py-3 text-sm">{maintenanceItem.title}</td>
                             <td className="px-6 py-3 text-sm">
@@ -162,8 +173,8 @@ const Schedules = () => {
                                     {maintenanceItem.status}
                                 </span>
                             </td>
-                            <td className="px-6 py-3 text-sm">{maintenanceItem.scheduled_start.replace('Z', '').slice(0, 16)}</td>
-                            <td className="px-6 py-3 text-sm">{maintenanceItem.scheduled_end.replace('Z', '').slice(0, 16)}</td>
+                            <td className="px-6 py-3 text-sm">{maintenanceItem.scheduled_start}</td>
+                            <td className="px-6 py-3 text-sm">{maintenanceItem.scheduled_end}</td>
                             {user.role === "Admin" && <td className="px-6 py-3 flex space-x-3">
                                 <Dialog onOpenChange={(isOpen) => {
                                     if (!isOpen) {
@@ -211,8 +222,8 @@ const Schedules = () => {
                                                             key={status}
                                                             onClick={() => setMaintenanceStatus(status)}
                                                             className={`rounded-[10px] ${maintenanceStatus === status
-                                                                    ? "bg-blue-600 hover:bg-blue-500"
-                                                                    : "bg-gray-500 hover:bg-gray-600"
+                                                                ? "bg-blue-600 hover:bg-blue-500"
+                                                                : "bg-gray-500 hover:bg-gray-600"
                                                                 }`}
                                                         >
                                                             {status}
@@ -256,8 +267,8 @@ const Schedules = () => {
                                                         id="maintenance-scheduled-start"
                                                         value={maintenanceScheduledStart}
                                                         onChange={(e) => setMaintenanceScheduledStart(e.target.value)}
-                                                        className="w-full rounded-[5px]"
-                                                        type="datetime-local"
+                                                        className="w-60 rounded-[5px]"
+                                                        type="text"
                                                     />
                                                 </div>
 
@@ -270,8 +281,8 @@ const Schedules = () => {
                                                         id="maintenance-scheduled-end"
                                                         value={maintenanceScheduledEnd}
                                                         onChange={(e) => setMaintenanceScheduledEnd(e.target.value)}
-                                                        className="w-full rounded-[5px]"
-                                                        type="datetime-local"
+                                                        className="w-60 rounded-[5px]"
+                                                        type="text"
                                                     />
                                                 </div>
                                             </div>
@@ -308,8 +319,8 @@ const Schedules = () => {
                                         </div>
 
                                         <DialogFooter className="flex items-end space-x-4">
-                                            <Button onClick={() => handleSave(maintenanceItem._id)}  className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
-                                                Save changes
+                                            <Button onClick={() => handleSave(maintenanceItem._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                                               {!loading ? "Update" : "Updating..."}
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
@@ -317,9 +328,11 @@ const Schedules = () => {
                             </td>
                             }
                         </tr>
-                    )) : <Loader loaderText="Fetching scheduled jobs..." /> }
+                    ))}
                 </tbody>
-            </table>
+            </table> : <div className='flex flex-col gap-3'>
+                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No maintenance has been scheduled yet.</p>
+            </div>}
         </div >
     );
 };

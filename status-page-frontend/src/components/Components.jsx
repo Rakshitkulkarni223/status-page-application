@@ -25,6 +25,8 @@ const Components = () => {
 
     const [loading, setLoading] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const [ownedGroupNames, setOwnedGroupNames] = useState([]);
     const [serviceName, setServiceName] = useState("");
     const [serviceStatus, setServiceStatus] = useState("");
@@ -60,6 +62,7 @@ const Components = () => {
     const [isOtherSelected, setIsOtherSelected] = useState(false);
 
     const fetchServices = async () => {
+        setIsLoading(true);
         try {
             const response = await fetch(`${apiUrl}/api/services`, {
                 method: 'GET',
@@ -70,7 +73,11 @@ const Components = () => {
             const data = await response.json();
             setOwnedGroupNames(user.role === "Admin" ? data : data
                 .filter(group => user.owned_service_groups.includes(group.id)))
+
+            setIsLoading(false);
         } catch (error) {
+            alert(error)
+            setIsLoading(false);
             console.error('Error subscribing:', error);
         }
     };
@@ -457,7 +464,7 @@ const Components = () => {
 
             </div>}
 
-            <table className="border-[1px] min-w-full table-auto">
+            {isLoading ? <Loader loaderText="Fetching services..." /> : ownedGroupNames?.length > 0 ? <table className="border-[1px] min-w-full table-auto">
                 <thead>
                     <tr className="bg-gray-700 text-white">
                         <th className="px-6 py-3 text-left text-sm font-semibold">Service Name</th>
@@ -467,7 +474,7 @@ const Components = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {ownedGroupNames?.length > 0 ? ownedGroupNames.map((group) =>
+                    {ownedGroupNames.map((group) =>
                         group.services.map((service) => (
                             <tr key={service.id} className="border-t hover:bg-gray-800">
                                 <td className="px-6 py-3 text-sm">{service.name}</td>
@@ -745,9 +752,11 @@ const Components = () => {
                                 </td>
                             </tr>
                         ))
-                    ) : <Loader loaderText="Fetching services..." />}
+                    )}
                 </tbody>
-            </table>
+            </table> : <div className='flex flex-col gap-3'>
+                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>No services found.</p>
+            </div>}
         </div>
     );
 };
