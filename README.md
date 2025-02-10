@@ -75,9 +75,11 @@ The application will be accessible at http://localhost:5173 by default.
 
 ## Tech Stack
 
-**Client:** React, Vite, TailwindCSS, MongoDB, ShadcnUI
+**Client:** React (with Vite), TailwindCSS, ShadCN UI
 
 **Server:** Node, Express
+
+**Database:** MongoDB
 
 
 ## Deployment
