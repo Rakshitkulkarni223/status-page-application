@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
+import { formatDate } from "../utils/formatDate";
 import Loader from "./Loader";
 
 const Schedules = () => {
@@ -77,21 +78,28 @@ const Schedules = () => {
 
             if (data.type === "SCHEDULE_NEW_MAINTENANCE") {
                 setMaintenance((prev) => [
-                    ...prev,
-                    data.maintenance
+                    {
+                        ...data.maintenance,
+                        scheduled_start : formatDate(data.maintenance.scheduled_start),
+                        scheduled_end : formatDate(data.maintenance.scheduled_end),
+                        updated_at: formatDate(data.incident.updated_at)
+                    },
+                    ...prev
                 ]);
             } else if (data.type === "UPDATE_SCHEDULE_MAINTENANCE") {
                 setMaintenance((prev) => {
                     return prev.map((maintenanceItem) => {
                         if (maintenanceItem._id === data.maintenance._id) {
                             return {
-                                ...data.maintenance
+                                ...data.maintenance,
+                                scheduled_start : formatDate(data.maintenance.scheduled_start),
+                                scheduled_end : formatDate(data.maintenance.scheduled_end)
                             }
                         }
                         return {
                             ...maintenanceItem
                         };
-                    })
+                    }).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
                 })
             }
         };
@@ -102,21 +110,21 @@ const Schedules = () => {
     }, [socket]);
 
 
-    const handleSave = async (id) => {
-
-        setLoading(true);
-
+    const handleSave = async (e, id) => {
+        e.preventDefault();
+        
         if (!maintenanceStatusContent) {
             alert("Status description cannot be empty. Please fill all the required fields.");
             return;
         }
-
+        
         if (maintenanceStatus === "Delayed") {
             if (!maintenanceStatusContent || !maintenanceDelayedStart || !maintenanceDelayedEnd) {
                 alert("Status description, Delayed start date and end date cannot be empty. Please fill all the required fields.");
                 return;
             }
         }
+        setLoading(true);
 
         const maintenanceData = {
             status: maintenanceStatus,
@@ -189,7 +197,7 @@ const Schedules = () => {
                                     }
                                 }}>
                                     <DialogTrigger asChild>
-                                        {maintenanceItem.status !== "Canceled" ? <button onClick={() => handleEditClick(maintenanceItem)} className="text-blue-500 hover:text-blue-700">
+                                        {!["Canceled", "Completed"].includes(maintenanceItem.status) ? <button onClick={() => handleEditClick(maintenanceItem)} className="text-blue-500 hover:text-blue-700">
                                             <Pencil size={16} />
                                         </button> : <button disabled className="text-red-500 hover:text-red-700">
                                             <PencilOff size={16} />
@@ -236,7 +244,7 @@ const Schedules = () => {
                                                 <Label htmlFor="maintenance-status-description" className="w-32 text-left">
                                                     Status Description
                                                 </Label>
-                                                <Textarea
+                                                <Textarea 
                                                     id="maintenance-status-description"
                                                     value={maintenanceStatusContent}
                                                     onChange={(e) => setMaintenanceStatusContent(e.target.value)}
@@ -319,7 +327,7 @@ const Schedules = () => {
                                         </div>
 
                                         <DialogFooter className="flex items-end space-x-4">
-                                            <Button onClick={() => handleSave(maintenanceItem._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
+                                            <Button onClick={(e) => handleSave(e,maintenanceItem._id)} className="border-[1px] text-black bg-green-500 rounded-[5px] py-2 text-sm hover:bg-green-600">
                                                {!loading ? "Update" : "Updating..."}
                                             </Button>
                                         </DialogFooter>

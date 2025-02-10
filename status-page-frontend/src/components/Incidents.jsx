@@ -16,6 +16,7 @@ import { apiUrl } from "../config/appConfig";
 import { useAuth } from "../contexts/authContext";
 import { useSocket } from "../contexts/socketContext";
 import Loader from "./Loader";
+import { formatDate } from "../utils/formatDate";
 
 
 const Incidents = () => {
@@ -55,7 +56,6 @@ const Incidents = () => {
 
     const handleSave = async (e, incidentId) => {
         e.preventDefault();
-        setLoading(true);
         let serviceStatus = serviceStatuses[incidentId];
 
         if (!incidentStatus || !serviceStatus || !incidentContent) {
@@ -80,6 +80,8 @@ const Incidents = () => {
             serviceStatus,
             timeline: incidentStatus !== 'Reported' ? [{ status: incidentStatus, content: incidentContent }] : [],
         };
+
+        setLoading(true);
 
         try {
             const response = await fetch(`${apiUrl}/api/incidents/${incidentId}`, {
@@ -130,7 +132,7 @@ const Incidents = () => {
         } catch (error) {
             setIsLoading(false);
             alert(error);
-            console.error('Error subscribing:', error);
+            console.error('Error while fetching incidents:', error);
         }
     };
 
@@ -149,10 +151,16 @@ const Incidents = () => {
                 setFilteredIncidents((prev) => {
                     return (
                         user.role === "Admin"
-                            ? [...prev, data.incident]
-                            : [...prev.filter(incident => incident.reported_by === user.id), data.incident]
+                            ? [{
+                                ...data.incident, occurred_at: formatDate(data.incident.occurred_at),
+                                updated_at: formatDate(data.incident.updated_at)
+                            }, ...prev]
+                            : [{
+                                ...data.incident, occurred_at: formatDate(data.incident.occurred_at),
+                                updated_at: formatDate(data.incident.updated_at)
+                            }, ...prev.filter(incident => incident.reported_by === user.id)]
                     )
-                })
+                }).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
             } else if (data.type === "UPDATE_INCIDENT") {
                 setFilteredIncidents((prev) => {
                     return (
@@ -162,13 +170,15 @@ const Incidents = () => {
                     ).map((incidentItem) => {
                         if (incidentItem._id === data.incident._id) {
                             return {
-                                ...data.incident
+                                ...data.incident,
+                                occurred_at: formatDate(data.incident.occurred_at),
+                                updated_at: formatDate(data.incident.updated_at)
                             }
                         }
                         return {
                             ...incidentItem
                         };
-                    })
+                    }).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
                 })
             }
         };
@@ -186,7 +196,8 @@ const Incidents = () => {
                     <tr className="bg-gray-700 text-white">
                         <th className="px-6 py-3 text-left text-sm font-semibold">Incident Title</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold">Status</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold">Reported On</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold">Occurred On</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold">Updated On</th>
                         {user.role === "Admin" && <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>}
                     </tr>
                 </thead>
@@ -200,6 +211,7 @@ const Incidents = () => {
                                 </span>
                             </td>
                             <td className="px-6 py-3 text-sm">{incident.occurred_at}</td>
+                            <td className="px-6 py-3 text-sm">{incident.updated_at}</td>
                             {user.role === "Admin" && <td className="px-6 py-3 flex space-x-3">
 
                                 <Dialog onOpenChange={(isOpen) => {
@@ -285,8 +297,8 @@ const Incidents = () => {
                                             </div>
 
                                             <div className="flex flex-col items-start gap-2">
-                                                <Label htmlFor="incident-time" className="text-right">
-                                                    Reported On
+                                                <Label htmlFor="incident-occured-at" className="text-right">
+                                                    Occurred On
                                                 </Label>
                                                 <Input
                                                     disabled
@@ -347,8 +359,8 @@ const Incidents = () => {
                     ))}
                 </tbody>
             </table> : <div className='flex flex-col gap-3'>
-          <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>{user.role === "Admin" ? "No incident has been reported yet." : "No incident has been reported yet by you."}</p>
-        </div>}
+                <p className='p-2 bg-gray-800 rounded-[5px] border-[1px] border-gray-600 text-left'>{user.role === "Admin" ? "No incident has been reported yet." : "No incident has been reported yet by you."}</p>
+            </div>}
         </div>
     );
 };

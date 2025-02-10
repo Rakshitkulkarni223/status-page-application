@@ -66,11 +66,11 @@ const UserOwnedServices = () => {
   }, [socket]);
 
   const handleSave = async (id) => {
-    setLoading(true);
     if (!groupName || groupName?.trim() === "") {
       alert("Group name cannot be empty!");
       return;
     }
+    setLoading(true);
     try {
       const response = await fetch(`${apiUrl}/api/services/group/${id}`, {
         method: 'PUT',

@@ -97,11 +97,11 @@ router.get('/', async (req, res) => {
       query.affected_services = service;
     }
 
-    var incidents = await Incident.find(query).populate('affected_services');
+    var incidents = await Incident.find(query).populate('affected_services').sort({ updated_at: -1 });;
     incidents = incidents.map((incident) => ({
       ...incident.toObject(),
       occurred_at : moment.utc(incident.occurred_at).local().format("MMMM Do YYYY, h:mm A"),
-      created_at: moment.utc(incident.created_at).local().format("MMMM Do YYYY, h:mm A"),
+      updated_at: moment.utc(incident.updated_at).local().format("MMMM Do YYYY, h:mm A"),
     }));
     res.status(200).json(incidents);
   } catch (err) {

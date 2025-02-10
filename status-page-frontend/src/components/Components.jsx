@@ -98,7 +98,7 @@ const Components = () => {
                         ? prevGroups
                         : prevGroups.filter(group => user.owned_service_groups.includes(group.id))
                     ).map((group) => {
-                        const updatedServices = group.services.map((service) => {
+                        var updatedServices = group.services.map((service) => {
                             if (service.id === data.updatedService._id) {
                                 return {
                                     ...service,
@@ -110,11 +110,13 @@ const Components = () => {
                             return service;
                         });
 
+                        updatedServices = updatedServices.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
                         return {
                             ...group,
                             services: updatedServices
                         };
-                    });
+                    }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
                 });
             } else if (data.type === "CREATE_NEW_SERVICE") {
                 fetchServices();
@@ -132,7 +134,7 @@ const Components = () => {
                             };
                         }
                         return group;
-                    });
+                    }).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
                 });
             }
         };
@@ -189,12 +191,12 @@ const Components = () => {
     const handleReportProblem = async (e) => {
         e.preventDefault();
 
-        setLoading(true);
-
+        
         if (!problemTitle || !problemDescription || !problemOccurredAt || !problemStatusContent) {
             alert('Missing required fields for Title, Description, Status description, Reported on fields. Please fill all the required fields.');
             return;
         }
+        setLoading(true);
 
         const newIncident = {
             title: problemTitle,
@@ -237,8 +239,6 @@ const Components = () => {
             return;
         }
 
-        setLoading(true);
-
         let updatedStatus = status;
 
         if (status === "Operational" && !serviceStatuses[id]) {
@@ -250,7 +250,7 @@ const Components = () => {
         } else {
             updatedStatus = serviceStatuses[id];
         }
-
+        setLoading(true);
         const maintenanceData = {
             title: maintenanceTitle,
             description: maintenanceDescription,
@@ -732,7 +732,7 @@ const Components = () => {
 
                                                     <div className="flex flex-col items-start gap-2">
                                                         <Label htmlFor="incident-time" className="text-left">
-                                                            Reported On
+                                                            Occurred On
                                                         </Label>
                                                         <Input
                                                             id="incident-occured-at"

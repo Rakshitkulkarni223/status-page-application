@@ -81,6 +81,7 @@ router.get('/', async (req, res) => {
           id: service._id,
           name: service.name,
           status: service.status,
+          updatedAt: service.updatedAt,
           link: service.link,
           maintenanceScheduled: maintenance ? true : false,
           maintenanceDetails: maintenance ? {
@@ -96,9 +97,12 @@ router.get('/', async (req, res) => {
       return {
         id: group._id,
         name: group.name,
+        updatedAt: group.updatedAt,
         services: servicesWithMaintenance
       };
     }));
+
+    groupedServices.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     res.status(200).json(groupedServices);
   } catch (err) {

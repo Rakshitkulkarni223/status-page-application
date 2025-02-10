@@ -13,6 +13,6 @@ const IncidentSchema = new mongoose.Schema({
     content: String
   }],
   reported_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Incident', IncidentSchema);

@@ -25,6 +25,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
       maintenance.delayed_start = delayed_start;
       maintenance.delayed_end = delayed_end;
       maintenance.status = "Scheduled";
+      maintenance.updated_at = new Date();
       maintenance.timeline.push({
         status,
         timestamp: new Date(),
@@ -34,6 +35,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
     if (!["Scheduled", "Delayed"].includes(status) && timeline) {
       maintenance.status = status || maintenance.status;
+      maintenance.updated_at = new Date();
       maintenance.timeline.push({
         status,
         timestamp: new Date(),
@@ -72,13 +74,14 @@ router.post('/', authMiddleware, async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    var maintenance = await Maintenance.find().populate('affected_services');
+    var maintenance = await Maintenance.find().populate('affected_services').sort({ updated_at: -1 });
     maintenance = maintenance.map((item) => ({
       ...item.toObject(),
       scheduled_start: moment.utc(item.scheduled_start).local().format("MMMM Do YYYY, h:mm A"),
       scheduled_end: moment.utc(item.scheduled_end).local().format("MMMM Do YYYY, h:mm A"),
       delayed_start: moment.utc(item.delayed_start).local().format("MMMM Do YYYY, h:mm A"),
       delayed_end: moment.utc(item.delayed_end).local().format("MMMM Do YYYY, h:mm A"),
+      updated_at: moment.utc(item.updated_at).local().format("MMMM Do YYYY, h:mm A"),
     }));
     res.status(200).json(maintenance);
   } catch (err) {
@@ -95,8 +98,9 @@ const updateMaintenanceStatus = async () => {
     });
 
     for (let maintenance of maintenances) {
-      if (new Date(maintenance.scheduled_end) < now && maintenance.status !== "Completed") {
+      if (new Date(maintenance.scheduled_end).toISOString().slice(0, 16) < now.toISOString().slice(0, 16) && maintenance.status !== "Completed") {
         maintenance.status = "Completed";
+        maintenance.updated_at = new Date();
         maintenance.timeline.push({
           status: "Completed",
           timestamp: now,
@@ -108,8 +112,9 @@ const updateMaintenanceStatus = async () => {
           broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
         }
       }
-      else if (new Date(maintenance.scheduled_start) < now && maintenance.status === "Scheduled") {
+      else if (new Date(maintenance.scheduled_start).toISOString().slice(0, 16) < now.toISOString().slice(0, 16) && maintenance.status === "Scheduled") {
         maintenance.status = "Delayed";
+        maintenance.updated_at = new Date();
         maintenance.timeline.push({
           status: "Delayed",
           timestamp: now,
@@ -118,6 +123,7 @@ const updateMaintenanceStatus = async () => {
       }
       else if (new Date(maintenance.scheduled_start).toISOString().slice(0, 16) === now.toISOString().slice(0, 16) && maintenance.status === "Scheduled") {
         maintenance.status = "In Progress";
+        maintenance.updated_at = new Date();
         maintenance.timeline.push({
           status: "In Progress",
           timestamp: now,
@@ -139,6 +145,6 @@ const updateMaintenanceStatus = async () => {
   }
 };
 
-// setInterval(updateMaintenanceStatus, 60 * 1000);
+setInterval(updateMaintenanceStatus, 60 * 1000);
 
 module.exports = router;

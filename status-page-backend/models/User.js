@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema({
   status: { type: String, required: true },
   owned_service_groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ServiceGroup' }],
   password: { type: String, required: true }
-});
+}, { timestamps: true });
 
 UserSchema.pre('save', async function (next) {
     const user = this;
