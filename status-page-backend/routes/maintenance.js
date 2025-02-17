@@ -100,30 +100,22 @@ const updateMaintenanceStatus = async () => {
     for (let maintenance of maintenances) {
       if (new Date(maintenance.scheduled_end) < now && maintenance.status !== "Completed") {
         maintenance.status = "Completed";
-        maintenance.updated_at = new Date();
+        maintenance.updated_at = now;
         maintenance.timeline.push({
           status: "Completed",
           timestamp: now,
           content: "Maintenance completed successfully."
         });
+
         let { affected_services: serviceId } = maintenance;
         if (serviceId) {
           const updatedService = await Service.findByIdAndUpdate(serviceId, { status: "Operational" }, { new: true });
           broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
         }
       }
-      else if (new Date(maintenance.scheduled_start) < now && maintenance.status === "Scheduled") {
-        maintenance.status = "Delayed";
-        maintenance.updated_at = new Date();
-        maintenance.timeline.push({
-          status: "Delayed",
-          timestamp: now,
-          content: "Maintenance start delayed."
-        });
-      }
       else if (new Date(maintenance.scheduled_start) <= now && maintenance.status === "Scheduled") {
         maintenance.status = "In Progress";
-        maintenance.updated_at = new Date();
+        maintenance.updated_at = now;
         maintenance.timeline.push({
           status: "In Progress",
           timestamp: now,
@@ -135,6 +127,15 @@ const updateMaintenanceStatus = async () => {
           const updatedService = await Service.findByIdAndUpdate(serviceId, { status: serviceStatus }, { new: true });
           broadcast({ type: "SERVICE_STATUS_UPDATE", updatedService });
         }
+      }
+      else if (new Date(maintenance.scheduled_start) < now && maintenance.status === "Scheduled") {
+        maintenance.status = "Delayed";
+        maintenance.updated_at = now;
+        maintenance.timeline.push({
+          status: "Delayed",
+          timestamp: now,
+          content: "Maintenance start delayed."
+        });
       }
 
       await maintenance.save();

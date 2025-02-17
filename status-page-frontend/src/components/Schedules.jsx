@@ -84,7 +84,7 @@ const Schedules = () => {
                         ...data.maintenance,
                         scheduled_start: formatDate(data.maintenance.scheduled_start),
                         scheduled_end: formatDate(data.maintenance.scheduled_end),
-                        updated_at: formatDate(data.incident.updated_at)
+                        updated_at: formatDate(data.maintenance.updated_at)
                     },
                     ...prev
                 ]);
